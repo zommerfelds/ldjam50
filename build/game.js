@@ -3961,10 +3961,11 @@ PlayView.prototype = $extend(GameState.prototype,{
 			break;
 		}
 		var obj1 = new h2d_Bitmap(obj);
+		var v = Gui.scale(5);
 		obj1.posChanged = true;
-		obj1.scaleX *= 20;
+		obj1.scaleX *= v;
 		obj1.posChanged = true;
-		obj1.scaleY *= 20;
+		obj1.scaleY *= v;
 		obj1.posChanged = true;
 		obj1.x = this.width / 2;
 		obj1.posChanged = true;
@@ -3989,7 +3990,7 @@ PlayView.prototype = $extend(GameState.prototype,{
 		while(_g < _g1.length) {
 			var card = [_g1[_g]];
 			++_g;
-			motion_Actuate.tween(card[0].obj,3,{ x : this.width * (0.2 + i / (this.handCards.length - 1) * 0.6), y : this.height * 0.85, rotation : (i / (this.handCards.length - 1) - 0.5) * Math.PI * 0.2}).onUpdate((function(card) {
+			motion_Actuate.tween(card[0].obj,3,{ x : this.width * 0.5 + Math.min(this.width * 0.75,this.handCards.length * Gui.scale(60)) * (i / (this.handCards.length - 1) - 0.5), y : this.height - Gui.scale(50), rotation : (i / (this.handCards.length - 1) - 0.5) * Math.PI * 0.2}).onUpdate((function(card) {
 				return function() {
 					_gthis.posUpdated(card[0].obj);
 				};
@@ -4004,9 +4005,6 @@ PlayView.prototype = $extend(GameState.prototype,{
 	,onMapEvent: function(event) {
 		var _gthis = this;
 		event.propagate = false;
-		if(event.touchId != 0) {
-			return;
-		}
 		if(event.kind == hxd_EventKind.EPush) {
 			var pt = new h2d_col_Point(event.relX,event.relY);
 			this._cameras[0].screenToCamera(pt);
