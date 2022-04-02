@@ -387,6 +387,75 @@ App.prototype = $extend(HerbalTeaApp.prototype,{
 	}
 	,__class__: App
 });
+var CardType = $hxEnums["CardType"] = { __ename__:true,__constructs__:null
+	,Track: {_hx_name:"Track",_hx_index:0,__enum__:"CardType",toString:$estr}
+	,Station: {_hx_name:"Station",_hx_index:1,__enum__:"CardType",toString:$estr}
+	,Money: {_hx_name:"Money",_hx_index:2,__enum__:"CardType",toString:$estr}
+	,Debt: {_hx_name:"Debt",_hx_index:3,__enum__:"CardType",toString:$estr}
+	,Backside: {_hx_name:"Backside",_hx_index:4,__enum__:"CardType",toString:$estr}
+};
+CardType.__constructs__ = [CardType.Track,CardType.Station,CardType.Money,CardType.Debt,CardType.Backside];
+CardType.__empty_constructs__ = [CardType.Track,CardType.Station,CardType.Money,CardType.Debt,CardType.Backside];
+var Card = function(type,scene,layer) {
+	this.onRelease = function(card,pt) {
+		card.returnToHomePos();
+	};
+	this.canMove = true;
+	this.homeRotation = 0.0;
+	this.homePos = new h2d_col_Point();
+	var _gthis = this;
+	this.type = type;
+	this.obj = new h2d_Bitmap(Card.CARD_TILES.get(type));
+	var _this = this.obj;
+	var v = Gui.scale(5);
+	_this.posChanged = true;
+	_this.scaleX *= v;
+	_this.posChanged = true;
+	_this.scaleY *= v;
+	scene.addChildAt(this.obj,layer);
+	var interactive = new h2d_Interactive(Card.CARD_WIDTH,Card.CARD_HEIGHT,this.obj);
+	interactive.posChanged = true;
+	interactive.x = -Card.CARD_WIDTH / 2;
+	interactive.posChanged = true;
+	interactive.y = -Card.CARD_HEIGHT / 2;
+	interactive.onPush = function(e) {
+		if(!_gthis.canMove) {
+			return;
+		}
+		scene.startCapture(function(e) {
+			var pt = scene.localToGlobal(new h2d_col_Point(e.relX,e.relY));
+			Utils.tween(_gthis.obj,0,{ x : pt.x, y : pt.y, rotation : 0});
+		});
+	};
+	interactive.onRelease = function(e) {
+		_gthis.onRelease(_gthis,interactive.localToGlobal(new h2d_col_Point(e.relX,e.relY)));
+		scene.stopCapture();
+	};
+	this.homePos = Utils.toPoint(this.obj);
+	this.homeRotation = this.obj.rotation;
+};
+Card.__name__ = "Card";
+Card.init = function() {
+	var _g = new haxe_ds_EnumValueMap();
+	_g.set(CardType.Track,hxd_Res.get_loader().loadCache("card-track.png",hxd_res_Image).toTile());
+	_g.set(CardType.Money,hxd_Res.get_loader().loadCache("card-money.png",hxd_res_Image).toTile());
+	_g.set(CardType.Station,hxd_Res.get_loader().loadCache("card-station.png",hxd_res_Image).toTile());
+	_g.set(CardType.Debt,hxd_Res.get_loader().loadCache("card-debt.png",hxd_res_Image).toTile());
+	_g.set(CardType.Backside,hxd_Res.get_loader().loadCache("card-back.png",hxd_res_Image).toTile());
+	Card.CARD_TILES = _g;
+	var tile = Card.CARD_TILES.iterator();
+	while(tile.hasNext()) {
+		var tile1 = tile.next();
+		tile1.dx = -(0.5 * tile1.width);
+		tile1.dy = -(0.5 * tile1.height);
+	}
+};
+Card.prototype = {
+	returnToHomePos: function() {
+		Utils.tween(this.obj,1.0,{ x : this.homePos.x, y : this.homePos.y, rotation : this.homeRotation});
+	}
+	,__class__: Card
+};
 var EReg = function(r,opt) {
 	this.r = new RegExp(r,opt.split("u").join(""));
 };
@@ -3859,30 +3928,14 @@ MenuView.prototype = $extend(GameState.prototype,{
 	}
 	,__class__: MenuView
 });
-var CardType = $hxEnums["CardType"] = { __ename__:true,__constructs__:null
-	,Track: {_hx_name:"Track",_hx_index:0,__enum__:"CardType",toString:$estr}
-	,Station: {_hx_name:"Station",_hx_index:1,__enum__:"CardType",toString:$estr}
-	,Money: {_hx_name:"Money",_hx_index:2,__enum__:"CardType",toString:$estr}
-};
-CardType.__constructs__ = [CardType.Track,CardType.Station,CardType.Money];
-CardType.__empty_constructs__ = [CardType.Track,CardType.Station,CardType.Money];
-var Card = function(type,obj) {
-	this.type = type;
-	this.obj = obj;
-};
-Card.__name__ = "Card";
-Card.prototype = {
-	__class__: Card
-};
 var PlayView = function() {
-	this.CARD_HEIGHT = 31;
-	this.CARD_WIDTH = 21;
-	this.tileCardStation = hxd_Res.get_loader().loadCache("card-station.png",hxd_res_Image).toTile();
-	this.tileCardMoney = hxd_Res.get_loader().loadCache("card-money.png",hxd_res_Image).toTile();
-	this.tileCardTrack = hxd_Res.get_loader().loadCache("card-track.png",hxd_res_Image).toTile();
 	this.handCards = [];
+	this.clickedPt = null;
+	this.constructionCardPlaceholders = [];
 	this.fpsText = new Text("",null,0.5);
 	this.drawGr = new h2d_Graphics();
+	this.trackUnderConstruction = null;
+	this.stations = [];
 	this.houses = [];
 	this.tracks = [];
 	this.points = [];
@@ -3892,6 +3945,100 @@ PlayView.__name__ = "PlayView";
 PlayView.__super__ = GameState;
 PlayView.prototype = $extend(GameState.prototype,{
 	init: function() {
+		Card.init();
+		this.setUpCamera();
+		this.addEventListener($bind(this,this.onMapEvent));
+		this.setUpGameModel();
+		this.addChild(this.drawGr);
+		this.handCards.push(new Card(CardType.Track,this,PlayView.LAYER_UI));
+		this.handCards.push(new Card(CardType.Money,this,PlayView.LAYER_UI));
+		this.handCards.push(new Card(CardType.Track,this,PlayView.LAYER_UI));
+		this.handCards.push(new Card(CardType.Station,this,PlayView.LAYER_UI));
+		this.handCards.push(new Card(CardType.Station,this,PlayView.LAYER_UI));
+		var _g = 0;
+		var _g1 = this.handCards;
+		while(_g < _g1.length) {
+			var card = _g1[_g];
+			++_g;
+			var _this = card.obj;
+			_this.posChanged = true;
+			_this.x = this.width / 2;
+			var _this1 = card.obj;
+			_this1.posChanged = true;
+			_this1.y = this.height / 2;
+			card.onRelease = $bind(this,this.onReleaseHandCard);
+		}
+		this.arrangeHand();
+		var deck = new Card(CardType.Backside,this,PlayView.LAYER_UI);
+		deck.homePos.x = Gui.scale(74);
+		var tmp = this.height;
+		var tmp1 = Gui.scale(252);
+		deck.homePos.y = tmp - tmp1;
+		deck.returnToHomePos();
+		deck.canMove = false;
+		var deck = new Card(CardType.Backside,this,PlayView.LAYER_UI);
+		deck.homePos.x = Gui.scale(77);
+		var tmp = this.height;
+		var tmp1 = Gui.scale(251);
+		deck.homePos.y = tmp - tmp1;
+		deck.returnToHomePos();
+		deck.canMove = false;
+		var deckNext = new Card(CardType.Backside,this,PlayView.LAYER_UI);
+		deckNext.homePos.x = Gui.scale(80);
+		var tmp = this.height;
+		var tmp1 = Gui.scale(250);
+		deckNext.homePos.y = tmp - tmp1;
+		deckNext.returnToHomePos();
+		if(new URLSearchParams(window.location.search).get("fps") != null) {
+			this.addChildAt(this.fpsText,PlayView.LAYER_UI);
+		}
+		var placeholder = new h2d_Bitmap(Card.CARD_TILES.get(CardType.Track),this);
+		var v = Gui.scale(2);
+		placeholder.posChanged = true;
+		placeholder.scaleX *= v;
+		placeholder.posChanged = true;
+		placeholder.scaleY *= v;
+		placeholder.alpha = 0.5;
+		placeholder.set_visible(false);
+		this.constructionCardPlaceholders.push(placeholder);
+		var placeholder = new h2d_Bitmap(Card.CARD_TILES.get(CardType.Track),this);
+		var v = Gui.scale(2);
+		placeholder.posChanged = true;
+		placeholder.scaleX *= v;
+		placeholder.posChanged = true;
+		placeholder.scaleY *= v;
+		placeholder.alpha = 0.5;
+		placeholder.set_visible(false);
+		this.constructionCardPlaceholders.push(placeholder);
+		var placeholder = new h2d_Bitmap(Card.CARD_TILES.get(CardType.Track),this);
+		var v = Gui.scale(2);
+		placeholder.posChanged = true;
+		placeholder.scaleX *= v;
+		placeholder.posChanged = true;
+		placeholder.scaleY *= v;
+		placeholder.alpha = 0.5;
+		placeholder.set_visible(false);
+		this.constructionCardPlaceholders.push(placeholder);
+		var placeholder = new h2d_Bitmap(Card.CARD_TILES.get(CardType.Track),this);
+		var v = Gui.scale(2);
+		placeholder.posChanged = true;
+		placeholder.scaleX *= v;
+		placeholder.posChanged = true;
+		placeholder.scaleY *= v;
+		placeholder.alpha = 0.5;
+		placeholder.set_visible(false);
+		this.constructionCardPlaceholders.push(placeholder);
+		var placeholder = new h2d_Bitmap(Card.CARD_TILES.get(CardType.Track),this);
+		var v = Gui.scale(2);
+		placeholder.posChanged = true;
+		placeholder.scaleX *= v;
+		placeholder.posChanged = true;
+		placeholder.scaleY *= v;
+		placeholder.alpha = 0.5;
+		placeholder.set_visible(false);
+		this.constructionCardPlaceholders.push(placeholder);
+	}
+	,setUpCamera: function() {
 		var uiCamera = new h2d_Camera(this);
 		uiCamera.layerVisible = function(layer) {
 			return layer == PlayView.LAYER_UI;
@@ -3907,11 +4054,11 @@ PlayView.prototype = $extend(GameState.prototype,{
 		this._cameras[0].layerVisible = function(layer) {
 			return layer == PlayView.LAYER_MAP;
 		};
-		this.addEventListener($bind(this,this.onMapEvent));
+	}
+	,setUpGameModel: function() {
 		var rand = new hxd_Rand(10);
-		this.points.push(new h2d_col_Point(-100,-700));
-		this.points.push(new h2d_col_Point(1000,500));
-		this.points.push(new h2d_col_Point(800,2000));
+		this.points.push(new h2d_col_Point(-400,-700));
+		this.points.push(new h2d_col_Point(400,700));
 		var _g = -10;
 		while(_g < 10) {
 			var i = _g++;
@@ -3919,94 +4066,131 @@ PlayView.prototype = $extend(GameState.prototype,{
 			while(_g1 < 10) {
 				rand.seed = 36969 * (rand.seed & 65535) + (rand.seed >> 16);
 				rand.seed2 = 18000 * (rand.seed2 & 65535) + (rand.seed2 >> 16);
-				var tmp = (i + (((rand.seed << 16) + rand.seed2 | 0) & 1073741823) % 10007 / 10007.0) * 700;
+				var tmp = (i + (((rand.seed << 16) + rand.seed2 | 0) & 1073741823) % 10007 / 10007.0) * 1000;
 				rand.seed = 36969 * (rand.seed & 65535) + (rand.seed >> 16);
 				rand.seed2 = 18000 * (rand.seed2 & 65535) + (rand.seed2 >> 16);
-				this.houses.push(new h2d_col_Point(tmp,(_g1++ + (((rand.seed << 16) + rand.seed2 | 0) & 1073741823) % 10007 / 10007.0) * 700));
+				this.houses.push(new h2d_col_Point(tmp,(_g1++ + (((rand.seed << 16) + rand.seed2 | 0) & 1073741823) % 10007 / 10007.0) * 1000));
 			}
 		}
 		this.tracks.push({ start : 0, end : 1});
-		this.tracks.push({ start : 1, end : 2});
-		this.addChild(this.drawGr);
-		var _this = this.tileCardTrack;
-		_this.dx = -(0.5 * _this.width);
-		_this.dy = -(0.5 * _this.height);
-		var _this = this.tileCardMoney;
-		_this.dx = -(0.5 * _this.width);
-		_this.dy = -(0.5 * _this.height);
-		var _this = this.tileCardStation;
-		_this.dx = -(0.5 * _this.width);
-		_this.dy = -(0.5 * _this.height);
-		this.handCards.push(this.makeCard(CardType.Track));
-		this.handCards.push(this.makeCard(CardType.Money));
-		this.handCards.push(this.makeCard(CardType.Track));
-		this.handCards.push(this.makeCard(CardType.Station));
-		this.handCards.push(this.makeCard(CardType.Station));
-		this.arrangeHand();
-		if(new URLSearchParams(window.location.search).get("fps") != null) {
-			this.addChildAt(this.fpsText,PlayView.LAYER_UI);
+		var _this = this.points[0];
+		var x = _this.x * 0.1;
+		var y = _this.y * 0.1;
+		if(y == null) {
+			y = 0.;
 		}
+		if(x == null) {
+			x = 0.;
+		}
+		var _this = this.points[1];
+		var x1 = _this.x * 0.9;
+		var y1 = _this.y * 0.9;
+		if(y1 == null) {
+			y1 = 0.;
+		}
+		if(x1 == null) {
+			x1 = 0.;
+		}
+		this.stations.push(new h2d_col_Point(x + x1,y + y1));
+		var _this = this.points[1];
+		var x = _this.x * 0.1;
+		var y = _this.y * 0.1;
+		if(y == null) {
+			y = 0.;
+		}
+		if(x == null) {
+			x = 0.;
+		}
+		var _this = this.points[0];
+		var x1 = _this.x * 0.9;
+		var y1 = _this.y * 0.9;
+		if(y1 == null) {
+			y1 = 0.;
+		}
+		if(x1 == null) {
+			x1 = 0.;
+		}
+		this.stations.push(new h2d_col_Point(x + x1,y + y1));
 	}
-	,makeCard: function(type) {
-		var obj;
-		switch(type._hx_index) {
+	,onReleaseHandCard: function(card,pt) {
+		var _gthis = this;
+		var mapPt = new h2d_col_Point(pt.x,pt.y);
+		this._cameras[0].screenToCamera(mapPt);
+		switch(card.type._hx_index) {
 		case 0:
-			obj = this.tileCardTrack;
+			if(this.trackUnderConstruction != null && this.trackUnderConstruction.paid < this.trackUnderConstruction.cost) {
+				var placeholder = this.constructionCardPlaceholders[this.trackUnderConstruction.paid];
+				var _this = Utils.toPoint(placeholder);
+				var dx = _this.x - mapPt.x;
+				var dy = _this.y - mapPt.y;
+				if(Math.sqrt(dx * dx + dy * dy) < 450) {
+					haxe_Log.trace("Building track!",{ fileName : "src/PlayView.hx", lineNumber : 121, className : "PlayView", methodName : "onReleaseHandCard"});
+					HxOverrides.remove(this.handCards,card);
+					this.trackUnderConstruction.cards.push(card);
+					var _this = card.obj;
+					if(_this != null && _this.parent != null) {
+						_this.parent.removeChild(_this);
+					}
+					this.addChild(card.obj);
+					var cardPos = Utils.toPoint(card.obj);
+					this._cameras[0].screenToCamera(cardPos);
+					var _this = card.obj;
+					_this.posChanged = true;
+					_this.x = cardPos.x;
+					var _this = card.obj;
+					_this.posChanged = true;
+					_this.y = cardPos.y;
+					this.trackUnderConstruction.paid++;
+					Utils.tween(card.obj,1.0,{ x : placeholder.x, y : placeholder.y, scaleX : placeholder.scaleX, scaleY : placeholder.scaleY}).onComplete(function() {
+						if(_gthis.trackUnderConstruction.paid == _gthis.trackUnderConstruction.cost) {
+							_gthis.points.push(_gthis.trackUnderConstruction.start);
+							_gthis.points.push(_gthis.trackUnderConstruction.end);
+							_gthis.tracks.push({ start : _gthis.points.length - 2, end : _gthis.points.length - 1});
+							var _g = 0;
+							var _g1 = _gthis.trackUnderConstruction.cards;
+							while(_g < _g1.length) {
+								var _this = _g1[_g++].obj;
+								if(_this != null && _this.parent != null) {
+									_this.parent.removeChild(_this);
+								}
+							}
+							_gthis.trackUnderConstruction = null;
+						}
+					});
+				}
+			}
 			break;
 		case 1:
-			obj = this.tileCardStation;
 			break;
-		case 2:
-			obj = this.tileCardMoney;
-			break;
+		default:
 		}
-		var obj1 = new h2d_Bitmap(obj);
-		var v = Gui.scale(5);
-		obj1.posChanged = true;
-		obj1.scaleX *= v;
-		obj1.posChanged = true;
-		obj1.scaleY *= v;
-		obj1.posChanged = true;
-		obj1.x = this.width / 2;
-		obj1.posChanged = true;
-		obj1.y = this.height / 2;
-		var interactive = new h2d_Interactive(this.CARD_WIDTH,this.CARD_HEIGHT,obj1);
-		interactive.posChanged = true;
-		interactive.x = -this.CARD_WIDTH / 2;
-		interactive.posChanged = true;
-		interactive.y = -this.CARD_HEIGHT / 2;
-		interactive.onClick = function(e) {
-			haxe_Log.trace("Touched " + Std.string(type),{ fileName : "src/PlayView.hx", lineNumber : 101, className : "PlayView", methodName : "makeCard"});
-		};
-		var card = new Card(type,obj1);
-		this.addChildAt(obj1,PlayView.LAYER_UI);
-		return card;
+		this.arrangeHand();
 	}
 	,arrangeHand: function() {
-		var _gthis = this;
 		var i = 0;
 		var _g = 0;
 		var _g1 = this.handCards;
 		while(_g < _g1.length) {
-			var card = [_g1[_g]];
+			var card = _g1[_g];
 			++_g;
-			motion_Actuate.tween(card[0].obj,3,{ x : this.width * 0.5 + Math.min(this.width * 0.75,this.handCards.length * Gui.scale(60)) * (i / (this.handCards.length - 1) - 0.5), y : this.height - Gui.scale(50), rotation : (i / (this.handCards.length - 1) - 0.5) * Math.PI * 0.2}).onUpdate((function(card) {
-				return function() {
-					_gthis.posUpdated(card[0].obj);
-				};
-			})(card));
+			var tmp = this.width * 0.5;
+			var tmp1 = Math.min(this.width * 0.75,this.handCards.length * Gui.scale(60));
+			card.homePos.x = tmp + tmp1 * (i / (this.handCards.length - 1) - 0.5);
+			var tmp2 = this.height;
+			var tmp3 = Gui.scale(50);
+			card.homePos.y = tmp2 - tmp3;
+			card.homeRotation = (i / (this.handCards.length - 1) - 0.5) * Math.PI * 0.2;
+			card.returnToHomePos();
 			++i;
 		}
-	}
-	,posUpdated: function(obj) {
-		obj.posChanged = true;
-		obj.x = obj.x;
 	}
 	,onMapEvent: function(event) {
 		var _gthis = this;
 		event.propagate = false;
 		if(event.kind == hxd_EventKind.EPush) {
-			var pt = new h2d_col_Point(event.relX,event.relY);
+			this.clickedPt = new h2d_col_Point(event.relX,event.relY);
+			var _this = this.clickedPt;
+			var pt = new h2d_col_Point(_this.x,_this.y);
 			this._cameras[0].screenToCamera(pt);
 			var closestPoint = null;
 			var _g = 0;
@@ -4027,14 +4211,15 @@ PlayView.prototype = $extend(GameState.prototype,{
 					closestPoint = closestPointTrack;
 				}
 			}
+			var addingTrack;
 			var dx = closestPoint.x - pt.x;
 			var dy = closestPoint.y - pt.y;
-			var addingTrack = Math.sqrt(dx * dx + dy * dy) < 100;
+			addingTrack = Math.sqrt(dx * dx + dy * dy) < 100 && (this.trackUnderConstruction == null || this.trackUnderConstruction.paid == 0);
 			if(addingTrack) {
-				this.points.push(closestPoint);
-				this.points.push(pt);
-				this.tracks.push({ start : this.points.length - 2, end : this.points.length - 1});
+				this.trackUnderConstruction = { start : closestPoint, end : pt, cost : 1, paid : 0, cards : []};
 			}
+			var startDragPos_y;
+			var startDragPos_x;
 			var x = event.relX;
 			var y = event.relY;
 			if(y == null) {
@@ -4043,12 +4228,21 @@ PlayView.prototype = $extend(GameState.prototype,{
 			if(x == null) {
 				x = 0.;
 			}
-			var lastDragPos = new h2d_col_Point(x,y);
+			startDragPos_x = x;
+			startDragPos_y = y;
+			var lastDragPos = new h2d_col_Point(startDragPos_x,startDragPos_y);
 			this.startCapture(function(event) {
 				var pt = new h2d_col_Point(event.relX,event.relY);
 				_gthis._cameras[0].screenToCamera(pt);
 				if(addingTrack) {
-					_gthis.points[_gthis.points.length - 1] = new h2d_col_Point(pt.x,pt.y);
+					var _this = _gthis.trackUnderConstruction.start;
+					var dx = _this.x - pt.x;
+					var dy = _this.y - pt.y;
+					var newCost = Math.ceil(Math.sqrt(dx * dx + dy * dy) / 700);
+					if(newCost <= 5) {
+						_gthis.trackUnderConstruction.end = new h2d_col_Point(pt.x,pt.y);
+						_gthis.trackUnderConstruction.cost = newCost;
+					}
 				} else {
 					var fh = _gthis._cameras[0];
 					var v = fh.x + (lastDragPos.x - event.relX);
@@ -4059,10 +4253,32 @@ PlayView.prototype = $extend(GameState.prototype,{
 					fh.posChanged = true;
 					fh.y = v;
 				}
+				var tmp;
+				if(_gthis.clickedPt != null) {
+					var x = event.relX;
+					var y = event.relY;
+					if(y == null) {
+						y = 0.;
+					}
+					if(x == null) {
+						x = 0.;
+					}
+					var dx = startDragPos_x - x;
+					var dy = startDragPos_y - y;
+					tmp = Math.sqrt(dx * dx + dy * dy) > Gui.scale() * 30;
+				} else {
+					tmp = false;
+				}
+				if(tmp) {
+					_gthis.clickedPt = null;
+				}
 				lastDragPos = new h2d_col_Point(event.relX,event.relY);
 			});
 		} else if(event.kind == hxd_EventKind.ERelease) {
 			this.stopCapture();
+			if(this.clickedPt != null && this.trackUnderConstruction.paid == 0) {
+				this.trackUnderConstruction = null;
+			}
 		}
 	}
 	,update: function(dt) {
@@ -4073,233 +4289,6 @@ PlayView.prototype = $extend(GameState.prototype,{
 		this.drawGr.clear();
 		this.drawGr.beginFill(5280848);
 		this.drawGr.drawRect(-10000,-10000,20000,20000);
-		this.drawGr.beginFill(3681318);
-		var _g = 0;
-		var _g1 = this.points;
-		while(_g < _g1.length) {
-			var point = _g1[_g];
-			++_g;
-			this.drawGr.drawCircle(point.x,point.y,35);
-		}
-		this.drawGr.endFill();
-		this.drawGr.lineStyle(15,6696206);
-		var _g = 0;
-		var _g1 = this.tracks;
-		while(_g < _g1.length) {
-			var track = _g1[_g];
-			++_g;
-			var start = this.points[track.start];
-			var end = this.points[track.end];
-			var x = end.x - start.x;
-			var y = end.y - start.y;
-			if(y == null) {
-				y = 0.;
-			}
-			if(x == null) {
-				x = 0.;
-			}
-			var _this_x = x;
-			var _this_y = y;
-			var k = _this_x * _this_x + _this_y * _this_y;
-			if(k < 1e-10) {
-				k = 0;
-			} else {
-				k = 1. / Math.sqrt(k);
-			}
-			var x1 = _this_x * k;
-			var y1 = _this_y * k;
-			if(y1 == null) {
-				y1 = 0.;
-			}
-			if(x1 == null) {
-				x1 = 0.;
-			}
-			var dir_x = x1;
-			var dir_y = y1;
-			var x2 = dir_x * 30;
-			var y2 = dir_y * 30;
-			if(y2 == null) {
-				y2 = 0.;
-			}
-			if(x2 == null) {
-				x2 = 0.;
-			}
-			var offset_x = x2;
-			var offset_y = y2;
-			var angle = 0.5 * Math.PI;
-			var c = Math.cos(angle);
-			var s = Math.sin(angle);
-			var y21 = offset_x * s + offset_y * c;
-			offset_x = offset_x * c - offset_y * s;
-			offset_y = y21;
-			var x3 = dir_x * 25;
-			var y3 = dir_y * 25;
-			if(y3 == null) {
-				y3 = 0.;
-			}
-			if(x3 == null) {
-				x3 = 0.;
-			}
-			var pos = new h2d_col_Point(start.x + x3,start.y + y3);
-			while(true) {
-				var dx = pos.x - start.x;
-				var dy = pos.y - start.y;
-				var dx1 = end.x - start.x;
-				var dy1 = end.y - start.y;
-				if(!(Math.sqrt(dx * dx + dy * dy) + 25 < Math.sqrt(dx1 * dx1 + dy1 * dy1))) {
-					break;
-				}
-				var x4 = offset_x * 1.5;
-				var y4 = offset_y * 1.5;
-				if(y4 == null) {
-					y4 = 0.;
-				}
-				if(x4 == null) {
-					x4 = 0.;
-				}
-				var x5 = pos.x + x4;
-				var y5 = pos.y + y4;
-				if(y5 == null) {
-					y5 = 0.;
-				}
-				if(x5 == null) {
-					x5 = 0.;
-				}
-				var plankLeft_x = x5;
-				var plankLeft_y = y5;
-				var x6 = offset_x * 1.5;
-				var y6 = offset_y * 1.5;
-				if(y6 == null) {
-					y6 = 0.;
-				}
-				if(x6 == null) {
-					x6 = 0.;
-				}
-				var x7 = pos.x - x6;
-				var y7 = pos.y - y6;
-				if(y7 == null) {
-					y7 = 0.;
-				}
-				if(x7 == null) {
-					x7 = 0.;
-				}
-				var plankRight_x = x7;
-				var plankRight_y = y7;
-				var _this = this.drawGr;
-				_this.flush();
-				_this.addVertex(plankLeft_x,plankLeft_y,_this.curR,_this.curG,_this.curB,_this.curA,plankLeft_x * _this.ma + plankLeft_y * _this.mc + _this.mx,plankLeft_x * _this.mb + plankLeft_y * _this.md + _this.my);
-				var _this1 = this.drawGr;
-				_this1.addVertex(plankRight_x,plankRight_y,_this1.curR,_this1.curG,_this1.curB,_this1.curA,plankRight_x * _this1.ma + plankRight_y * _this1.mc + _this1.mx,plankRight_x * _this1.mb + plankRight_y * _this1.md + _this1.my);
-				var x8 = dir_x * 25;
-				var y8 = dir_y * 25;
-				if(y8 == null) {
-					y8 = 0.;
-				}
-				if(x8 == null) {
-					x8 = 0.;
-				}
-				pos = new h2d_col_Point(pos.x + x8,pos.y + y8);
-			}
-		}
-		this.drawGr.lineStyle(10,0);
-		var _g = 0;
-		var _g1 = this.tracks;
-		while(_g < _g1.length) {
-			var track = _g1[_g];
-			++_g;
-			var start = this.points[track.start];
-			var end = this.points[track.end];
-			var x = end.x - start.x;
-			var y = end.y - start.y;
-			if(y == null) {
-				y = 0.;
-			}
-			if(x == null) {
-				x = 0.;
-			}
-			var _this_x = x;
-			var _this_y = y;
-			var k = _this_x * _this_x + _this_y * _this_y;
-			if(k < 1e-10) {
-				k = 0;
-			} else {
-				k = 1. / Math.sqrt(k);
-			}
-			var x1 = _this_x * k;
-			var y1 = _this_y * k;
-			if(y1 == null) {
-				y1 = 0.;
-			}
-			if(x1 == null) {
-				x1 = 0.;
-			}
-			var x2 = x1 * 30;
-			var y2 = y1 * 30;
-			if(y2 == null) {
-				y2 = 0.;
-			}
-			if(x2 == null) {
-				x2 = 0.;
-			}
-			var offset_x = x2;
-			var offset_y = y2;
-			var angle = 0.5 * Math.PI;
-			var c = Math.cos(angle);
-			var s = Math.sin(angle);
-			var y21 = offset_x * s + offset_y * c;
-			offset_x = offset_x * c - offset_y * s;
-			offset_y = y21;
-			var x3 = start.x + offset_x;
-			var y3 = start.y + offset_y;
-			if(y3 == null) {
-				y3 = 0.;
-			}
-			if(x3 == null) {
-				x3 = 0.;
-			}
-			var rail1Start_x = x3;
-			var rail1Start_y = y3;
-			var x4 = end.x + offset_x;
-			var y4 = end.y + offset_y;
-			if(y4 == null) {
-				y4 = 0.;
-			}
-			if(x4 == null) {
-				x4 = 0.;
-			}
-			var rail1End_x = x4;
-			var rail1End_y = y4;
-			var _this = this.drawGr;
-			_this.flush();
-			_this.addVertex(rail1Start_x,rail1Start_y,_this.curR,_this.curG,_this.curB,_this.curA,rail1Start_x * _this.ma + rail1Start_y * _this.mc + _this.mx,rail1Start_x * _this.mb + rail1Start_y * _this.md + _this.my);
-			var _this1 = this.drawGr;
-			_this1.addVertex(rail1End_x,rail1End_y,_this1.curR,_this1.curG,_this1.curB,_this1.curA,rail1End_x * _this1.ma + rail1End_y * _this1.mc + _this1.mx,rail1End_x * _this1.mb + rail1End_y * _this1.md + _this1.my);
-			var x5 = start.x - offset_x;
-			var y5 = start.y - offset_y;
-			if(y5 == null) {
-				y5 = 0.;
-			}
-			if(x5 == null) {
-				x5 = 0.;
-			}
-			var rail2Start_x = x5;
-			var rail2Start_y = y5;
-			var x6 = end.x - offset_x;
-			var y6 = end.y - offset_y;
-			if(y6 == null) {
-				y6 = 0.;
-			}
-			if(x6 == null) {
-				x6 = 0.;
-			}
-			var rail2End_x = x6;
-			var rail2End_y = y6;
-			var _this2 = this.drawGr;
-			_this2.flush();
-			_this2.addVertex(rail2Start_x,rail2Start_y,_this2.curR,_this2.curG,_this2.curB,_this2.curA,rail2Start_x * _this2.ma + rail2Start_y * _this2.mc + _this2.mx,rail2Start_x * _this2.mb + rail2Start_y * _this2.md + _this2.my);
-			var _this3 = this.drawGr;
-			_this3.addVertex(rail2End_x,rail2End_y,_this3.curR,_this3.curG,_this3.curB,_this3.curA,rail2End_x * _this3.ma + rail2End_y * _this3.mc + _this3.mx,rail2End_x * _this3.mb + rail2End_y * _this3.md + _this3.my);
-		}
 		this.drawGr.beginFill(13082394);
 		this.drawGr.lineStyle();
 		var _g = 0;
@@ -4308,6 +4297,108 @@ PlayView.prototype = $extend(GameState.prototype,{
 			var house = _g1[_g];
 			++_g;
 			this.drawGr.drawRect(house.x - 70.,house.y - 100.,140,200);
+		}
+		this.drawGr.beginFill(3681318);
+		var _g = 0;
+		var _g1 = this.points;
+		while(_g < _g1.length) {
+			var point = _g1[_g];
+			++_g;
+			this.drawGr.drawCircle(point.x,point.y,35);
+		}
+		if(this.trackUnderConstruction != null) {
+			this.drawGr.drawCircle(this.trackUnderConstruction.start.x,this.trackUnderConstruction.start.y,35);
+			this.drawGr.drawCircle(this.trackUnderConstruction.end.x,this.trackUnderConstruction.end.y,35);
+		}
+		this.drawGr.endFill();
+		this.drawGr.lineStyle(15,6696206);
+		var _g = 0;
+		var _g1 = this.tracks;
+		while(_g < _g1.length) {
+			var track = _g1[_g];
+			++_g;
+			RenderUtils.drawRailroadTies(this.drawGr,this.points[track.start],this.points[track.end]);
+		}
+		if(this.trackUnderConstruction != null) {
+			this.drawGr.lineStyle(15,6696206,0.4);
+			RenderUtils.drawRailroadTies(this.drawGr,this.trackUnderConstruction.start,this.trackUnderConstruction.end);
+		}
+		this.drawGr.lineStyle(10,0);
+		var _g = 0;
+		var _g1 = this.tracks;
+		while(_g < _g1.length) {
+			var track = _g1[_g];
+			++_g;
+			RenderUtils.drawRails(this.drawGr,this.points[track.start],this.points[track.end]);
+		}
+		var _g = 0;
+		var _g1 = this.constructionCardPlaceholders;
+		while(_g < _g1.length) _g1[_g++].set_visible(false);
+		if(this.trackUnderConstruction != null) {
+			this.drawGr.lineStyle(10,0,0.4);
+			RenderUtils.drawRails(this.drawGr,this.trackUnderConstruction.start,this.trackUnderConstruction.end);
+			this.drawGr.beginFill(7365474);
+			this.drawGr.lineStyle();
+			var _this = this.constructionCardPlaceholders[0].getBounds();
+			var placeholderWidth = _this.xMax - _this.xMin;
+			var w = (placeholderWidth + Gui.scale(10)) * this.trackUnderConstruction.cost + Gui.scale(10);
+			var _this = this.constructionCardPlaceholders[0].getBounds();
+			var h = _this.yMax - _this.yMin + Gui.scale(20);
+			var _this = this.trackUnderConstruction.start;
+			var p = this.trackUnderConstruction.end;
+			var x = _this.x + p.x;
+			var y = _this.y + p.y;
+			if(y == null) {
+				y = 0.;
+			}
+			if(x == null) {
+				x = 0.;
+			}
+			var x1 = x * 0.5;
+			var y1 = y * 0.5;
+			if(y1 == null) {
+				y1 = 0.;
+			}
+			if(x1 == null) {
+				x1 = 0.;
+			}
+			var popup_x = x1;
+			var popup_y = y1;
+			this.drawGr.drawRect(popup_x - w / 2,popup_y + 80 + 30,w,h);
+			var _this = this.drawGr;
+			var y = popup_y + 80;
+			_this.flush();
+			_this.addVertex(popup_x,y,_this.curR,_this.curG,_this.curB,_this.curA,popup_x * _this.ma + y * _this.mc + _this.mx,popup_x * _this.mb + y * _this.md + _this.my);
+			var _this = this.drawGr;
+			var x = popup_x - 30;
+			var y = popup_y + 80 + 30;
+			_this.addVertex(x,y,_this.curR,_this.curG,_this.curB,_this.curA,x * _this.ma + y * _this.mc + _this.mx,x * _this.mb + y * _this.md + _this.my);
+			var _this = this.drawGr;
+			var x = popup_x + 30;
+			var y = popup_y + 80 + 30;
+			_this.addVertex(x,y,_this.curR,_this.curG,_this.curB,_this.curA,x * _this.ma + y * _this.mc + _this.mx,x * _this.mb + y * _this.md + _this.my);
+			var _g = 0;
+			var _g1 = this.trackUnderConstruction.cost;
+			while(_g < _g1) {
+				var i = _g++;
+				this.constructionCardPlaceholders[i].set_visible(true);
+				var _this = this.constructionCardPlaceholders[i];
+				var v = popup_x - w / 2 + placeholderWidth / 2 + Gui.scale(10) + i * (placeholderWidth + Gui.scale(10));
+				_this.posChanged = true;
+				_this.x = v;
+				var _this1 = this.constructionCardPlaceholders[i];
+				_this1.posChanged = true;
+				_this1.y = popup_y + 80 + 30 + h / 2;
+			}
+		}
+		this.drawGr.beginFill(7559983);
+		this.drawGr.lineStyle();
+		var _g = 0;
+		var _g1 = this.stations;
+		while(_g < _g1.length) {
+			var station = _g1[_g];
+			++_g;
+			this.drawGr.drawCircle(station.x,station.y,150);
 		}
 	}
 	,__class__: PlayView
@@ -4401,6 +4492,206 @@ Reflect.isEnumValue = function(v) {
 		return v.__enum__ != null;
 	} else {
 		return false;
+	}
+};
+var RenderUtils = function() { };
+RenderUtils.__name__ = "RenderUtils";
+RenderUtils.drawRails = function(drawGr,start,end) {
+	var x = end.x - start.x;
+	var y = end.y - start.y;
+	if(y == null) {
+		y = 0.;
+	}
+	if(x == null) {
+		x = 0.;
+	}
+	var _this_x = x;
+	var _this_y = y;
+	var k = _this_x * _this_x + _this_y * _this_y;
+	if(k < 1e-10) {
+		k = 0;
+	} else {
+		k = 1. / Math.sqrt(k);
+	}
+	var x = _this_x * k;
+	var y = _this_y * k;
+	if(y == null) {
+		y = 0.;
+	}
+	if(x == null) {
+		x = 0.;
+	}
+	var x1 = x * 30;
+	var y1 = y * 30;
+	if(y1 == null) {
+		y1 = 0.;
+	}
+	if(x1 == null) {
+		x1 = 0.;
+	}
+	var offset_x = x1;
+	var offset_y = y1;
+	var angle = 0.5 * Math.PI;
+	var c = Math.cos(angle);
+	var s = Math.sin(angle);
+	var y2 = offset_x * s + offset_y * c;
+	offset_x = offset_x * c - offset_y * s;
+	offset_y = y2;
+	var x = start.x + offset_x;
+	var y = start.y + offset_y;
+	if(y == null) {
+		y = 0.;
+	}
+	if(x == null) {
+		x = 0.;
+	}
+	var rail1Start_x = x;
+	var rail1Start_y = y;
+	var x = end.x + offset_x;
+	var y = end.y + offset_y;
+	if(y == null) {
+		y = 0.;
+	}
+	if(x == null) {
+		x = 0.;
+	}
+	var rail1End_x = x;
+	var rail1End_y = y;
+	drawGr.flush();
+	drawGr.addVertex(rail1Start_x,rail1Start_y,drawGr.curR,drawGr.curG,drawGr.curB,drawGr.curA,rail1Start_x * drawGr.ma + rail1Start_y * drawGr.mc + drawGr.mx,rail1Start_x * drawGr.mb + rail1Start_y * drawGr.md + drawGr.my);
+	drawGr.addVertex(rail1End_x,rail1End_y,drawGr.curR,drawGr.curG,drawGr.curB,drawGr.curA,rail1End_x * drawGr.ma + rail1End_y * drawGr.mc + drawGr.mx,rail1End_x * drawGr.mb + rail1End_y * drawGr.md + drawGr.my);
+	var x = start.x - offset_x;
+	var y = start.y - offset_y;
+	if(y == null) {
+		y = 0.;
+	}
+	if(x == null) {
+		x = 0.;
+	}
+	var rail2Start_x = x;
+	var rail2Start_y = y;
+	var x = end.x - offset_x;
+	var y = end.y - offset_y;
+	if(y == null) {
+		y = 0.;
+	}
+	if(x == null) {
+		x = 0.;
+	}
+	var rail2End_x = x;
+	var rail2End_y = y;
+	drawGr.flush();
+	drawGr.addVertex(rail2Start_x,rail2Start_y,drawGr.curR,drawGr.curG,drawGr.curB,drawGr.curA,rail2Start_x * drawGr.ma + rail2Start_y * drawGr.mc + drawGr.mx,rail2Start_x * drawGr.mb + rail2Start_y * drawGr.md + drawGr.my);
+	drawGr.addVertex(rail2End_x,rail2End_y,drawGr.curR,drawGr.curG,drawGr.curB,drawGr.curA,rail2End_x * drawGr.ma + rail2End_y * drawGr.mc + drawGr.mx,rail2End_x * drawGr.mb + rail2End_y * drawGr.md + drawGr.my);
+};
+RenderUtils.drawRailroadTies = function(drawGr,start,end) {
+	var x = end.x - start.x;
+	var y = end.y - start.y;
+	if(y == null) {
+		y = 0.;
+	}
+	if(x == null) {
+		x = 0.;
+	}
+	var _this_x = x;
+	var _this_y = y;
+	var k = _this_x * _this_x + _this_y * _this_y;
+	if(k < 1e-10) {
+		k = 0;
+	} else {
+		k = 1. / Math.sqrt(k);
+	}
+	var x = _this_x * k;
+	var y = _this_y * k;
+	if(y == null) {
+		y = 0.;
+	}
+	if(x == null) {
+		x = 0.;
+	}
+	var dir_x = x;
+	var dir_y = y;
+	var x = dir_x * 30;
+	var y = dir_y * 30;
+	if(y == null) {
+		y = 0.;
+	}
+	if(x == null) {
+		x = 0.;
+	}
+	var offset_x = x;
+	var offset_y = y;
+	var angle = 0.5 * Math.PI;
+	var c = Math.cos(angle);
+	var s = Math.sin(angle);
+	var y2 = offset_x * s + offset_y * c;
+	offset_x = offset_x * c - offset_y * s;
+	offset_y = y2;
+	var x = dir_x * 25;
+	var y = dir_y * 25;
+	if(y == null) {
+		y = 0.;
+	}
+	if(x == null) {
+		x = 0.;
+	}
+	var pos = new h2d_col_Point(start.x + x,start.y + y);
+	while(true) {
+		var dx = pos.x - start.x;
+		var dy = pos.y - start.y;
+		var dx1 = end.x - start.x;
+		var dy1 = end.y - start.y;
+		if(!(Math.sqrt(dx * dx + dy * dy) + 25 < Math.sqrt(dx1 * dx1 + dy1 * dy1))) {
+			break;
+		}
+		var x = offset_x * 1.5;
+		var y = offset_y * 1.5;
+		if(y == null) {
+			y = 0.;
+		}
+		if(x == null) {
+			x = 0.;
+		}
+		var x1 = pos.x + x;
+		var y1 = pos.y + y;
+		if(y1 == null) {
+			y1 = 0.;
+		}
+		if(x1 == null) {
+			x1 = 0.;
+		}
+		var plankLeft_x = x1;
+		var plankLeft_y = y1;
+		var x2 = offset_x * 1.5;
+		var y2 = offset_y * 1.5;
+		if(y2 == null) {
+			y2 = 0.;
+		}
+		if(x2 == null) {
+			x2 = 0.;
+		}
+		var x3 = pos.x - x2;
+		var y3 = pos.y - y2;
+		if(y3 == null) {
+			y3 = 0.;
+		}
+		if(x3 == null) {
+			x3 = 0.;
+		}
+		var plankRight_x = x3;
+		var plankRight_y = y3;
+		drawGr.flush();
+		drawGr.addVertex(plankLeft_x,plankLeft_y,drawGr.curR,drawGr.curG,drawGr.curB,drawGr.curA,plankLeft_x * drawGr.ma + plankLeft_y * drawGr.mc + drawGr.mx,plankLeft_x * drawGr.mb + plankLeft_y * drawGr.md + drawGr.my);
+		drawGr.addVertex(plankRight_x,plankRight_y,drawGr.curR,drawGr.curG,drawGr.curB,drawGr.curA,plankRight_x * drawGr.ma + plankRight_y * drawGr.mc + drawGr.mx,plankRight_x * drawGr.mb + plankRight_y * drawGr.md + drawGr.my);
+		var x4 = dir_x * 25;
+		var y4 = dir_y * 25;
+		if(y4 == null) {
+			y4 = 0.;
+		}
+		if(x4 == null) {
+			x4 = 0.;
+		}
+		pos = new h2d_col_Point(pos.x + x4,pos.y + y4);
 	}
 };
 var Std = function() { };
@@ -4642,6 +4933,9 @@ Utils.floatToStr = function(n,prec) {
 		return HxOverrides.substr(str,0,str.length - prec) + "." + HxOverrides.substr(str,str.length - prec,null);
 	}
 };
+Utils.toPoint = function(p) {
+	return new h2d_col_Point(p.x,p.y);
+};
 Utils.projectToLineSegment = function(p,l0,l1) {
 	var dx = l0.x - l1.x;
 	var dy = l0.y - l1.y;
@@ -4683,6 +4977,17 @@ Utils.projectToLineSegment = function(p,l0,l1) {
 		x1 = 0.;
 	}
 	return new h2d_col_Point(l0.x + x1,l0.y + y1);
+};
+Utils.posUpdated = function(obj) {
+	obj.posChanged = true;
+	obj.x = obj.x;
+};
+Utils.tween = function(obj,time,properties) {
+	return motion_Actuate.tween(obj,time,properties).onUpdate(function() {
+		Utils.posUpdated(obj);
+	}).onComplete(function() {
+		Utils.posUpdated(obj);
+	});
 };
 var XmlType = {};
 XmlType.toString = function(this1) {
@@ -43068,6 +43373,8 @@ HerbalTeaApp.debugShowFps = false;
 HerbalTeaApp.avgUpdateTime = 0.0;
 HerbalTeaApp.avgRenderTime = 0.0;
 HerbalTeaApp.cutout = { top : 0, bottom : 0, left : 0, right : 0};
+Card.CARD_WIDTH = 21;
+Card.CARD_HEIGHT = 31;
 h2d_HtmlText.REG_SPACES = new EReg("[\r\n\t ]+","g");
 Colors.BLUE = -13291603;
 Colors.LIGHT_GREY = -10066330;
