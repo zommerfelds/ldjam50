@@ -1,5 +1,5 @@
 (function ($global) { "use strict";
-var $hxClasses = {},$estr = function() { return js_Boot.__string_rec(this,''); },$hxEnums = $hxEnums || {},$_;
+var $estr = function() { return js_Boot.__string_rec(this,''); },$hxEnums = $hxEnums || {},$_;
 function $extend(from, fields) {
 	var proto = Object.create(from);
 	for (var name in fields) proto[name] = fields[name];
@@ -7,7 +7,6 @@ function $extend(from, fields) {
 	return proto;
 }
 var h3d_IDrawable = function() { };
-$hxClasses["h3d.IDrawable"] = h3d_IDrawable;
 h3d_IDrawable.__name__ = "h3d.IDrawable";
 h3d_IDrawable.__isInterface__ = true;
 var hxd_App = function() {
@@ -26,7 +25,6 @@ var hxd_App = function() {
 		});
 	}
 };
-$hxClasses["hxd.App"] = hxd_App;
 hxd_App.__name__ = "hxd.App";
 hxd_App.__interfaces__ = [h3d_IDrawable];
 hxd_App.staticHandler = function() {
@@ -129,7 +127,6 @@ var HerbalTeaApp = function() {
 	this.renderedCurrentState = false;
 	hxd_App.call(this);
 };
-$hxClasses["HerbalTeaApp"] = HerbalTeaApp;
 HerbalTeaApp.__name__ = "HerbalTeaApp";
 HerbalTeaApp.toggleFullScreen = function() {
 	var $window = hxd_Window.getInstance();
@@ -375,28 +372,24 @@ HerbalTeaApp.prototype = $extend(hxd_App.prototype,{
 var App = function() {
 	HerbalTeaApp.call(this);
 };
-$hxClasses["App"] = App;
 App.__name__ = "App";
 App.main = function() {
 	App.instance = new App();
 };
-App.loadHighScore = function() {
-	return hxd_Save.load({ highscore : 0}).highscore;
-};
-App.writeHighScore = function(highscore) {
-	hxd_Save.save({ highscore : highscore});
-};
 App.__super__ = HerbalTeaApp;
 App.prototype = $extend(HerbalTeaApp.prototype,{
 	onload: function() {
-		this.switchState(new MenuView());
+		if(new URLSearchParams(window.location.search).get("start") == "game") {
+			this.switchState(new PlayView());
+		} else {
+			this.switchState(new MenuView());
+		}
 	}
 	,__class__: App
 });
 var EReg = function(r,opt) {
 	this.r = new RegExp(r,opt.split("u").join(""));
 };
-$hxClasses["EReg"] = EReg;
 EReg.__name__ = "EReg";
 EReg.prototype = {
 	match: function(s) {
@@ -464,7 +457,6 @@ var h2d_Object = function(parent) {
 		parent.addChild(this);
 	}
 };
-$hxClasses["h2d.Object"] = h2d_Object;
 h2d_Object.__name__ = "h2d.Object";
 h2d_Object.prototype = {
 	getBounds: function(relativeTo,out) {
@@ -1397,7 +1389,6 @@ var h2d_Layers = function(parent) {
 	this.layersIndexes = [];
 	this.layerCount = 0;
 };
-$hxClasses["h2d.Layers"] = h2d_Layers;
 h2d_Layers.__name__ = "h2d.Layers";
 h2d_Layers.__super__ = h2d_Object;
 h2d_Layers.prototype = $extend(h2d_Object.prototype,{
@@ -1447,7 +1438,6 @@ h2d_Layers.prototype = $extend(h2d_Object.prototype,{
 	,__class__: h2d_Layers
 });
 var hxd_InteractiveScene = function() { };
-$hxClasses["hxd.InteractiveScene"] = hxd_InteractiveScene;
 hxd_InteractiveScene.__name__ = "hxd.InteractiveScene";
 hxd_InteractiveScene.__isInterface__ = true;
 hxd_InteractiveScene.prototype = {
@@ -1477,7 +1467,6 @@ var h2d_Scene = function() {
 	this.window = hxd_Window.getInstance();
 	this.posChanged = true;
 };
-$hxClasses["h2d.Scene"] = h2d_Scene;
 h2d_Scene.__name__ = "h2d.Scene";
 h2d_Scene.__interfaces__ = [hxd_InteractiveScene,h3d_IDrawable];
 h2d_Scene.__super__ = h2d_Layers;
@@ -2065,7 +2054,6 @@ h2d_Scene.prototype = $extend(h2d_Layers.prototype,{
 var GameState = function() {
 	h2d_Scene.call(this);
 };
-$hxClasses["GameState"] = GameState;
 GameState.__name__ = "GameState";
 GameState.__super__ = h2d_Scene;
 GameState.prototype = $extend(h2d_Scene.prototype,{
@@ -2082,7 +2070,6 @@ GameState.prototype = $extend(h2d_Scene.prototype,{
 	,__class__: GameState
 });
 var Gui = function() { };
-$hxClasses["Gui"] = Gui;
 Gui.__name__ = "Gui";
 Gui.scale = function(multiplier) {
 	if(multiplier == null) {
@@ -2104,7 +2091,6 @@ var h2d_Drawable = function(parent) {
 	h2d_Object.call(this,parent);
 	this.color = new h3d_Vector(1,1,1,1);
 };
-$hxClasses["h2d.Drawable"] = h2d_Drawable;
 h2d_Drawable.__name__ = "h2d.Drawable";
 h2d_Drawable.__super__ = h2d_Object;
 h2d_Drawable.prototype = $extend(h2d_Object.prototype,{
@@ -2160,7 +2146,6 @@ var h2d_Text = function(font,parent) {
 	this.currentText = "";
 	this.set_textColor(16777215);
 };
-$hxClasses["h2d.Text"] = h2d_Text;
 h2d_Text.__name__ = "h2d.Text";
 h2d_Text.__super__ = h2d_Drawable;
 h2d_Text.prototype = $extend(h2d_Drawable.prototype,{
@@ -2608,7 +2593,6 @@ var h2d_HtmlText = function(font,parent) {
 	this.condenseWhite = true;
 	h2d_Text.call(this,font,parent);
 };
-$hxClasses["h2d.HtmlText"] = h2d_HtmlText;
 h2d_HtmlText.__name__ = "h2d.HtmlText";
 h2d_HtmlText.defaultLoadImage = function(url) {
 	return null;
@@ -3616,7 +3600,6 @@ var Text = function(text,parent,size,addDefaultShadow) {
 		this.dropShadow = { dx : Gui.scale(5), dy : Gui.scale(5), color : 0, alpha : 0.5};
 	}
 };
-$hxClasses["Text"] = Text;
 Text.__name__ = "Text";
 Text.__super__ = h2d_HtmlText;
 Text.prototype = $extend(h2d_HtmlText.prototype,{
@@ -3637,7 +3620,6 @@ Text.prototype = $extend(h2d_HtmlText.prototype,{
 	,__class__: Text
 });
 var Colors = function() { };
-$hxClasses["Colors"] = Colors;
 Colors.__name__ = "Colors";
 var Button = function(parent,onClickFn,backgroundColor,disableOnClick) {
 	if(disableOnClick == null) {
@@ -3734,7 +3716,6 @@ var Button = function(parent,onClickFn,backgroundColor,disableOnClick) {
 	this.content.interactive.onOut = releaseButton;
 	this.set_backgroundColor(backgroundColor);
 };
-$hxClasses["Button"] = Button;
 Button.__name__ = "Button";
 Button.__super__ = h2d_Object;
 Button.prototype = $extend(h2d_Object.prototype,{
@@ -3784,7 +3765,6 @@ var TextButton = function(parent,labelText,onClickFn,backgroundColor,disableOnCl
 	fh.set_paddingTop(fh.paddingTop + (this.text.lineSpacing | 0));
 	this.redrawButton();
 };
-$hxClasses["TextButton"] = TextButton;
 TextButton.__name__ = "TextButton";
 TextButton.__super__ = Button;
 TextButton.prototype = $extend(Button.prototype,{
@@ -3795,30 +3775,7 @@ TextButton.prototype = $extend(Button.prototype,{
 	,__class__: TextButton
 });
 var HxOverrides = function() { };
-$hxClasses["HxOverrides"] = HxOverrides;
 HxOverrides.__name__ = "HxOverrides";
-HxOverrides.strDate = function(s) {
-	switch(s.length) {
-	case 8:
-		var k = s.split(":");
-		var d = new Date();
-		d["setTime"](0);
-		d["setUTCHours"](k[0]);
-		d["setUTCMinutes"](k[1]);
-		d["setUTCSeconds"](k[2]);
-		return d;
-	case 10:
-		var k = s.split("-");
-		return new Date(k[0],k[1] - 1,k[2],0,0,0);
-	case 19:
-		var k = s.split(" ");
-		var y = k[0].split("-");
-		var t = k[1].split(":");
-		return new Date(y[0],y[1] - 1,y[2],t[0],t[1],t[2]);
-	default:
-		throw haxe_Exception.thrown("Invalid date format : " + s);
-	}
-};
 HxOverrides.cca = function(s,index) {
 	var x = s.charCodeAt(index);
 	if(x != x) {
@@ -3850,7 +3807,6 @@ HxOverrides.now = function() {
 	return Date.now();
 };
 var Lambda = function() { };
-$hxClasses["Lambda"] = Lambda;
 Lambda.__name__ = "Lambda";
 Lambda.array = function(it) {
 	var a = [];
@@ -3862,7 +3818,6 @@ Math.__name__ = "Math";
 var MenuView = function() {
 	GameState.call(this);
 };
-$hxClasses["MenuView"] = MenuView;
 MenuView.__name__ = "MenuView";
 MenuView.__super__ = GameState;
 MenuView.prototype = $extend(GameState.prototype,{
@@ -3876,8 +3831,7 @@ MenuView.prototype = $extend(GameState.prototype,{
 		centeringFlow.set_maxWidth(this.width);
 		centeringFlow.set_layout(h2d_FlowLayout.Vertical);
 		centeringFlow.set_verticalSpacing(Gui.scaleAsInt(50));
-		new Text("Wellcome to...",centeringFlow,0.8);
-		new Text("Yet Another Game!",centeringFlow);
+		new Text("Trains & Cards",centeringFlow);
 		centeringFlow.addSpacing(Gui.scaleAsInt(100));
 		new TextButton(centeringFlow,"Toggle fullscreen",function() {
 			HerbalTeaApp.toggleFullScreen();
@@ -3886,216 +3840,27 @@ MenuView.prototype = $extend(GameState.prototype,{
 		new TextButton(centeringFlow,"Start game",function() {
 			App.instance.switchState(new PlayView());
 		},Colors.BLUE,null,0.8);
-		new Text("Highscore: " + App.loadHighScore(),centeringFlow,0.8);
 		centeringFlow.addSpacing(Gui.scaleAsInt(100));
 		new Text("version: " + hxd_Res.get_loader().loadCache("version.txt",hxd_res_Resource).entry.getText(),centeringFlow,0.5);
 	}
 	,__class__: MenuView
 });
-var State = $hxEnums["State"] = { __ename__:"State",__constructs__:null
-	,WaitingForTouch: {_hx_name:"WaitingForTouch",_hx_index:0,__enum__:"State",toString:$estr}
-	,Playing: {_hx_name:"Playing",_hx_index:1,__enum__:"State",toString:$estr}
-	,MissedBall: {_hx_name:"MissedBall",_hx_index:2,__enum__:"State",toString:$estr}
-	,Dead: {_hx_name:"Dead",_hx_index:3,__enum__:"State",toString:$estr}
-};
-State.__constructs__ = [State.WaitingForTouch,State.Playing,State.MissedBall,State.Dead];
-State.__empty_constructs__ = [State.WaitingForTouch,State.Playing,State.MissedBall,State.Dead];
 var PlayView = function() {
-	this.resetInteractive = new h2d_Interactive(0,0);
-	this.resetText = new Text("");
-	this.points = 0;
-	this.pointsText = new Text("");
-	this.state = State.WaitingForTouch;
-	this.wallSize = 0.5;
-	this.ballVel = new h2d_col_Point();
-	this.ballSize = 0.5;
-	this.ball = new h2d_Graphics();
-	this.paddleHeight = 0.5;
-	this.paddleWidth = 2;
-	this.paddle = new h2d_Graphics();
-	this.gameArea = new h2d_Graphics();
-	this.playHeight = 16;
-	this.playWidth = 9;
 	GameState.call(this);
 };
-$hxClasses["PlayView"] = PlayView;
 PlayView.__name__ = "PlayView";
 PlayView.__super__ = GameState;
 PlayView.prototype = $extend(GameState.prototype,{
 	init: function() {
-		var _gthis = this;
-		if(this.height / this.width > this.playHeight / this.playWidth) {
-			var _this = this.gameArea;
-			var v = this.width / this.playWidth;
-			_this.posChanged = true;
-			_this.scaleX *= v;
-			_this.posChanged = true;
-			_this.scaleY *= v;
-			var _this = this.gameArea;
-			_this.posChanged = true;
-			_this.y = (this.height - this.playHeight * this.gameArea.scaleY) / 2;
-		} else {
-			var _this = this.gameArea;
-			var v = this.height / this.playHeight;
-			_this.posChanged = true;
-			_this.scaleX *= v;
-			_this.posChanged = true;
-			_this.scaleY *= v;
-			var _this = this.gameArea;
-			_this.posChanged = true;
-			_this.x = (this.width - this.playWidth * this.gameArea.scaleX) / 2;
-		}
-		this.gameArea.beginFill(3342336);
-		this.gameArea.drawRect(0,0,this.playWidth,this.playHeight);
-		this.addChild(this.gameArea);
-		var wall = new h2d_Graphics(this.gameArea);
-		wall.beginFill(16777215);
-		wall.drawRect(0,0,this.playWidth,this.wallSize);
-		this.paddle.beginFill(16777215);
-		this.paddle.drawRect(-this.paddleWidth / 2,0,this.paddleWidth,this.paddleHeight);
-		var _this = this.paddle;
-		_this.posChanged = true;
-		_this.y = this.playHeight * 0.8;
-		this.gameArea.addChild(this.paddle);
-		this.ball.beginFill(16777215);
-		this.ball.drawRect(-this.ballSize / 2,-this.ballSize / 2,this.ballSize,this.ballSize);
-		this.gameArea.addChild(this.ball);
-		var _this = this.pointsText;
-		_this.posChanged = true;
-		_this.x = this.width * 0.5;
-		var _this = this.pointsText;
-		_this.posChanged = true;
-		_this.y = this.width * 0.02 + this.gameArea.y + this.wallSize * this.gameArea.scaleY;
-		this.pointsText.set_textAlign(h2d_Align.Center);
-		this.addChild(this.pointsText);
-		this.resetText.set_text("reset");
-		var _this = this.resetText;
-		var v = this.width;
-		var _this1 = this.resetText.getBounds();
-		_this.posChanged = true;
-		_this.x = v - (_this1.xMax - _this1.xMin) - this.width * 0.05;
-		var _this = this.resetText;
-		_this.posChanged = true;
-		_this.y = this.width * 0.02 + this.gameArea.y + this.wallSize * this.gameArea.scaleY;
-		this.addChild(this.resetText);
-		var _this = this.resetText.getBounds();
-		this.resetInteractive.width = _this.xMax - _this.xMin;
-		var _this = this.resetText.getBounds();
-		this.resetInteractive.height = _this.yMax - _this.yMin;
-		this.resetInteractive.onClick = function(e) {
-			_gthis.setupGame();
-		};
-		this.resetText.addChild(this.resetInteractive);
-		var backText = new Text("&lt;-",this);
-		backText.posChanged = true;
-		backText.x = this.width * 0.05;
-		backText.posChanged = true;
-		backText.y = this.width * 0.02 + this.gameArea.y + this.wallSize * this.gameArea.scaleY;
-		var _this = backText.getBounds();
-		var backInteractive = _this.xMax - _this.xMin;
-		var _this = backText.getBounds();
-		new h2d_Interactive(backInteractive,_this.yMax - _this.yMin,backText).onClick = function(e) {
-			App.instance.switchState(new MenuView());
-		};
-		this.setupGame();
 		this.addEventListener($bind(this,this.onEvent));
-		var manager = hxd_snd_Manager.get();
-		manager.masterVolume = 0.5;
-		manager.masterChannelGroup.addEffect(new hxd_snd_effect_Reverb(hxd_snd_effect_ReverbPreset.DRUGGED));
-		manager.masterChannelGroup.addEffect(new hxd_snd_effect_Pitch(0.5));
-	}
-	,setupGame: function() {
-		this.resetText.set_visible(false);
-		this.points = 0;
-		var _this = this.paddle;
-		_this.posChanged = true;
-		_this.x = this.playWidth / 2;
-		var _this = this.ball;
-		_this.posChanged = true;
-		_this.x = this.paddle.x;
-		var _this = this.ball;
-		_this.posChanged = true;
-		_this.y = this.paddle.y - this.ballSize / 2;
-		this.state = State.WaitingForTouch;
 	}
 	,onEvent: function(event) {
-		if(event.kind._hx_index == 0) {
-			if(this.state == State.WaitingForTouch) {
-				this.state = State.Playing;
-				this.setRandomBallVel();
-				hxd_Res.get_loader().loadCache("start.wav",hxd_res_Sound).play();
-			}
-		}
-		var _this = this.paddle;
-		_this.posChanged = true;
-		_this.x = (event.relX - this.gameArea.x) / this.gameArea.scaleX;
-	}
-	,setRandomBallVel: function() {
-		this.ballVel = new h2d_col_Point(0,-(10 + this.points));
-		var _this = this.ballVel;
-		var angle = (Math.random() - 0.5) * Math.PI * 0.8;
-		var c = Math.cos(angle);
-		var s = Math.sin(angle);
-		var y2 = _this.x * s + _this.y * c;
-		_this.x = _this.x * c - _this.y * s;
-		_this.y = y2;
 	}
 	,update: function(dt) {
-		this.pointsText.set_text("" + this.points);
-		if(this.state == State.WaitingForTouch || this.state == State.Dead) {
-			return;
-		}
-		var fh = this.ball;
-		fh.posChanged = true;
-		fh.x += this.ballVel.x * dt;
-		var fh = this.ball;
-		fh.posChanged = true;
-		fh.y += this.ballVel.y * dt;
-		if(this.ball.x - this.ballSize * 0.5 < 0) {
-			var _this = this.ball;
-			_this.posChanged = true;
-			_this.x = this.ballSize * 0.5;
-			this.ballVel.x *= -1;
-			hxd_Res.get_loader().loadCache("blip.wav",hxd_res_Sound).play();
-		}
-		if(this.ball.x + this.ballSize * 0.5 > this.playWidth) {
-			var _this = this.ball;
-			_this.posChanged = true;
-			_this.x = this.playWidth - this.ballSize * 0.5;
-			this.ballVel.x *= -1;
-			hxd_Res.get_loader().loadCache("blip.wav",hxd_res_Sound).play();
-		}
-		if(this.ball.y - this.ballSize * 0.5 < this.wallSize) {
-			var _this = this.ball;
-			_this.posChanged = true;
-			_this.y = this.wallSize + this.ballSize * 0.5;
-			this.ballVel.y *= -1;
-			this.points += 1;
-			if(App.loadHighScore() < this.points) {
-				App.writeHighScore(this.points);
-			}
-			hxd_Res.get_loader().loadCache("blip.wav",hxd_res_Sound).play();
-		}
-		if(this.ball.y + this.ballSize * 0.5 > this.paddle.y) {
-			if(this.state == State.Playing && this.ball.x + this.ballSize > this.paddle.x - this.paddleWidth / 2 && this.ball.x - this.ballSize < this.paddle.x + this.paddleWidth / 2) {
-				var _this = this.ball;
-				_this.posChanged = true;
-				_this.y = this.paddle.y - this.ballSize * 0.5;
-				this.setRandomBallVel();
-				hxd_Res.get_loader().loadCache("blip.wav",hxd_res_Sound).play();
-			} else {
-				this.state = State.MissedBall;
-			}
-		}
-		if(this.ball.y - this.ballSize * 0.5 > this.playHeight) {
-			this.state = State.Dead;
-			this.resetText.set_visible(true);
-		}
 	}
 	,__class__: PlayView
 });
 var Reflect = function() { };
-$hxClasses["Reflect"] = Reflect;
 Reflect.__name__ = "Reflect";
 Reflect.field = function(o,field) {
 	try {
@@ -4103,18 +3868,6 @@ Reflect.field = function(o,field) {
 	} catch( _g ) {
 		return null;
 	}
-};
-Reflect.fields = function(o) {
-	var a = [];
-	if(o != null) {
-		var hasOwnProperty = Object.prototype.hasOwnProperty;
-		for( var f in o ) {
-		if(f != "__id__" && f != "hx__closures__" && hasOwnProperty.call(o,f)) {
-			a.push(f);
-		}
-		}
-	}
-	return a;
 };
 Reflect.isFunction = function(f) {
 	if(typeof(f) == "function") {
@@ -4145,21 +3898,6 @@ Reflect.compareMethods = function(f1,f2) {
 		return false;
 	}
 };
-Reflect.isObject = function(v) {
-	if(v == null) {
-		return false;
-	}
-	var t = typeof(v);
-	if(!(t == "string" || t == "object" && v.__enum__ == null)) {
-		if(t == "function") {
-			return (v.__name__ || v.__ename__) != null;
-		} else {
-			return false;
-		}
-	} else {
-		return true;
-	}
-};
 Reflect.isEnumValue = function(v) {
 	if(v != null) {
 		return v.__enum__ != null;
@@ -4167,15 +3905,7 @@ Reflect.isEnumValue = function(v) {
 		return false;
 	}
 };
-Reflect.deleteField = function(o,field) {
-	if(!Object.prototype.hasOwnProperty.call(o,field)) {
-		return false;
-	}
-	delete(o[field]);
-	return true;
-};
 var Std = function() { };
-$hxClasses["Std"] = Std;
 Std.__name__ = "Std";
 Std.string = function(s) {
 	return js_Boot.__string_rec(s,"");
@@ -4210,13 +3940,11 @@ Std.random = function(x) {
 var StringBuf = function() {
 	this.b = "";
 };
-$hxClasses["StringBuf"] = StringBuf;
 StringBuf.__name__ = "StringBuf";
 StringBuf.prototype = {
 	__class__: StringBuf
 };
 var StringTools = function() { };
-$hxClasses["StringTools"] = StringTools;
 StringTools.__name__ = "StringTools";
 StringTools.htmlEscape = function(s,quotes) {
 	var buf_b = "";
@@ -4319,21 +4047,7 @@ StringTools.hex = function(n,digits) {
 	}
 	return s;
 };
-var ValueType = $hxEnums["ValueType"] = { __ename__:"ValueType",__constructs__:null
-	,TNull: {_hx_name:"TNull",_hx_index:0,__enum__:"ValueType",toString:$estr}
-	,TInt: {_hx_name:"TInt",_hx_index:1,__enum__:"ValueType",toString:$estr}
-	,TFloat: {_hx_name:"TFloat",_hx_index:2,__enum__:"ValueType",toString:$estr}
-	,TBool: {_hx_name:"TBool",_hx_index:3,__enum__:"ValueType",toString:$estr}
-	,TObject: {_hx_name:"TObject",_hx_index:4,__enum__:"ValueType",toString:$estr}
-	,TFunction: {_hx_name:"TFunction",_hx_index:5,__enum__:"ValueType",toString:$estr}
-	,TClass: ($_=function(c) { return {_hx_index:6,c:c,__enum__:"ValueType",toString:$estr}; },$_._hx_name="TClass",$_.__params__ = ["c"],$_)
-	,TEnum: ($_=function(e) { return {_hx_index:7,e:e,__enum__:"ValueType",toString:$estr}; },$_._hx_name="TEnum",$_.__params__ = ["e"],$_)
-	,TUnknown: {_hx_name:"TUnknown",_hx_index:8,__enum__:"ValueType",toString:$estr}
-};
-ValueType.__constructs__ = [ValueType.TNull,ValueType.TInt,ValueType.TFloat,ValueType.TBool,ValueType.TObject,ValueType.TFunction,ValueType.TClass,ValueType.TEnum,ValueType.TUnknown];
-ValueType.__empty_constructs__ = [ValueType.TNull,ValueType.TInt,ValueType.TFloat,ValueType.TBool,ValueType.TObject,ValueType.TFunction,ValueType.TUnknown];
 var Type = function() { };
-$hxClasses["Type"] = Type;
 Type.__name__ = "Type";
 Type.createInstance = function(cl,args) {
 	return new (Function.prototype.bind.apply(cl,[null].concat(args)));
@@ -4367,41 +4081,6 @@ Type.createEnumIndex = function(e,index,params) {
 		throw haxe_Exception.thrown(index + " is not a valid enum constructor index");
 	}
 	return Type.createEnum(e,c,params);
-};
-Type.typeof = function(v) {
-	switch(typeof(v)) {
-	case "boolean":
-		return ValueType.TBool;
-	case "function":
-		if(v.__name__ || v.__ename__) {
-			return ValueType.TObject;
-		}
-		return ValueType.TFunction;
-	case "number":
-		if(Math.ceil(v) == v % 2147483648.0) {
-			return ValueType.TInt;
-		}
-		return ValueType.TFloat;
-	case "object":
-		if(v == null) {
-			return ValueType.TNull;
-		}
-		var e = v.__enum__;
-		if(e != null) {
-			return ValueType.TEnum($hxEnums[e]);
-		}
-		var c = js_Boot.getClass(v);
-		if(c != null) {
-			return ValueType.TClass(c);
-		}
-		return ValueType.TObject;
-	case "string":
-		return ValueType.TClass(String);
-	case "undefined":
-		return ValueType.TNull;
-	default:
-		return ValueType.TUnknown;
-	}
 };
 Type.enumEq = function(a,b) {
 	if(a == b) {
@@ -4447,7 +4126,6 @@ Type.enumParameters = function(e) {
 	}
 };
 var Utils = function() { };
-$hxClasses["Utils"] = Utils;
 Utils.__name__ = "Utils";
 Utils.floatToStr = function(n,prec) {
 	if(prec == null) {
@@ -4490,7 +4168,6 @@ var Xml = function(nodeType) {
 	this.children = [];
 	this.attributeMap = new haxe_ds_StringMap();
 };
-$hxClasses["Xml"] = Xml;
 Xml.__name__ = "Xml";
 Xml.parse = function(str) {
 	return haxe_xml_Parser.parse(str);
@@ -4658,14 +4335,14 @@ Xml.prototype = {
 	}
 	,__class__: Xml
 };
-var format_gif_Block = $hxEnums["format.gif.Block"] = { __ename__:"format.gif.Block",__constructs__:null
+var format_gif_Block = $hxEnums["format.gif.Block"] = { __ename__:true,__constructs__:null
 	,BFrame: ($_=function(frame) { return {_hx_index:0,frame:frame,__enum__:"format.gif.Block",toString:$estr}; },$_._hx_name="BFrame",$_.__params__ = ["frame"],$_)
 	,BExtension: ($_=function(extension) { return {_hx_index:1,extension:extension,__enum__:"format.gif.Block",toString:$estr}; },$_._hx_name="BExtension",$_.__params__ = ["extension"],$_)
 	,BEOF: {_hx_name:"BEOF",_hx_index:2,__enum__:"format.gif.Block",toString:$estr}
 };
 format_gif_Block.__constructs__ = [format_gif_Block.BFrame,format_gif_Block.BExtension,format_gif_Block.BEOF];
 format_gif_Block.__empty_constructs__ = [format_gif_Block.BEOF];
-var format_gif_Extension = $hxEnums["format.gif.Extension"] = { __ename__:"format.gif.Extension",__constructs__:null
+var format_gif_Extension = $hxEnums["format.gif.Extension"] = { __ename__:true,__constructs__:null
 	,EGraphicControl: ($_=function(gce) { return {_hx_index:0,gce:gce,__enum__:"format.gif.Extension",toString:$estr}; },$_._hx_name="EGraphicControl",$_.__params__ = ["gce"],$_)
 	,EComment: ($_=function(text) { return {_hx_index:1,text:text,__enum__:"format.gif.Extension",toString:$estr}; },$_._hx_name="EComment",$_.__params__ = ["text"],$_)
 	,EText: ($_=function(pte) { return {_hx_index:2,pte:pte,__enum__:"format.gif.Extension",toString:$estr}; },$_._hx_name="EText",$_.__params__ = ["pte"],$_)
@@ -4674,20 +4351,20 @@ var format_gif_Extension = $hxEnums["format.gif.Extension"] = { __ename__:"forma
 };
 format_gif_Extension.__constructs__ = [format_gif_Extension.EGraphicControl,format_gif_Extension.EComment,format_gif_Extension.EText,format_gif_Extension.EApplicationExtension,format_gif_Extension.EUnknown];
 format_gif_Extension.__empty_constructs__ = [];
-var format_gif_ApplicationExtension = $hxEnums["format.gif.ApplicationExtension"] = { __ename__:"format.gif.ApplicationExtension",__constructs__:null
+var format_gif_ApplicationExtension = $hxEnums["format.gif.ApplicationExtension"] = { __ename__:true,__constructs__:null
 	,AENetscapeLooping: ($_=function(loops) { return {_hx_index:0,loops:loops,__enum__:"format.gif.ApplicationExtension",toString:$estr}; },$_._hx_name="AENetscapeLooping",$_.__params__ = ["loops"],$_)
 	,AEUnknown: ($_=function(name,version,data) { return {_hx_index:1,name:name,version:version,data:data,__enum__:"format.gif.ApplicationExtension",toString:$estr}; },$_._hx_name="AEUnknown",$_.__params__ = ["name","version","data"],$_)
 };
 format_gif_ApplicationExtension.__constructs__ = [format_gif_ApplicationExtension.AENetscapeLooping,format_gif_ApplicationExtension.AEUnknown];
 format_gif_ApplicationExtension.__empty_constructs__ = [];
-var format_gif_Version = $hxEnums["format.gif.Version"] = { __ename__:"format.gif.Version",__constructs__:null
+var format_gif_Version = $hxEnums["format.gif.Version"] = { __ename__:true,__constructs__:null
 	,GIF87a: {_hx_name:"GIF87a",_hx_index:0,__enum__:"format.gif.Version",toString:$estr}
 	,GIF89a: {_hx_name:"GIF89a",_hx_index:1,__enum__:"format.gif.Version",toString:$estr}
 	,Unknown: ($_=function(version) { return {_hx_index:2,version:version,__enum__:"format.gif.Version",toString:$estr}; },$_._hx_name="Unknown",$_.__params__ = ["version"],$_)
 };
 format_gif_Version.__constructs__ = [format_gif_Version.GIF87a,format_gif_Version.GIF89a,format_gif_Version.Unknown];
 format_gif_Version.__empty_constructs__ = [format_gif_Version.GIF87a,format_gif_Version.GIF89a];
-var format_gif_DisposalMethod = $hxEnums["format.gif.DisposalMethod"] = { __ename__:"format.gif.DisposalMethod",__constructs__:null
+var format_gif_DisposalMethod = $hxEnums["format.gif.DisposalMethod"] = { __ename__:true,__constructs__:null
 	,UNSPECIFIED: {_hx_name:"UNSPECIFIED",_hx_index:0,__enum__:"format.gif.DisposalMethod",toString:$estr}
 	,NO_ACTION: {_hx_name:"NO_ACTION",_hx_index:1,__enum__:"format.gif.DisposalMethod",toString:$estr}
 	,FILL_BACKGROUND: {_hx_name:"FILL_BACKGROUND",_hx_index:2,__enum__:"format.gif.DisposalMethod",toString:$estr}
@@ -4700,7 +4377,6 @@ var format_gif_Reader = function(i) {
 	this.i = i;
 	i.set_bigEndian(false);
 };
-$hxClasses["format.gif.Reader"] = format_gif_Reader;
 format_gif_Reader.__name__ = "format.gif.Reader";
 format_gif_Reader.prototype = {
 	read: function() {
@@ -5000,7 +4676,6 @@ format_gif_Reader.prototype = {
 	,__class__: format_gif_Reader
 };
 var format_gif_Tools = function() { };
-$hxClasses["format.gif.Tools"] = format_gif_Tools;
 format_gif_Tools.__name__ = "format.gif.Tools";
 format_gif_Tools.extractFullBGRA = function(data,frameIndex) {
 	var gce = null;
@@ -5154,7 +4829,7 @@ format_gif_Tools.extractFullRGBA = function(data,frameIndex) {
 	}
 	return bytes;
 };
-var format_mp3_SamplingRate = $hxEnums["format.mp3.SamplingRate"] = { __ename__:"format.mp3.SamplingRate",__constructs__:null
+var format_mp3_SamplingRate = $hxEnums["format.mp3.SamplingRate"] = { __ename__:true,__constructs__:null
 	,SR_8000: {_hx_name:"SR_8000",_hx_index:0,__enum__:"format.mp3.SamplingRate",toString:$estr}
 	,SR_11025: {_hx_name:"SR_11025",_hx_index:1,__enum__:"format.mp3.SamplingRate",toString:$estr}
 	,SR_12000: {_hx_name:"SR_12000",_hx_index:2,__enum__:"format.mp3.SamplingRate",toString:$estr}
@@ -5167,7 +4842,7 @@ var format_mp3_SamplingRate = $hxEnums["format.mp3.SamplingRate"] = { __ename__:
 };
 format_mp3_SamplingRate.__constructs__ = [format_mp3_SamplingRate.SR_8000,format_mp3_SamplingRate.SR_11025,format_mp3_SamplingRate.SR_12000,format_mp3_SamplingRate.SR_22050,format_mp3_SamplingRate.SR_24000,format_mp3_SamplingRate.SR_32000,format_mp3_SamplingRate.SR_44100,format_mp3_SamplingRate.SR_48000,format_mp3_SamplingRate.SR_Bad];
 format_mp3_SamplingRate.__empty_constructs__ = [format_mp3_SamplingRate.SR_8000,format_mp3_SamplingRate.SR_11025,format_mp3_SamplingRate.SR_12000,format_mp3_SamplingRate.SR_22050,format_mp3_SamplingRate.SR_24000,format_mp3_SamplingRate.SR_32000,format_mp3_SamplingRate.SR_44100,format_mp3_SamplingRate.SR_48000,format_mp3_SamplingRate.SR_Bad];
-var format_mp3_Bitrate = $hxEnums["format.mp3.Bitrate"] = { __ename__:"format.mp3.Bitrate",__constructs__:null
+var format_mp3_Bitrate = $hxEnums["format.mp3.Bitrate"] = { __ename__:true,__constructs__:null
 	,BR_8: {_hx_name:"BR_8",_hx_index:0,__enum__:"format.mp3.Bitrate",toString:$estr}
 	,BR_16: {_hx_name:"BR_16",_hx_index:1,__enum__:"format.mp3.Bitrate",toString:$estr}
 	,BR_24: {_hx_name:"BR_24",_hx_index:2,__enum__:"format.mp3.Bitrate",toString:$estr}
@@ -5198,7 +4873,6 @@ var format_mp3_Bitrate = $hxEnums["format.mp3.Bitrate"] = { __ename__:"format.mp
 format_mp3_Bitrate.__constructs__ = [format_mp3_Bitrate.BR_8,format_mp3_Bitrate.BR_16,format_mp3_Bitrate.BR_24,format_mp3_Bitrate.BR_32,format_mp3_Bitrate.BR_40,format_mp3_Bitrate.BR_48,format_mp3_Bitrate.BR_56,format_mp3_Bitrate.BR_64,format_mp3_Bitrate.BR_80,format_mp3_Bitrate.BR_96,format_mp3_Bitrate.BR_112,format_mp3_Bitrate.BR_128,format_mp3_Bitrate.BR_144,format_mp3_Bitrate.BR_160,format_mp3_Bitrate.BR_176,format_mp3_Bitrate.BR_192,format_mp3_Bitrate.BR_224,format_mp3_Bitrate.BR_256,format_mp3_Bitrate.BR_288,format_mp3_Bitrate.BR_320,format_mp3_Bitrate.BR_352,format_mp3_Bitrate.BR_384,format_mp3_Bitrate.BR_416,format_mp3_Bitrate.BR_448,format_mp3_Bitrate.BR_Free,format_mp3_Bitrate.BR_Bad];
 format_mp3_Bitrate.__empty_constructs__ = [format_mp3_Bitrate.BR_8,format_mp3_Bitrate.BR_16,format_mp3_Bitrate.BR_24,format_mp3_Bitrate.BR_32,format_mp3_Bitrate.BR_40,format_mp3_Bitrate.BR_48,format_mp3_Bitrate.BR_56,format_mp3_Bitrate.BR_64,format_mp3_Bitrate.BR_80,format_mp3_Bitrate.BR_96,format_mp3_Bitrate.BR_112,format_mp3_Bitrate.BR_128,format_mp3_Bitrate.BR_144,format_mp3_Bitrate.BR_160,format_mp3_Bitrate.BR_176,format_mp3_Bitrate.BR_192,format_mp3_Bitrate.BR_224,format_mp3_Bitrate.BR_256,format_mp3_Bitrate.BR_288,format_mp3_Bitrate.BR_320,format_mp3_Bitrate.BR_352,format_mp3_Bitrate.BR_384,format_mp3_Bitrate.BR_416,format_mp3_Bitrate.BR_448,format_mp3_Bitrate.BR_Free,format_mp3_Bitrate.BR_Bad];
 var format_mp3_MPEG = function() { };
-$hxClasses["format.mp3.MPEG"] = format_mp3_MPEG;
 format_mp3_MPEG.__name__ = "format.mp3.MPEG";
 format_mp3_MPEG.enum2Num = function(m) {
 	switch(m._hx_index) {
@@ -5303,7 +4977,6 @@ format_mp3_MPEG.bitrateEnum2Num = function(br) {
 	}
 };
 var format_mp3_CLayer = function() { };
-$hxClasses["format.mp3.CLayer"] = format_mp3_CLayer;
 format_mp3_CLayer.__name__ = "format.mp3.CLayer";
 format_mp3_CLayer.num2Enum = function(l) {
 	switch(l) {
@@ -5318,7 +4991,6 @@ format_mp3_CLayer.num2Enum = function(l) {
 	}
 };
 var format_mp3_CChannelMode = function() { };
-$hxClasses["format.mp3.CChannelMode"] = format_mp3_CChannelMode;
 format_mp3_CChannelMode.__name__ = "format.mp3.CChannelMode";
 format_mp3_CChannelMode.num2Enum = function(c) {
 	switch(c) {
@@ -5335,7 +5007,6 @@ format_mp3_CChannelMode.num2Enum = function(c) {
 	}
 };
 var format_mp3_CEmphasis = function() { };
-$hxClasses["format.mp3.CEmphasis"] = format_mp3_CEmphasis;
 format_mp3_CEmphasis.__name__ = "format.mp3.CEmphasis";
 format_mp3_CEmphasis.num2Enum = function(c) {
 	switch(c) {
@@ -5351,7 +5022,7 @@ format_mp3_CEmphasis.num2Enum = function(c) {
 		throw haxe_Exception.thrown("assert");
 	}
 };
-var format_mp3_MPEGVersion = $hxEnums["format.mp3.MPEGVersion"] = { __ename__:"format.mp3.MPEGVersion",__constructs__:null
+var format_mp3_MPEGVersion = $hxEnums["format.mp3.MPEGVersion"] = { __ename__:true,__constructs__:null
 	,MPEG_V1: {_hx_name:"MPEG_V1",_hx_index:0,__enum__:"format.mp3.MPEGVersion",toString:$estr}
 	,MPEG_V2: {_hx_name:"MPEG_V2",_hx_index:1,__enum__:"format.mp3.MPEGVersion",toString:$estr}
 	,MPEG_V25: {_hx_name:"MPEG_V25",_hx_index:2,__enum__:"format.mp3.MPEGVersion",toString:$estr}
@@ -5359,7 +5030,7 @@ var format_mp3_MPEGVersion = $hxEnums["format.mp3.MPEGVersion"] = { __ename__:"f
 };
 format_mp3_MPEGVersion.__constructs__ = [format_mp3_MPEGVersion.MPEG_V1,format_mp3_MPEGVersion.MPEG_V2,format_mp3_MPEGVersion.MPEG_V25,format_mp3_MPEGVersion.MPEG_Reserved];
 format_mp3_MPEGVersion.__empty_constructs__ = [format_mp3_MPEGVersion.MPEG_V1,format_mp3_MPEGVersion.MPEG_V2,format_mp3_MPEGVersion.MPEG_V25,format_mp3_MPEGVersion.MPEG_Reserved];
-var format_mp3_Layer = $hxEnums["format.mp3.Layer"] = { __ename__:"format.mp3.Layer",__constructs__:null
+var format_mp3_Layer = $hxEnums["format.mp3.Layer"] = { __ename__:true,__constructs__:null
 	,LayerReserved: {_hx_name:"LayerReserved",_hx_index:0,__enum__:"format.mp3.Layer",toString:$estr}
 	,Layer3: {_hx_name:"Layer3",_hx_index:1,__enum__:"format.mp3.Layer",toString:$estr}
 	,Layer2: {_hx_name:"Layer2",_hx_index:2,__enum__:"format.mp3.Layer",toString:$estr}
@@ -5367,7 +5038,7 @@ var format_mp3_Layer = $hxEnums["format.mp3.Layer"] = { __ename__:"format.mp3.La
 };
 format_mp3_Layer.__constructs__ = [format_mp3_Layer.LayerReserved,format_mp3_Layer.Layer3,format_mp3_Layer.Layer2,format_mp3_Layer.Layer1];
 format_mp3_Layer.__empty_constructs__ = [format_mp3_Layer.LayerReserved,format_mp3_Layer.Layer3,format_mp3_Layer.Layer2,format_mp3_Layer.Layer1];
-var format_mp3_ChannelMode = $hxEnums["format.mp3.ChannelMode"] = { __ename__:"format.mp3.ChannelMode",__constructs__:null
+var format_mp3_ChannelMode = $hxEnums["format.mp3.ChannelMode"] = { __ename__:true,__constructs__:null
 	,Stereo: {_hx_name:"Stereo",_hx_index:0,__enum__:"format.mp3.ChannelMode",toString:$estr}
 	,JointStereo: {_hx_name:"JointStereo",_hx_index:1,__enum__:"format.mp3.ChannelMode",toString:$estr}
 	,DualChannel: {_hx_name:"DualChannel",_hx_index:2,__enum__:"format.mp3.ChannelMode",toString:$estr}
@@ -5375,7 +5046,7 @@ var format_mp3_ChannelMode = $hxEnums["format.mp3.ChannelMode"] = { __ename__:"f
 };
 format_mp3_ChannelMode.__constructs__ = [format_mp3_ChannelMode.Stereo,format_mp3_ChannelMode.JointStereo,format_mp3_ChannelMode.DualChannel,format_mp3_ChannelMode.Mono];
 format_mp3_ChannelMode.__empty_constructs__ = [format_mp3_ChannelMode.Stereo,format_mp3_ChannelMode.JointStereo,format_mp3_ChannelMode.DualChannel,format_mp3_ChannelMode.Mono];
-var format_mp3_Emphasis = $hxEnums["format.mp3.Emphasis"] = { __ename__:"format.mp3.Emphasis",__constructs__:null
+var format_mp3_Emphasis = $hxEnums["format.mp3.Emphasis"] = { __ename__:true,__constructs__:null
 	,NoEmphasis: {_hx_name:"NoEmphasis",_hx_index:0,__enum__:"format.mp3.Emphasis",toString:$estr}
 	,Ms50_15: {_hx_name:"Ms50_15",_hx_index:1,__enum__:"format.mp3.Emphasis",toString:$estr}
 	,CCIT_J17: {_hx_name:"CCIT_J17",_hx_index:2,__enum__:"format.mp3.Emphasis",toString:$estr}
@@ -5383,7 +5054,7 @@ var format_mp3_Emphasis = $hxEnums["format.mp3.Emphasis"] = { __ename__:"format.
 };
 format_mp3_Emphasis.__constructs__ = [format_mp3_Emphasis.NoEmphasis,format_mp3_Emphasis.Ms50_15,format_mp3_Emphasis.CCIT_J17,format_mp3_Emphasis.InvalidEmphasis];
 format_mp3_Emphasis.__empty_constructs__ = [format_mp3_Emphasis.NoEmphasis,format_mp3_Emphasis.Ms50_15,format_mp3_Emphasis.CCIT_J17,format_mp3_Emphasis.InvalidEmphasis];
-var format_mp3_FrameType = $hxEnums["format.mp3.FrameType"] = { __ename__:"format.mp3.FrameType",__constructs__:null
+var format_mp3_FrameType = $hxEnums["format.mp3.FrameType"] = { __ename__:true,__constructs__:null
 	,FT_MP3: {_hx_name:"FT_MP3",_hx_index:0,__enum__:"format.mp3.FrameType",toString:$estr}
 	,FT_NONE: {_hx_name:"FT_NONE",_hx_index:1,__enum__:"format.mp3.FrameType",toString:$estr}
 };
@@ -5397,7 +5068,6 @@ var format_mp3_Reader = function(i) {
 	this.sampleSize = 0;
 	this.any_read = false;
 };
-$hxClasses["format.mp3.Reader"] = format_mp3_Reader;
 format_mp3_Reader.__name__ = "format.mp3.Reader";
 format_mp3_Reader.prototype = {
 	skipID3v2: function() {
@@ -5513,7 +5183,6 @@ format_mp3_Reader.prototype = {
 	,__class__: format_mp3_Reader
 };
 var format_mp3_Tools = function() { };
-$hxClasses["format.mp3.Tools"] = format_mp3_Tools;
 format_mp3_Tools.__name__ = "format.mp3.Tools";
 format_mp3_Tools.getBitrate = function(mpegVersion,layerIdx,bitrateIdx) {
 	if(mpegVersion == format_mp3_MPEG.Reserved || layerIdx == format_mp3_CLayer.LReserved) {
@@ -5547,14 +5216,14 @@ format_mp3_Tools.getSampleCount = function(mpegVersion) {
 format_mp3_Tools.getSampleCountHdr = function(hdr) {
 	return format_mp3_Tools.getSampleCount(format_mp3_MPEG.enum2Num(hdr.version));
 };
-var format_png_Color = $hxEnums["format.png.Color"] = { __ename__:"format.png.Color",__constructs__:null
+var format_png_Color = $hxEnums["format.png.Color"] = { __ename__:true,__constructs__:null
 	,ColGrey: ($_=function(alpha) { return {_hx_index:0,alpha:alpha,__enum__:"format.png.Color",toString:$estr}; },$_._hx_name="ColGrey",$_.__params__ = ["alpha"],$_)
 	,ColTrue: ($_=function(alpha) { return {_hx_index:1,alpha:alpha,__enum__:"format.png.Color",toString:$estr}; },$_._hx_name="ColTrue",$_.__params__ = ["alpha"],$_)
 	,ColIndexed: {_hx_name:"ColIndexed",_hx_index:2,__enum__:"format.png.Color",toString:$estr}
 };
 format_png_Color.__constructs__ = [format_png_Color.ColGrey,format_png_Color.ColTrue,format_png_Color.ColIndexed];
 format_png_Color.__empty_constructs__ = [format_png_Color.ColIndexed];
-var format_png_Chunk = $hxEnums["format.png.Chunk"] = { __ename__:"format.png.Chunk",__constructs__:null
+var format_png_Chunk = $hxEnums["format.png.Chunk"] = { __ename__:true,__constructs__:null
 	,CEnd: {_hx_name:"CEnd",_hx_index:0,__enum__:"format.png.Chunk",toString:$estr}
 	,CHeader: ($_=function(h) { return {_hx_index:1,h:h,__enum__:"format.png.Chunk",toString:$estr}; },$_._hx_name="CHeader",$_.__params__ = ["h"],$_)
 	,CData: ($_=function(b) { return {_hx_index:2,b:b,__enum__:"format.png.Chunk",toString:$estr}; },$_._hx_name="CData",$_.__params__ = ["b"],$_)
@@ -5568,7 +5237,6 @@ var format_png_Reader = function(i) {
 	i.set_bigEndian(true);
 	this.checkCRC = true;
 };
-$hxClasses["format.png.Reader"] = format_png_Reader;
 format_png_Reader.__name__ = "format.png.Reader";
 format_png_Reader.prototype = {
 	read: function() {
@@ -5725,7 +5393,6 @@ format_png_Reader.prototype = {
 	,__class__: format_png_Reader
 };
 var format_png_Tools = function() { };
-$hxClasses["format.png.Tools"] = format_png_Tools;
 format_png_Tools.__name__ = "format.png.Tools";
 format_png_Tools.getHeader = function(d) {
 	var _g_head = d.h;
@@ -6465,7 +6132,7 @@ format_png_Tools.extract32 = function(d,bytes,flipY) {
 	}
 	return bgra;
 };
-var format_tga_ImageOrigin = $hxEnums["format.tga.ImageOrigin"] = { __ename__:"format.tga.ImageOrigin",__constructs__:null
+var format_tga_ImageOrigin = $hxEnums["format.tga.ImageOrigin"] = { __ename__:true,__constructs__:null
 	,BottomLeft: {_hx_name:"BottomLeft",_hx_index:0,__enum__:"format.tga.ImageOrigin",toString:$estr}
 	,BottomRight: {_hx_name:"BottomRight",_hx_index:1,__enum__:"format.tga.ImageOrigin",toString:$estr}
 	,TopLeft: {_hx_name:"TopLeft",_hx_index:2,__enum__:"format.tga.ImageOrigin",toString:$estr}
@@ -6473,7 +6140,7 @@ var format_tga_ImageOrigin = $hxEnums["format.tga.ImageOrigin"] = { __ename__:"f
 };
 format_tga_ImageOrigin.__constructs__ = [format_tga_ImageOrigin.BottomLeft,format_tga_ImageOrigin.BottomRight,format_tga_ImageOrigin.TopLeft,format_tga_ImageOrigin.TopRight];
 format_tga_ImageOrigin.__empty_constructs__ = [format_tga_ImageOrigin.BottomLeft,format_tga_ImageOrigin.BottomRight,format_tga_ImageOrigin.TopLeft,format_tga_ImageOrigin.TopRight];
-var format_tga_ImageType = $hxEnums["format.tga.ImageType"] = { __ename__:"format.tga.ImageType",__constructs__:null
+var format_tga_ImageType = $hxEnums["format.tga.ImageType"] = { __ename__:true,__constructs__:null
 	,NoImage: {_hx_name:"NoImage",_hx_index:0,__enum__:"format.tga.ImageType",toString:$estr}
 	,UncompressedColorMapped: {_hx_name:"UncompressedColorMapped",_hx_index:1,__enum__:"format.tga.ImageType",toString:$estr}
 	,UncompressedTrueColor: {_hx_name:"UncompressedTrueColor",_hx_index:2,__enum__:"format.tga.ImageType",toString:$estr}
@@ -6489,7 +6156,6 @@ var format_tga_Reader = function(i) {
 	this.i = i;
 	i.set_bigEndian(false);
 };
-$hxClasses["format.tga.Reader"] = format_tga_Reader;
 format_tga_Reader.__name__ = "format.tga.Reader";
 format_tga_Reader.prototype = {
 	read: function() {
@@ -6744,7 +6410,6 @@ var format_tools_BitsInput = function(i) {
 	this.nbits = 0;
 	this.bits = 0;
 };
-$hxClasses["format.tools.BitsInput"] = format_tools_BitsInput;
 format_tools_BitsInput.__name__ = "format.tools.BitsInput";
 format_tools_BitsInput.prototype = {
 	readBits: function(n) {
@@ -6780,12 +6445,11 @@ format_tools_BitsInput.prototype = {
 	,__class__: format_tools_BitsInput
 };
 var format_tools_Inflate = function() { };
-$hxClasses["format.tools.Inflate"] = format_tools_Inflate;
 format_tools_Inflate.__name__ = "format.tools.Inflate";
 format_tools_Inflate.run = function(bytes) {
 	return haxe_zip_Uncompress.run(bytes);
 };
-var format_wav_WAVEFormat = $hxEnums["format.wav.WAVEFormat"] = { __ename__:"format.wav.WAVEFormat",__constructs__:null
+var format_wav_WAVEFormat = $hxEnums["format.wav.WAVEFormat"] = { __ename__:true,__constructs__:null
 	,WF_PCM: {_hx_name:"WF_PCM",_hx_index:0,__enum__:"format.wav.WAVEFormat",toString:$estr}
 };
 format_wav_WAVEFormat.__constructs__ = [format_wav_WAVEFormat.WF_PCM];
@@ -6794,7 +6458,6 @@ var format_wav_Reader = function(i) {
 	this.i = i;
 	i.set_bigEndian(false);
 };
-$hxClasses["format.wav.Reader"] = format_wav_Reader;
 format_wav_Reader.__name__ = "format.wav.Reader";
 format_wav_Reader.prototype = {
 	read: function() {
@@ -6890,7 +6553,6 @@ var h2d_Bitmap = function(tile,parent) {
 	h2d_Drawable.call(this,parent);
 	this.set_tile(tile);
 };
-$hxClasses["h2d.Bitmap"] = h2d_Bitmap;
 h2d_Bitmap.__name__ = "h2d.Bitmap";
 h2d_Bitmap.__super__ = h2d_Drawable;
 h2d_Bitmap.prototype = $extend(h2d_Drawable.prototype,{
@@ -6932,7 +6594,7 @@ h2d_Bitmap.prototype = $extend(h2d_Drawable.prototype,{
 	}
 	,__class__: h2d_Bitmap
 });
-var h2d_BlendMode = $hxEnums["h2d.BlendMode"] = { __ename__:"h2d.BlendMode",__constructs__:null
+var h2d_BlendMode = $hxEnums["h2d.BlendMode"] = { __ename__:true,__constructs__:null
 	,None: {_hx_name:"None",_hx_index:0,__enum__:"h2d.BlendMode",toString:$estr}
 	,Alpha: {_hx_name:"Alpha",_hx_index:1,__enum__:"h2d.BlendMode",toString:$estr}
 	,Add: {_hx_name:"Add",_hx_index:2,__enum__:"h2d.BlendMode",toString:$estr}
@@ -6973,7 +6635,6 @@ var h2d_Camera = function(scene) {
 		scene.addCamera(this);
 	}
 };
-$hxClasses["h2d.Camera"] = h2d_Camera;
 h2d_Camera.__name__ = "h2d.Camera";
 h2d_Camera.prototype = {
 	layerVisible: function(layer) {
@@ -7042,7 +6703,7 @@ h2d_Camera.prototype = {
 	}
 	,__class__: h2d_Camera
 };
-var h2d_FlowAlign = $hxEnums["h2d.FlowAlign"] = { __ename__:"h2d.FlowAlign",__constructs__:null
+var h2d_FlowAlign = $hxEnums["h2d.FlowAlign"] = { __ename__:true,__constructs__:null
 	,Top: {_hx_name:"Top",_hx_index:0,__enum__:"h2d.FlowAlign",toString:$estr}
 	,Left: {_hx_name:"Left",_hx_index:1,__enum__:"h2d.FlowAlign",toString:$estr}
 	,Right: {_hx_name:"Right",_hx_index:2,__enum__:"h2d.FlowAlign",toString:$estr}
@@ -7051,14 +6712,14 @@ var h2d_FlowAlign = $hxEnums["h2d.FlowAlign"] = { __ename__:"h2d.FlowAlign",__co
 };
 h2d_FlowAlign.__constructs__ = [h2d_FlowAlign.Top,h2d_FlowAlign.Left,h2d_FlowAlign.Right,h2d_FlowAlign.Middle,h2d_FlowAlign.Bottom];
 h2d_FlowAlign.__empty_constructs__ = [h2d_FlowAlign.Top,h2d_FlowAlign.Left,h2d_FlowAlign.Right,h2d_FlowAlign.Middle,h2d_FlowAlign.Bottom];
-var h2d_FlowLayout = $hxEnums["h2d.FlowLayout"] = { __ename__:"h2d.FlowLayout",__constructs__:null
+var h2d_FlowLayout = $hxEnums["h2d.FlowLayout"] = { __ename__:true,__constructs__:null
 	,Horizontal: {_hx_name:"Horizontal",_hx_index:0,__enum__:"h2d.FlowLayout",toString:$estr}
 	,Vertical: {_hx_name:"Vertical",_hx_index:1,__enum__:"h2d.FlowLayout",toString:$estr}
 	,Stack: {_hx_name:"Stack",_hx_index:2,__enum__:"h2d.FlowLayout",toString:$estr}
 };
 h2d_FlowLayout.__constructs__ = [h2d_FlowLayout.Horizontal,h2d_FlowLayout.Vertical,h2d_FlowLayout.Stack];
 h2d_FlowLayout.__empty_constructs__ = [h2d_FlowLayout.Horizontal,h2d_FlowLayout.Vertical,h2d_FlowLayout.Stack];
-var h2d_FlowOverflow = $hxEnums["h2d.FlowOverflow"] = { __ename__:"h2d.FlowOverflow",__constructs__:null
+var h2d_FlowOverflow = $hxEnums["h2d.FlowOverflow"] = { __ename__:true,__constructs__:null
 	,Expand: {_hx_name:"Expand",_hx_index:0,__enum__:"h2d.FlowOverflow",toString:$estr}
 	,Limit: {_hx_name:"Limit",_hx_index:1,__enum__:"h2d.FlowOverflow",toString:$estr}
 	,Hidden: {_hx_name:"Hidden",_hx_index:2,__enum__:"h2d.FlowOverflow",toString:$estr}
@@ -7080,7 +6741,6 @@ var h2d_FlowProperties = function(elt) {
 	this.paddingLeft = 0;
 	this.elt = elt;
 };
-$hxClasses["h2d.FlowProperties"] = h2d_FlowProperties;
 h2d_FlowProperties.__name__ = "h2d.FlowProperties";
 h2d_FlowProperties.prototype = {
 	set_isAbsolute: function(a) {
@@ -7127,7 +6787,6 @@ var h2d_Flow = function(parent) {
 	this.tmpBounds = new h2d_col_Bounds();
 	h2d_Object.call(this,parent);
 };
-$hxClasses["h2d.Flow"] = h2d_Flow;
 h2d_Flow.__name__ = "h2d.Flow";
 h2d_Flow.__super__ = h2d_Object;
 h2d_Flow.prototype = $extend(h2d_Object.prototype,{
@@ -8242,7 +7901,6 @@ var h2d_Kerning = function(c,o) {
 	this.prevChar = c;
 	this.offset = o;
 };
-$hxClasses["h2d.Kerning"] = h2d_Kerning;
 h2d_Kerning.__name__ = "h2d.Kerning";
 h2d_Kerning.prototype = {
 	__class__: h2d_Kerning
@@ -8251,7 +7909,6 @@ var h2d_FontChar = function(t,w) {
 	this.t = t;
 	this.width = w;
 };
-$hxClasses["h2d.FontChar"] = h2d_FontChar;
 h2d_FontChar.__name__ = "h2d.FontChar";
 h2d_FontChar.prototype = {
 	addKerning: function(prevChar,offset) {
@@ -8271,7 +7928,7 @@ h2d_FontChar.prototype = {
 	}
 	,__class__: h2d_FontChar
 };
-var h2d_FontType = $hxEnums["h2d.FontType"] = { __ename__:"h2d.FontType",__constructs__:null
+var h2d_FontType = $hxEnums["h2d.FontType"] = { __ename__:true,__constructs__:null
 	,BitmapFont: {_hx_name:"BitmapFont",_hx_index:0,__enum__:"h2d.FontType",toString:$estr}
 	,SignedDistanceField: ($_=function(channel,alphaCutoff,smoothing) { return {_hx_index:1,channel:channel,alphaCutoff:alphaCutoff,smoothing:smoothing,__enum__:"h2d.FontType",toString:$estr}; },$_._hx_name="SignedDistanceField",$_.__params__ = ["channel","alphaCutoff","smoothing"],$_)
 };
@@ -8293,7 +7950,6 @@ var h2d_Font = function(name,size,type) {
 		this.type = type;
 	}
 };
-$hxClasses["h2d.Font"] = h2d_Font;
 h2d_Font.__name__ = "h2d.Font";
 h2d_Font.prototype = {
 	resizeTo: function(size) {
@@ -8319,7 +7975,6 @@ h2d_Font.prototype = {
 };
 var h2d_GPoint = function() {
 };
-$hxClasses["h2d.GPoint"] = h2d_GPoint;
 h2d_GPoint.__name__ = "h2d.GPoint";
 h2d_GPoint.prototype = {
 	load: function(x,y,r,g,b,a) {
@@ -8333,13 +7988,11 @@ h2d_GPoint.prototype = {
 	,__class__: h2d_GPoint
 };
 var hxd_impl__$Serializable_NoSerializeSupport = function() { };
-$hxClasses["hxd.impl._Serializable.NoSerializeSupport"] = hxd_impl__$Serializable_NoSerializeSupport;
 hxd_impl__$Serializable_NoSerializeSupport.__name__ = "hxd.impl._Serializable.NoSerializeSupport";
 hxd_impl__$Serializable_NoSerializeSupport.__isInterface__ = true;
 var h3d_prim_Primitive = function() {
 	this.refCount = 0;
 };
-$hxClasses["h3d.prim.Primitive"] = h3d_prim_Primitive;
 h3d_prim_Primitive.__name__ = "h3d.prim.Primitive";
 h3d_prim_Primitive.__interfaces__ = [hxd_impl__$Serializable_NoSerializeSupport];
 h3d_prim_Primitive.prototype = {
@@ -8400,7 +8053,6 @@ var h2d__$Graphics_GraphicsContent = function() {
 	h3d_prim_Primitive.call(this);
 	this.buffers = [];
 };
-$hxClasses["h2d._Graphics.GraphicsContent"] = h2d__$Graphics_GraphicsContent;
 h2d__$Graphics_GraphicsContent.__name__ = "h2d._Graphics.GraphicsContent";
 h2d__$Graphics_GraphicsContent.__super__ = h3d_prim_Primitive;
 h2d__$Graphics_GraphicsContent.prototype = $extend(h3d_prim_Primitive.prototype,{
@@ -8527,7 +8179,6 @@ var h2d_Graphics = function(parent) {
 	this.tile = h2d_Tile.fromColor(16777215);
 	this.clear();
 };
-$hxClasses["h2d.Graphics"] = h2d_Graphics;
 h2d_Graphics.__name__ = "h2d.Graphics";
 h2d_Graphics.__super__ = h2d_Drawable;
 h2d_Graphics.prototype = $extend(h2d_Drawable.prototype,{
@@ -9797,14 +9448,14 @@ h2d_Graphics.prototype = $extend(h2d_Drawable.prototype,{
 	}
 	,__class__: h2d_Graphics
 });
-var h2d_LineHeightMode = $hxEnums["h2d.LineHeightMode"] = { __ename__:"h2d.LineHeightMode",__constructs__:null
+var h2d_LineHeightMode = $hxEnums["h2d.LineHeightMode"] = { __ename__:true,__constructs__:null
 	,Accurate: {_hx_name:"Accurate",_hx_index:0,__enum__:"h2d.LineHeightMode",toString:$estr}
 	,TextOnly: {_hx_name:"TextOnly",_hx_index:1,__enum__:"h2d.LineHeightMode",toString:$estr}
 	,Constant: {_hx_name:"Constant",_hx_index:2,__enum__:"h2d.LineHeightMode",toString:$estr}
 };
 h2d_LineHeightMode.__constructs__ = [h2d_LineHeightMode.Accurate,h2d_LineHeightMode.TextOnly,h2d_LineHeightMode.Constant];
 h2d_LineHeightMode.__empty_constructs__ = [h2d_LineHeightMode.Accurate,h2d_LineHeightMode.TextOnly,h2d_LineHeightMode.Constant];
-var h2d_ImageVerticalAlign = $hxEnums["h2d.ImageVerticalAlign"] = { __ename__:"h2d.ImageVerticalAlign",__constructs__:null
+var h2d_ImageVerticalAlign = $hxEnums["h2d.ImageVerticalAlign"] = { __ename__:true,__constructs__:null
 	,Top: {_hx_name:"Top",_hx_index:0,__enum__:"h2d.ImageVerticalAlign",toString:$estr}
 	,Bottom: {_hx_name:"Bottom",_hx_index:1,__enum__:"h2d.ImageVerticalAlign",toString:$estr}
 	,Middle: {_hx_name:"Middle",_hx_index:2,__enum__:"h2d.ImageVerticalAlign",toString:$estr}
@@ -9812,7 +9463,6 @@ var h2d_ImageVerticalAlign = $hxEnums["h2d.ImageVerticalAlign"] = { __ename__:"h
 h2d_ImageVerticalAlign.__constructs__ = [h2d_ImageVerticalAlign.Top,h2d_ImageVerticalAlign.Bottom,h2d_ImageVerticalAlign.Middle];
 h2d_ImageVerticalAlign.__empty_constructs__ = [h2d_ImageVerticalAlign.Top,h2d_ImageVerticalAlign.Bottom,h2d_ImageVerticalAlign.Middle];
 var hxd_Interactive = function() { };
-$hxClasses["hxd.Interactive"] = hxd_Interactive;
 hxd_Interactive.__name__ = "hxd.Interactive";
 hxd_Interactive.__isInterface__ = true;
 hxd_Interactive.prototype = {
@@ -9831,7 +9481,6 @@ var h2d_Interactive = function(width,height,parent,shape) {
 	this.height = height;
 	this.shape = shape;
 };
-$hxClasses["h2d.Interactive"] = h2d_Interactive;
 h2d_Interactive.__name__ = "h2d.Interactive";
 h2d_Interactive.__interfaces__ = [hxd_Interactive];
 h2d_Interactive.__super__ = h2d_Drawable;
@@ -10040,7 +9689,6 @@ var h2d_Mask = function(width,height,parent) {
 	this.width = width;
 	this.height = height;
 };
-$hxClasses["h2d.Mask"] = h2d_Mask;
 h2d_Mask.__name__ = "h2d.Mask";
 h2d_Mask.maskWith = function(ctx,object,width,height,scrollX,scrollY) {
 	if(scrollY == null) {
@@ -10151,7 +9799,6 @@ var h3d_impl_RenderContext = function() {
 	this.elapsedTime = 1. / hxd_System.getDefaultFrameRate();
 	this.textures = new h3d_impl_TextureCache(this);
 };
-$hxClasses["h3d.impl.RenderContext"] = h3d_impl_RenderContext;
 h3d_impl_RenderContext.__name__ = "h3d.impl.RenderContext";
 h3d_impl_RenderContext.prototype = {
 	dispose: function() {
@@ -10182,7 +9829,6 @@ var h2d_RenderContext = function(scene) {
 	this.cameraStackIndex = 0;
 	this.filterStack = [];
 };
-$hxClasses["h2d.RenderContext"] = h2d_RenderContext;
 h2d_RenderContext.__name__ = "h2d.RenderContext";
 h2d_RenderContext.__super__ = h3d_impl_RenderContext;
 h2d_RenderContext.prototype = $extend(h3d_impl_RenderContext.prototype,{
@@ -11510,7 +11156,6 @@ var h2d_TileGroup = function(t,parent) {
 	this.curColor = new h3d_Vector(1,1,1,1);
 	this.content = new h2d_TileLayerContent();
 };
-$hxClasses["h2d.TileGroup"] = h2d_TileGroup;
 h2d_TileGroup.__name__ = "h2d.TileGroup";
 h2d_TileGroup.__super__ = h2d_Drawable;
 h2d_TileGroup.prototype = $extend(h2d_Drawable.prototype,{
@@ -11592,7 +11237,6 @@ var h2d_ScaleGrid = function(tile,borderL,borderT,borderR,borderB,parent) {
 	this.set_height(tile.height);
 	this.content.useAllocator = true;
 };
-$hxClasses["h2d.ScaleGrid"] = h2d_ScaleGrid;
 h2d_ScaleGrid.__name__ = "h2d.ScaleGrid";
 h2d_ScaleGrid.__super__ = h2d_TileGroup;
 h2d_ScaleGrid.prototype = $extend(h2d_TileGroup.prototype,{
@@ -11808,7 +11452,7 @@ h2d_ScaleGrid.prototype = $extend(h2d_TileGroup.prototype,{
 	}
 	,__class__: h2d_ScaleGrid
 });
-var h2d_ScaleModeAlign = $hxEnums["h2d.ScaleModeAlign"] = { __ename__:"h2d.ScaleModeAlign",__constructs__:null
+var h2d_ScaleModeAlign = $hxEnums["h2d.ScaleModeAlign"] = { __ename__:true,__constructs__:null
 	,Left: {_hx_name:"Left",_hx_index:0,__enum__:"h2d.ScaleModeAlign",toString:$estr}
 	,Right: {_hx_name:"Right",_hx_index:1,__enum__:"h2d.ScaleModeAlign",toString:$estr}
 	,Center: {_hx_name:"Center",_hx_index:2,__enum__:"h2d.ScaleModeAlign",toString:$estr}
@@ -11817,7 +11461,7 @@ var h2d_ScaleModeAlign = $hxEnums["h2d.ScaleModeAlign"] = { __ename__:"h2d.Scale
 };
 h2d_ScaleModeAlign.__constructs__ = [h2d_ScaleModeAlign.Left,h2d_ScaleModeAlign.Right,h2d_ScaleModeAlign.Center,h2d_ScaleModeAlign.Top,h2d_ScaleModeAlign.Bottom];
 h2d_ScaleModeAlign.__empty_constructs__ = [h2d_ScaleModeAlign.Left,h2d_ScaleModeAlign.Right,h2d_ScaleModeAlign.Center,h2d_ScaleModeAlign.Top,h2d_ScaleModeAlign.Bottom];
-var h2d_ScaleMode = $hxEnums["h2d.ScaleMode"] = { __ename__:"h2d.ScaleMode",__constructs__:null
+var h2d_ScaleMode = $hxEnums["h2d.ScaleMode"] = { __ename__:true,__constructs__:null
 	,Resize: {_hx_name:"Resize",_hx_index:0,__enum__:"h2d.ScaleMode",toString:$estr}
 	,Stretch: ($_=function(width,height) { return {_hx_index:1,width:width,height:height,__enum__:"h2d.ScaleMode",toString:$estr}; },$_._hx_name="Stretch",$_.__params__ = ["width","height"],$_)
 	,LetterBox: ($_=function(width,height,integerScale,horizontalAlign,verticalAlign) { return {_hx_index:2,width:width,height:height,integerScale:integerScale,horizontalAlign:horizontalAlign,verticalAlign:verticalAlign,__enum__:"h2d.ScaleMode",toString:$estr}; },$_._hx_name="LetterBox",$_.__params__ = ["width","height","integerScale","horizontalAlign","verticalAlign"],$_)
@@ -11827,7 +11471,7 @@ var h2d_ScaleMode = $hxEnums["h2d.ScaleMode"] = { __ename__:"h2d.ScaleMode",__co
 };
 h2d_ScaleMode.__constructs__ = [h2d_ScaleMode.Resize,h2d_ScaleMode.Stretch,h2d_ScaleMode.LetterBox,h2d_ScaleMode.Fixed,h2d_ScaleMode.Zoom,h2d_ScaleMode.AutoZoom];
 h2d_ScaleMode.__empty_constructs__ = [h2d_ScaleMode.Resize];
-var h2d_Align = $hxEnums["h2d.Align"] = { __ename__:"h2d.Align",__constructs__:null
+var h2d_Align = $hxEnums["h2d.Align"] = { __ename__:true,__constructs__:null
 	,Left: {_hx_name:"Left",_hx_index:0,__enum__:"h2d.Align",toString:$estr}
 	,Right: {_hx_name:"Right",_hx_index:1,__enum__:"h2d.Align",toString:$estr}
 	,Center: {_hx_name:"Center",_hx_index:2,__enum__:"h2d.Align",toString:$estr}
@@ -11854,7 +11498,6 @@ var h2d_Tile = function(tex,x,y,w,h,dx,dy) {
 		this.setTexture(tex);
 	}
 };
-$hxClasses["h2d.Tile"] = h2d_Tile;
 h2d_Tile.__name__ = "h2d.Tile";
 h2d_Tile.fromColor = function(color,width,height,alpha) {
 	if(alpha == null) {
@@ -11905,7 +11548,6 @@ var h2d_TileLayerContent = function() {
 	this.state = new h2d_impl_BatchDrawState();
 	this.clear();
 };
-$hxClasses["h2d.TileLayerContent"] = h2d_TileLayerContent;
 h2d_TileLayerContent.__name__ = "h2d.TileLayerContent";
 h2d_TileLayerContent.__super__ = h3d_prim_Primitive;
 h2d_TileLayerContent.prototype = $extend(h3d_prim_Primitive.prototype,{
@@ -12352,13 +11994,11 @@ var h2d_col_Bounds = function() {
 	this.xMax = -1e20;
 	this.yMax = -1e20;
 };
-$hxClasses["h2d.col.Bounds"] = h2d_col_Bounds;
 h2d_col_Bounds.__name__ = "h2d.col.Bounds";
 h2d_col_Bounds.prototype = {
 	__class__: h2d_col_Bounds
 };
 var h2d_col_Collider = function() { };
-$hxClasses["h2d.col.Collider"] = h2d_col_Collider;
 h2d_col_Collider.__name__ = "h2d.col.Collider";
 h2d_col_Collider.__isInterface__ = true;
 h2d_col_Collider.prototype = {
@@ -12370,7 +12010,6 @@ var h2d_col_IBounds = function() {
 	this.xMax = -2147483648;
 	this.yMax = -2147483648;
 };
-$hxClasses["h2d.col.IBounds"] = h2d_col_IBounds;
 h2d_col_IBounds.__name__ = "h2d.col.IBounds";
 h2d_col_IBounds.prototype = {
 	__class__: h2d_col_IBounds
@@ -12383,7 +12022,6 @@ var h2d_col_Matrix = function() {
 	this.x = 0;
 	this.y = 0;
 };
-$hxClasses["h2d.col.Matrix"] = h2d_col_Matrix;
 h2d_col_Matrix.__name__ = "h2d.col.Matrix";
 h2d_col_Matrix.prototype = {
 	__class__: h2d_col_Matrix
@@ -12398,7 +12036,6 @@ var h2d_col_Point = function(x,y) {
 	this.x = x;
 	this.y = y;
 };
-$hxClasses["h2d.col.Point"] = h2d_col_Point;
 h2d_col_Point.__name__ = "h2d.col.Point";
 h2d_col_Point.prototype = {
 	__class__: h2d_col_Point
@@ -12408,7 +12045,6 @@ var h2d_filter_Filter = function() {
 	this.boundsExtend = 0.;
 	this.autoBounds = true;
 };
-$hxClasses["h2d.filter.Filter"] = h2d_filter_Filter;
 h2d_filter_Filter.__name__ = "h2d.filter.Filter";
 h2d_filter_Filter.prototype = {
 	get_enable: function() {
@@ -12436,7 +12072,6 @@ var h2d_impl_BatchDrawState = function() {
 	this.head = this.tail = new h2d_impl__$BatchDrawState_StateEntry(null);
 	this.totalCount = 0;
 };
-$hxClasses["h2d.impl.BatchDrawState"] = h2d_impl_BatchDrawState;
 h2d_impl_BatchDrawState.__name__ = "h2d.impl.BatchDrawState";
 h2d_impl_BatchDrawState.prototype = {
 	setTexture: function(texture) {
@@ -12536,7 +12171,6 @@ var h2d_impl__$BatchDrawState_StateEntry = function(texture) {
 	this.texture = texture;
 	this.count = 0;
 };
-$hxClasses["h2d.impl._BatchDrawState.StateEntry"] = h2d_impl__$BatchDrawState_StateEntry;
 h2d_impl__$BatchDrawState_StateEntry.__name__ = "h2d.impl._BatchDrawState.StateEntry";
 h2d_impl__$BatchDrawState_StateEntry.prototype = {
 	set: function(texture) {
@@ -12546,7 +12180,7 @@ h2d_impl__$BatchDrawState_StateEntry.prototype = {
 	}
 	,__class__: h2d_impl__$BatchDrawState_StateEntry
 };
-var h3d_BufferFlag = $hxEnums["h3d.BufferFlag"] = { __ename__:"h3d.BufferFlag",__constructs__:null
+var h3d_BufferFlag = $hxEnums["h3d.BufferFlag"] = { __ename__:true,__constructs__:null
 	,Dynamic: {_hx_name:"Dynamic",_hx_index:0,__enum__:"h3d.BufferFlag",toString:$estr}
 	,Triangles: {_hx_name:"Triangles",_hx_index:1,__enum__:"h3d.BufferFlag",toString:$estr}
 	,Quads: {_hx_name:"Quads",_hx_index:2,__enum__:"h3d.BufferFlag",toString:$estr}
@@ -12570,7 +12204,6 @@ var h3d_Buffer = function(vertices,stride,flags) {
 		h3d_Engine.CURRENT.mem.allocBuffer(this,stride);
 	}
 };
-$hxClasses["h3d.Buffer"] = h3d_Buffer;
 h3d_Buffer.__name__ = "h3d.Buffer";
 h3d_Buffer.ofFloats = function(v,stride,flags) {
 	var nvert = v.pos / stride | 0;
@@ -12656,7 +12289,6 @@ var h3d_Camera = function(fovY,zoom,screenRatio,zNear,zFar,rightHanded) {
 	this.frustum = new h3d_col_Frustum();
 	this.update();
 };
-$hxClasses["h3d.Camera"] = h3d_Camera;
 h3d_Camera.__name__ = "h3d.Camera";
 h3d_Camera.prototype = {
 	getInverseViewProj: function() {
@@ -12898,7 +12530,6 @@ var h3d__$Engine_TargetTmp = function(t,n,l,m) {
 	this.layer = l;
 	this.mipLevel = m;
 };
-$hxClasses["h3d._Engine.TargetTmp"] = h3d__$Engine_TargetTmp;
 h3d__$Engine_TargetTmp.__name__ = "h3d._Engine.TargetTmp";
 h3d__$Engine_TargetTmp.prototype = {
 	__class__: h3d__$Engine_TargetTmp
@@ -12921,7 +12552,6 @@ var h3d_Engine = function() {
 	this.driver = new h3d_impl_GlDriver(this.antiAlias);
 	h3d_Engine.CURRENT = this;
 };
-$hxClasses["h3d.Engine"] = h3d_Engine;
 h3d_Engine.__name__ = "h3d.Engine";
 h3d_Engine.prototype = {
 	init: function() {
@@ -13238,7 +12868,6 @@ var h3d_Indexes = function(count,is32) {
 	this.is32 = is32;
 	this.mem.allocIndexes(this);
 };
-$hxClasses["h3d.Indexes"] = h3d_Indexes;
 h3d_Indexes.__name__ = "h3d.Indexes";
 h3d_Indexes.alloc = function(i,startPos,length) {
 	if(length == null) {
@@ -13273,7 +12902,6 @@ h3d_Indexes.prototype = {
 };
 var h3d_Matrix = function() {
 };
-$hxClasses["h3d.Matrix"] = h3d_Matrix;
 h3d_Matrix.__name__ = "h3d.Matrix";
 h3d_Matrix.L = function(a) {
 	var m = new h3d_Matrix();
@@ -13549,7 +13177,6 @@ var h3d_Quat = function(x,y,z,w) {
 	this.z = z;
 	this.w = w;
 };
-$hxClasses["h3d.Quat"] = h3d_Quat;
 h3d_Quat.__name__ = "h3d.Quat";
 h3d_Quat.prototype = {
 	toMatrix: function(m) {
@@ -13603,13 +13230,11 @@ var h3d_Vector = function(x,y,z,w) {
 	this.z = z;
 	this.w = w;
 };
-$hxClasses["h3d.Vector"] = h3d_Vector;
 h3d_Vector.__name__ = "h3d.Vector";
 h3d_Vector.prototype = {
 	__class__: h3d_Vector
 };
 var h3d_anim_AnimatedObject = function() { };
-$hxClasses["h3d.anim.AnimatedObject"] = h3d_anim_AnimatedObject;
 h3d_anim_AnimatedObject.__name__ = "h3d.anim.AnimatedObject";
 var h3d_anim_Animation = function(name,frameCount,sampling) {
 	this.name = name;
@@ -13622,7 +13247,6 @@ var h3d_anim_Animation = function(name,frameCount,sampling) {
 	this.loop = true;
 	this.pause = false;
 };
-$hxClasses["h3d.anim.Animation"] = h3d_anim_Animation;
 h3d_anim_Animation.__name__ = "h3d.anim.Animation";
 h3d_anim_Animation.__interfaces__ = [hxd_impl__$Serializable_NoSerializeSupport];
 h3d_anim_Animation.prototype = {
@@ -13713,7 +13337,6 @@ h3d_anim_Animation.prototype = {
 	,__class__: h3d_anim_Animation
 };
 var h3d_col_Collider = function() { };
-$hxClasses["h3d.col.Collider"] = h3d_col_Collider;
 h3d_col_Collider.__name__ = "h3d.col.Collider";
 h3d_col_Collider.__isInterface__ = true;
 h3d_col_Collider.__interfaces__ = [hxd_impl__$Serializable_NoSerializeSupport];
@@ -13728,7 +13351,6 @@ var h3d_col_Bounds = function() {
 	this.zMin = 1e20;
 	this.zMax = -1e20;
 };
-$hxClasses["h3d.col.Bounds"] = h3d_col_Bounds;
 h3d_col_Bounds.__name__ = "h3d.col.Bounds";
 h3d_col_Bounds.__interfaces__ = [h3d_col_Collider];
 h3d_col_Bounds.prototype = {
@@ -13815,7 +13437,6 @@ var h3d_col_Frustum = function(mvp) {
 		this.loadMatrix(mvp);
 	}
 };
-$hxClasses["h3d.col.Frustum"] = h3d_col_Frustum;
 h3d_col_Frustum.__name__ = "h3d.col.Frustum";
 h3d_col_Frustum.prototype = {
 	loadMatrix: function(mvp) {
@@ -14039,7 +13660,6 @@ h3d_col_Frustum.prototype = {
 };
 var h3d_col_Ray = function() {
 };
-$hxClasses["h3d.col.Ray"] = h3d_col_Ray;
 h3d_col_Ray.__name__ = "h3d.col.Ray";
 h3d_col_Ray.prototype = {
 	normalize: function() {
@@ -14064,7 +13684,6 @@ var h3d_col_Plane = function(nx,ny,nz,d) {
 	this.nz = nz;
 	this.d = d;
 };
-$hxClasses["h3d.col.Plane"] = h3d_col_Plane;
 h3d_col_Plane.__name__ = "h3d.col.Plane";
 h3d_col_Plane.prototype = {
 	__class__: h3d_col_Plane
@@ -14083,7 +13702,6 @@ var h3d_col_Point = function(x,y,z) {
 	this.y = y;
 	this.z = z;
 };
-$hxClasses["h3d.col.Point"] = h3d_col_Point;
 h3d_col_Point.__name__ = "h3d.col.Point";
 h3d_col_Point.prototype = {
 	__class__: h3d_col_Point
@@ -14122,7 +13740,6 @@ var h3d_col_Sphere = function(x,y,z,r) {
 	this.z = sz;
 	this.r = sr;
 };
-$hxClasses["h3d.col.Sphere"] = h3d_col_Sphere;
 h3d_col_Sphere.__name__ = "h3d.col.Sphere";
 h3d_col_Sphere.__interfaces__ = [h3d_col_Collider];
 h3d_col_Sphere.prototype = {
@@ -14194,7 +13811,7 @@ h3d_col_Sphere.prototype = {
 	}
 	,__class__: h3d_col_Sphere
 };
-var h3d_impl_Feature = $hxEnums["h3d.impl.Feature"] = { __ename__:"h3d.impl.Feature",__constructs__:null
+var h3d_impl_Feature = $hxEnums["h3d.impl.Feature"] = { __ename__:true,__constructs__:null
 	,StandardDerivatives: {_hx_name:"StandardDerivatives",_hx_index:0,__enum__:"h3d.impl.Feature",toString:$estr}
 	,FloatTextures: {_hx_name:"FloatTextures",_hx_index:1,__enum__:"h3d.impl.Feature",toString:$estr}
 	,AllocDepthBuffer: {_hx_name:"AllocDepthBuffer",_hx_index:2,__enum__:"h3d.impl.Feature",toString:$estr}
@@ -14209,7 +13826,7 @@ var h3d_impl_Feature = $hxEnums["h3d.impl.Feature"] = { __ename__:"h3d.impl.Feat
 };
 h3d_impl_Feature.__constructs__ = [h3d_impl_Feature.StandardDerivatives,h3d_impl_Feature.FloatTextures,h3d_impl_Feature.AllocDepthBuffer,h3d_impl_Feature.HardwareAccelerated,h3d_impl_Feature.MultipleRenderTargets,h3d_impl_Feature.Queries,h3d_impl_Feature.SRGBTextures,h3d_impl_Feature.ShaderModel3,h3d_impl_Feature.BottomLeftCoords,h3d_impl_Feature.Wireframe,h3d_impl_Feature.InstancedRendering];
 h3d_impl_Feature.__empty_constructs__ = [h3d_impl_Feature.StandardDerivatives,h3d_impl_Feature.FloatTextures,h3d_impl_Feature.AllocDepthBuffer,h3d_impl_Feature.HardwareAccelerated,h3d_impl_Feature.MultipleRenderTargets,h3d_impl_Feature.Queries,h3d_impl_Feature.SRGBTextures,h3d_impl_Feature.ShaderModel3,h3d_impl_Feature.BottomLeftCoords,h3d_impl_Feature.Wireframe,h3d_impl_Feature.InstancedRendering];
-var h3d_impl_RenderFlag = $hxEnums["h3d.impl.RenderFlag"] = { __ename__:"h3d.impl.RenderFlag",__constructs__:null
+var h3d_impl_RenderFlag = $hxEnums["h3d.impl.RenderFlag"] = { __ename__:true,__constructs__:null
 	,CameraHandness: {_hx_name:"CameraHandness",_hx_index:0,__enum__:"h3d.impl.RenderFlag",toString:$estr}
 };
 h3d_impl_RenderFlag.__constructs__ = [h3d_impl_RenderFlag.CameraHandness];
@@ -14218,7 +13835,6 @@ var h3d_impl_InputNames = function(names) {
 	this.id = h3d_impl_InputNames.UID++;
 	this.names = names;
 };
-$hxClasses["h3d.impl.InputNames"] = h3d_impl_InputNames;
 h3d_impl_InputNames.__name__ = "h3d.impl.InputNames";
 h3d_impl_InputNames.get = function(names) {
 	var key = names.join("|");
@@ -14233,7 +13849,6 @@ h3d_impl_InputNames.prototype = {
 	__class__: h3d_impl_InputNames
 };
 var h3d_impl_Driver = function() { };
-$hxClasses["h3d.impl.Driver"] = h3d_impl_Driver;
 h3d_impl_Driver.__name__ = "h3d.impl.Driver";
 h3d_impl_Driver.prototype = {
 	hasFeature: function(f) {
@@ -14332,21 +13947,18 @@ var h3d_impl__$GlDriver_CompiledShader = function(s,vertex,shader) {
 	this.vertex = vertex;
 	this.shader = shader;
 };
-$hxClasses["h3d.impl._GlDriver.CompiledShader"] = h3d_impl__$GlDriver_CompiledShader;
 h3d_impl__$GlDriver_CompiledShader.__name__ = "h3d.impl._GlDriver.CompiledShader";
 h3d_impl__$GlDriver_CompiledShader.prototype = {
 	__class__: h3d_impl__$GlDriver_CompiledShader
 };
 var h3d_impl__$GlDriver_CompiledAttribute = function() {
 };
-$hxClasses["h3d.impl._GlDriver.CompiledAttribute"] = h3d_impl__$GlDriver_CompiledAttribute;
 h3d_impl__$GlDriver_CompiledAttribute.__name__ = "h3d.impl._GlDriver.CompiledAttribute";
 h3d_impl__$GlDriver_CompiledAttribute.prototype = {
 	__class__: h3d_impl__$GlDriver_CompiledAttribute
 };
 var h3d_impl__$GlDriver_CompiledProgram = function() {
 };
-$hxClasses["h3d.impl._GlDriver.CompiledProgram"] = h3d_impl__$GlDriver_CompiledProgram;
 h3d_impl__$GlDriver_CompiledProgram.__name__ = "h3d.impl._GlDriver.CompiledProgram";
 h3d_impl__$GlDriver_CompiledProgram.prototype = {
 	__class__: h3d_impl__$GlDriver_CompiledProgram
@@ -14443,7 +14055,6 @@ var h3d_impl_GlDriver = function(antiAlias) {
 	this.gl.pixelStorei(3333,1);
 	this.gl.pixelStorei(3317,1);
 };
-$hxClasses["h3d.impl.GlDriver"] = h3d_impl_GlDriver;
 h3d_impl_GlDriver.__name__ = "h3d.impl.GlDriver";
 h3d_impl_GlDriver.__super__ = h3d_impl_Driver;
 h3d_impl_GlDriver.prototype = $extend(h3d_impl_Driver.prototype,{
@@ -15792,7 +15403,6 @@ var h3d_impl__$ManagedBuffer_FreeCell = function(pos,count,next) {
 	this.count = count;
 	this.next = next;
 };
-$hxClasses["h3d.impl._ManagedBuffer.FreeCell"] = h3d_impl__$ManagedBuffer_FreeCell;
 h3d_impl__$ManagedBuffer_FreeCell.__name__ = "h3d.impl._ManagedBuffer.FreeCell";
 h3d_impl__$ManagedBuffer_FreeCell.prototype = {
 	__class__: h3d_impl__$ManagedBuffer_FreeCell
@@ -15809,7 +15419,6 @@ var h3d_impl_ManagedBuffer = function(stride,size,flags) {
 	this.mem = h3d_Engine.CURRENT.mem;
 	this.mem.allocManaged(this);
 };
-$hxClasses["h3d.impl.ManagedBuffer"] = h3d_impl_ManagedBuffer;
 h3d_impl_ManagedBuffer.__name__ = "h3d.impl.ManagedBuffer";
 h3d_impl_ManagedBuffer.prototype = {
 	uploadVertexBuffer: function(start,vertices,buf,bufPos) {
@@ -15903,7 +15512,6 @@ var h3d_impl_MemoryManager = function(driver) {
 	this.usedMemory = 0;
 	this.driver = driver;
 };
-$hxClasses["h3d.impl.MemoryManager"] = h3d_impl_MemoryManager;
 h3d_impl_MemoryManager.__name__ = "h3d.impl.MemoryManager";
 h3d_impl_MemoryManager.prototype = {
 	init: function() {
@@ -16239,7 +15847,6 @@ h3d_impl_MemoryManager.prototype = {
 	,__class__: h3d_impl_MemoryManager
 };
 var h3d_impl_RendererFX = function() { };
-$hxClasses["h3d.impl.RendererFX"] = h3d_impl_RendererFX;
 h3d_impl_RendererFX.__name__ = "h3d.impl.RendererFX";
 h3d_impl_RendererFX.__isInterface__ = true;
 h3d_impl_RendererFX.prototype = {
@@ -16252,7 +15859,6 @@ var h3d_impl_TextureCache = function(ctx) {
 	this.defaultFormat = h3d_mat_Texture.nativeFormat;
 	this.defaultDepthBuffer = h3d_mat_DepthBuffer.getDefault();
 };
-$hxClasses["h3d.impl.TextureCache"] = h3d_impl_TextureCache;
 h3d_impl_TextureCache.__name__ = "h3d.impl.TextureCache";
 h3d_impl_TextureCache.prototype = {
 	begin: function() {
@@ -16321,7 +15927,6 @@ h3d_impl_TextureCache.prototype = {
 	,__class__: h3d_impl_TextureCache
 };
 var hxd_impl_AnyProps = function() { };
-$hxClasses["hxd.impl.AnyProps"] = hxd_impl_AnyProps;
 hxd_impl_AnyProps.__name__ = "hxd.impl.AnyProps";
 hxd_impl_AnyProps.prototype = {
 	set_props: function(p) {
@@ -16341,7 +15946,6 @@ var h3d_mat_BaseMaterial = function(shader) {
 		this.addPass(new h3d_mat_Pass("default",null)).addShader(shader);
 	}
 };
-$hxClasses["h3d.mat.BaseMaterial"] = h3d_mat_BaseMaterial;
 h3d_mat_BaseMaterial.__name__ = "h3d.mat.BaseMaterial";
 h3d_mat_BaseMaterial.__interfaces__ = [hxd_impl__$Serializable_NoSerializeSupport];
 h3d_mat_BaseMaterial.__super__ = hxd_impl_AnyProps;
@@ -16391,7 +15995,7 @@ h3d_mat_BaseMaterial.prototype = $extend(hxd_impl_AnyProps.prototype,{
 	}
 	,__class__: h3d_mat_BaseMaterial
 });
-var h3d_mat_Face = $hxEnums["h3d.mat.Face"] = { __ename__:"h3d.mat.Face",__constructs__:null
+var h3d_mat_Face = $hxEnums["h3d.mat.Face"] = { __ename__:true,__constructs__:null
 	,None: {_hx_name:"None",_hx_index:0,__enum__:"h3d.mat.Face",toString:$estr}
 	,Back: {_hx_name:"Back",_hx_index:1,__enum__:"h3d.mat.Face",toString:$estr}
 	,Front: {_hx_name:"Front",_hx_index:2,__enum__:"h3d.mat.Face",toString:$estr}
@@ -16399,7 +16003,7 @@ var h3d_mat_Face = $hxEnums["h3d.mat.Face"] = { __ename__:"h3d.mat.Face",__const
 };
 h3d_mat_Face.__constructs__ = [h3d_mat_Face.None,h3d_mat_Face.Back,h3d_mat_Face.Front,h3d_mat_Face.Both];
 h3d_mat_Face.__empty_constructs__ = [h3d_mat_Face.None,h3d_mat_Face.Back,h3d_mat_Face.Front,h3d_mat_Face.Both];
-var h3d_mat_Blend = $hxEnums["h3d.mat.Blend"] = { __ename__:"h3d.mat.Blend",__constructs__:null
+var h3d_mat_Blend = $hxEnums["h3d.mat.Blend"] = { __ename__:true,__constructs__:null
 	,One: {_hx_name:"One",_hx_index:0,__enum__:"h3d.mat.Blend",toString:$estr}
 	,Zero: {_hx_name:"Zero",_hx_index:1,__enum__:"h3d.mat.Blend",toString:$estr}
 	,SrcAlpha: {_hx_name:"SrcAlpha",_hx_index:2,__enum__:"h3d.mat.Blend",toString:$estr}
@@ -16418,7 +16022,7 @@ var h3d_mat_Blend = $hxEnums["h3d.mat.Blend"] = { __ename__:"h3d.mat.Blend",__co
 };
 h3d_mat_Blend.__constructs__ = [h3d_mat_Blend.One,h3d_mat_Blend.Zero,h3d_mat_Blend.SrcAlpha,h3d_mat_Blend.SrcColor,h3d_mat_Blend.DstAlpha,h3d_mat_Blend.DstColor,h3d_mat_Blend.OneMinusSrcAlpha,h3d_mat_Blend.OneMinusSrcColor,h3d_mat_Blend.OneMinusDstAlpha,h3d_mat_Blend.OneMinusDstColor,h3d_mat_Blend.ConstantColor,h3d_mat_Blend.ConstantAlpha,h3d_mat_Blend.OneMinusConstantColor,h3d_mat_Blend.OneMinusConstantAlpha,h3d_mat_Blend.SrcAlphaSaturate];
 h3d_mat_Blend.__empty_constructs__ = [h3d_mat_Blend.One,h3d_mat_Blend.Zero,h3d_mat_Blend.SrcAlpha,h3d_mat_Blend.SrcColor,h3d_mat_Blend.DstAlpha,h3d_mat_Blend.DstColor,h3d_mat_Blend.OneMinusSrcAlpha,h3d_mat_Blend.OneMinusSrcColor,h3d_mat_Blend.OneMinusDstAlpha,h3d_mat_Blend.OneMinusDstColor,h3d_mat_Blend.ConstantColor,h3d_mat_Blend.ConstantAlpha,h3d_mat_Blend.OneMinusConstantColor,h3d_mat_Blend.OneMinusConstantAlpha,h3d_mat_Blend.SrcAlphaSaturate];
-var h3d_mat_Compare = $hxEnums["h3d.mat.Compare"] = { __ename__:"h3d.mat.Compare",__constructs__:null
+var h3d_mat_Compare = $hxEnums["h3d.mat.Compare"] = { __ename__:true,__constructs__:null
 	,Always: {_hx_name:"Always",_hx_index:0,__enum__:"h3d.mat.Compare",toString:$estr}
 	,Never: {_hx_name:"Never",_hx_index:1,__enum__:"h3d.mat.Compare",toString:$estr}
 	,Equal: {_hx_name:"Equal",_hx_index:2,__enum__:"h3d.mat.Compare",toString:$estr}
@@ -16430,7 +16034,7 @@ var h3d_mat_Compare = $hxEnums["h3d.mat.Compare"] = { __ename__:"h3d.mat.Compare
 };
 h3d_mat_Compare.__constructs__ = [h3d_mat_Compare.Always,h3d_mat_Compare.Never,h3d_mat_Compare.Equal,h3d_mat_Compare.NotEqual,h3d_mat_Compare.Greater,h3d_mat_Compare.GreaterEqual,h3d_mat_Compare.Less,h3d_mat_Compare.LessEqual];
 h3d_mat_Compare.__empty_constructs__ = [h3d_mat_Compare.Always,h3d_mat_Compare.Never,h3d_mat_Compare.Equal,h3d_mat_Compare.NotEqual,h3d_mat_Compare.Greater,h3d_mat_Compare.GreaterEqual,h3d_mat_Compare.Less,h3d_mat_Compare.LessEqual];
-var h3d_mat_StencilOp = $hxEnums["h3d.mat.StencilOp"] = { __ename__:"h3d.mat.StencilOp",__constructs__:null
+var h3d_mat_StencilOp = $hxEnums["h3d.mat.StencilOp"] = { __ename__:true,__constructs__:null
 	,Keep: {_hx_name:"Keep",_hx_index:0,__enum__:"h3d.mat.StencilOp",toString:$estr}
 	,Zero: {_hx_name:"Zero",_hx_index:1,__enum__:"h3d.mat.StencilOp",toString:$estr}
 	,Replace: {_hx_name:"Replace",_hx_index:2,__enum__:"h3d.mat.StencilOp",toString:$estr}
@@ -16442,26 +16046,26 @@ var h3d_mat_StencilOp = $hxEnums["h3d.mat.StencilOp"] = { __ename__:"h3d.mat.Ste
 };
 h3d_mat_StencilOp.__constructs__ = [h3d_mat_StencilOp.Keep,h3d_mat_StencilOp.Zero,h3d_mat_StencilOp.Replace,h3d_mat_StencilOp.Increment,h3d_mat_StencilOp.IncrementWrap,h3d_mat_StencilOp.Decrement,h3d_mat_StencilOp.DecrementWrap,h3d_mat_StencilOp.Invert];
 h3d_mat_StencilOp.__empty_constructs__ = [h3d_mat_StencilOp.Keep,h3d_mat_StencilOp.Zero,h3d_mat_StencilOp.Replace,h3d_mat_StencilOp.Increment,h3d_mat_StencilOp.IncrementWrap,h3d_mat_StencilOp.Decrement,h3d_mat_StencilOp.DecrementWrap,h3d_mat_StencilOp.Invert];
-var h3d_mat_MipMap = $hxEnums["h3d.mat.MipMap"] = { __ename__:"h3d.mat.MipMap",__constructs__:null
+var h3d_mat_MipMap = $hxEnums["h3d.mat.MipMap"] = { __ename__:true,__constructs__:null
 	,None: {_hx_name:"None",_hx_index:0,__enum__:"h3d.mat.MipMap",toString:$estr}
 	,Nearest: {_hx_name:"Nearest",_hx_index:1,__enum__:"h3d.mat.MipMap",toString:$estr}
 	,Linear: {_hx_name:"Linear",_hx_index:2,__enum__:"h3d.mat.MipMap",toString:$estr}
 };
 h3d_mat_MipMap.__constructs__ = [h3d_mat_MipMap.None,h3d_mat_MipMap.Nearest,h3d_mat_MipMap.Linear];
 h3d_mat_MipMap.__empty_constructs__ = [h3d_mat_MipMap.None,h3d_mat_MipMap.Nearest,h3d_mat_MipMap.Linear];
-var h3d_mat_Filter = $hxEnums["h3d.mat.Filter"] = { __ename__:"h3d.mat.Filter",__constructs__:null
+var h3d_mat_Filter = $hxEnums["h3d.mat.Filter"] = { __ename__:true,__constructs__:null
 	,Nearest: {_hx_name:"Nearest",_hx_index:0,__enum__:"h3d.mat.Filter",toString:$estr}
 	,Linear: {_hx_name:"Linear",_hx_index:1,__enum__:"h3d.mat.Filter",toString:$estr}
 };
 h3d_mat_Filter.__constructs__ = [h3d_mat_Filter.Nearest,h3d_mat_Filter.Linear];
 h3d_mat_Filter.__empty_constructs__ = [h3d_mat_Filter.Nearest,h3d_mat_Filter.Linear];
-var h3d_mat_Wrap = $hxEnums["h3d.mat.Wrap"] = { __ename__:"h3d.mat.Wrap",__constructs__:null
+var h3d_mat_Wrap = $hxEnums["h3d.mat.Wrap"] = { __ename__:true,__constructs__:null
 	,Clamp: {_hx_name:"Clamp",_hx_index:0,__enum__:"h3d.mat.Wrap",toString:$estr}
 	,Repeat: {_hx_name:"Repeat",_hx_index:1,__enum__:"h3d.mat.Wrap",toString:$estr}
 };
 h3d_mat_Wrap.__constructs__ = [h3d_mat_Wrap.Clamp,h3d_mat_Wrap.Repeat];
 h3d_mat_Wrap.__empty_constructs__ = [h3d_mat_Wrap.Clamp,h3d_mat_Wrap.Repeat];
-var h3d_mat_Operation = $hxEnums["h3d.mat.Operation"] = { __ename__:"h3d.mat.Operation",__constructs__:null
+var h3d_mat_Operation = $hxEnums["h3d.mat.Operation"] = { __ename__:true,__constructs__:null
 	,Add: {_hx_name:"Add",_hx_index:0,__enum__:"h3d.mat.Operation",toString:$estr}
 	,Sub: {_hx_name:"Sub",_hx_index:1,__enum__:"h3d.mat.Operation",toString:$estr}
 	,ReverseSub: {_hx_name:"ReverseSub",_hx_index:2,__enum__:"h3d.mat.Operation",toString:$estr}
@@ -16470,7 +16074,7 @@ var h3d_mat_Operation = $hxEnums["h3d.mat.Operation"] = { __ename__:"h3d.mat.Ope
 };
 h3d_mat_Operation.__constructs__ = [h3d_mat_Operation.Add,h3d_mat_Operation.Sub,h3d_mat_Operation.ReverseSub,h3d_mat_Operation.Min,h3d_mat_Operation.Max];
 h3d_mat_Operation.__empty_constructs__ = [h3d_mat_Operation.Add,h3d_mat_Operation.Sub,h3d_mat_Operation.ReverseSub,h3d_mat_Operation.Min,h3d_mat_Operation.Max];
-var h3d_mat_TextureFlags = $hxEnums["h3d.mat.TextureFlags"] = { __ename__:"h3d.mat.TextureFlags",__constructs__:null
+var h3d_mat_TextureFlags = $hxEnums["h3d.mat.TextureFlags"] = { __ename__:true,__constructs__:null
 	,Target: {_hx_name:"Target",_hx_index:0,__enum__:"h3d.mat.TextureFlags",toString:$estr}
 	,Cube: {_hx_name:"Cube",_hx_index:1,__enum__:"h3d.mat.TextureFlags",toString:$estr}
 	,MipMapped: {_hx_name:"MipMapped",_hx_index:2,__enum__:"h3d.mat.TextureFlags",toString:$estr}
@@ -16487,7 +16091,6 @@ var h3d_mat_TextureFlags = $hxEnums["h3d.mat.TextureFlags"] = { __ename__:"h3d.m
 h3d_mat_TextureFlags.__constructs__ = [h3d_mat_TextureFlags.Target,h3d_mat_TextureFlags.Cube,h3d_mat_TextureFlags.MipMapped,h3d_mat_TextureFlags.ManualMipMapGen,h3d_mat_TextureFlags.IsNPOT,h3d_mat_TextureFlags.NoAlloc,h3d_mat_TextureFlags.Dynamic,h3d_mat_TextureFlags.AlphaPremultiplied,h3d_mat_TextureFlags.WasCleared,h3d_mat_TextureFlags.Loading,h3d_mat_TextureFlags.Serialize,h3d_mat_TextureFlags.IsArray];
 h3d_mat_TextureFlags.__empty_constructs__ = [h3d_mat_TextureFlags.Target,h3d_mat_TextureFlags.Cube,h3d_mat_TextureFlags.MipMapped,h3d_mat_TextureFlags.ManualMipMapGen,h3d_mat_TextureFlags.IsNPOT,h3d_mat_TextureFlags.NoAlloc,h3d_mat_TextureFlags.Dynamic,h3d_mat_TextureFlags.AlphaPremultiplied,h3d_mat_TextureFlags.WasCleared,h3d_mat_TextureFlags.Loading,h3d_mat_TextureFlags.Serialize,h3d_mat_TextureFlags.IsArray];
 var h3d_mat_Defaults = function() { };
-$hxClasses["h3d.mat.Defaults"] = h3d_mat_Defaults;
 h3d_mat_Defaults.__name__ = "h3d.mat.Defaults";
 h3d_mat_Defaults.get_shadowShader = function() {
 	var s = h3d_mat_Defaults.shadowShader;
@@ -16501,7 +16104,7 @@ h3d_mat_Defaults.get_shadowShader = function() {
 h3d_mat_Defaults.set_shadowShader = function(s) {
 	return h3d_mat_Defaults.shadowShader = s;
 };
-var h3d_mat_DepthFormat = $hxEnums["h3d.mat.DepthFormat"] = { __ename__:"h3d.mat.DepthFormat",__constructs__:null
+var h3d_mat_DepthFormat = $hxEnums["h3d.mat.DepthFormat"] = { __ename__:true,__constructs__:null
 	,Depth16: {_hx_name:"Depth16",_hx_index:0,__enum__:"h3d.mat.DepthFormat",toString:$estr}
 	,Depth24: {_hx_name:"Depth24",_hx_index:1,__enum__:"h3d.mat.DepthFormat",toString:$estr}
 	,Depth24Stencil8: {_hx_name:"Depth24Stencil8",_hx_index:2,__enum__:"h3d.mat.DepthFormat",toString:$estr}
@@ -16516,7 +16119,6 @@ var h3d_mat_DepthBuffer = function(width,height,format) {
 		this.alloc();
 	}
 };
-$hxClasses["h3d.mat.DepthBuffer"] = h3d_mat_DepthBuffer;
 h3d_mat_DepthBuffer.__name__ = "h3d.mat.DepthBuffer";
 h3d_mat_DepthBuffer.getDefault = function() {
 	return h3d_Engine.CURRENT.driver.getDefaultDepthBuffer();
@@ -16550,7 +16152,6 @@ var h3d_mat_Material = function(texture) {
 	h3d_mat_BaseMaterial.call(this,this.mshader);
 	this.set_texture(texture);
 };
-$hxClasses["h3d.mat.Material"] = h3d_mat_Material;
 h3d_mat_Material.__name__ = "h3d.mat.Material";
 h3d_mat_Material.__super__ = h3d_mat_BaseMaterial;
 h3d_mat_Material.prototype = $extend(h3d_mat_BaseMaterial.prototype,{
@@ -16672,7 +16273,6 @@ h3d_mat_Material.prototype = $extend(h3d_mat_BaseMaterial.prototype,{
 });
 var h3d_mat_MaterialDatabase = function() {
 };
-$hxClasses["h3d.mat.MaterialDatabase"] = h3d_mat_MaterialDatabase;
 h3d_mat_MaterialDatabase.__name__ = "h3d.mat.MaterialDatabase";
 h3d_mat_MaterialDatabase.prototype = {
 	__class__: h3d_mat_MaterialDatabase
@@ -16683,7 +16283,6 @@ var h3d_mat_MaterialSetup = function(name) {
 	}
 	this.name = name;
 };
-$hxClasses["h3d.mat.MaterialSetup"] = h3d_mat_MaterialSetup;
 h3d_mat_MaterialSetup.__name__ = "h3d.mat.MaterialSetup";
 h3d_mat_MaterialSetup.prototype = {
 	createRenderer: function() {
@@ -16714,7 +16313,6 @@ var h3d_mat_Pass = function(name,shaders,parent) {
 	this.set_blendOp(this.set_blendAlphaOp(h3d_mat_Operation.Add));
 	this.colorMask = 15;
 };
-$hxClasses["h3d.mat.Pass"] = h3d_mat_Pass;
 h3d_mat_Pass.__name__ = "h3d.mat.Pass";
 h3d_mat_Pass.__interfaces__ = [hxd_impl__$Serializable_NoSerializeSupport];
 h3d_mat_Pass.prototype = {
@@ -16944,7 +16542,6 @@ var h3d_mat_Stencil = function() {
 	this.setOp(h3d_mat_StencilOp.Keep,h3d_mat_StencilOp.Keep,h3d_mat_StencilOp.Keep);
 	this.setFunc(h3d_mat_Compare.Always);
 };
-$hxClasses["h3d.mat.Stencil"] = h3d_mat_Stencil;
 h3d_mat_Stencil.__name__ = "h3d.mat.Stencil";
 h3d_mat_Stencil.__interfaces__ = [hxd_impl__$Serializable_NoSerializeSupport];
 h3d_mat_Stencil.prototype = {
@@ -17023,7 +16620,7 @@ h3d_mat_Stencil.prototype = {
 	}
 	,__class__: h3d_mat_Stencil
 };
-var hxd_PixelFormat = $hxEnums["hxd.PixelFormat"] = { __ename__:"hxd.PixelFormat",__constructs__:null
+var hxd_PixelFormat = $hxEnums["hxd.PixelFormat"] = { __ename__:true,__constructs__:null
 	,ARGB: {_hx_name:"ARGB",_hx_index:0,__enum__:"hxd.PixelFormat",toString:$estr}
 	,BGRA: {_hx_name:"BGRA",_hx_index:1,__enum__:"hxd.PixelFormat",toString:$estr}
 	,RGBA: {_hx_name:"RGBA",_hx_index:2,__enum__:"hxd.PixelFormat",toString:$estr}
@@ -17083,7 +16680,6 @@ var h3d_mat_Texture = function(w,h,flags,format) {
 		this.alloc();
 	}
 };
-$hxClasses["h3d.mat.Texture"] = h3d_mat_Texture;
 h3d_mat_Texture.__name__ = "h3d.mat.Texture";
 h3d_mat_Texture.fromColor = function(color,alpha) {
 	if(alpha == null) {
@@ -17338,7 +16934,6 @@ var h3d_mat_TextureArray = function(w,h,layers,flags,format) {
 	flags.push(h3d_mat_TextureFlags.IsArray);
 	h3d_mat_Texture.call(this,w,h,flags,format);
 };
-$hxClasses["h3d.mat.TextureArray"] = h3d_mat_TextureArray;
 h3d_mat_TextureArray.__name__ = "h3d.mat.TextureArray";
 h3d_mat_TextureArray.__super__ = h3d_mat_Texture;
 h3d_mat_TextureArray.prototype = $extend(h3d_mat_Texture.prototype,{
@@ -17353,7 +16948,6 @@ h3d_mat_TextureArray.prototype = $extend(h3d_mat_Texture.prototype,{
 var h3d_pass_Base = function(name) {
 	this.name = name;
 };
-$hxClasses["h3d.pass.Base"] = h3d_pass_Base;
 h3d_pass_Base.__name__ = "h3d.pass.Base";
 h3d_pass_Base.prototype = {
 	setContext: function(ctx) {
@@ -17373,7 +16967,6 @@ var h3d_pass_ScreenFx = function(shader,output) {
 	this.pass.set_culling(h3d_mat_Face.None);
 	this.pass.depth(false,h3d_mat_Compare.Always);
 };
-$hxClasses["h3d.pass.ScreenFx"] = h3d_pass_ScreenFx;
 h3d_pass_ScreenFx.__name__ = "h3d.pass.ScreenFx";
 h3d_pass_ScreenFx.prototype = {
 	get_engine: function() {
@@ -17428,7 +17021,6 @@ var h3d_pass_Blur = function(radius,gain,linear,quality) {
 	this.set_gain(gain);
 	this.set_linear(linear);
 };
-$hxClasses["h3d.pass.Blur"] = h3d_pass_Blur;
 h3d_pass_Blur.__name__ = "h3d.pass.Blur";
 h3d_pass_Blur.__super__ = h3d_pass_ScreenFx;
 h3d_pass_Blur.prototype = $extend(h3d_pass_ScreenFx.prototype,{
@@ -17614,7 +17206,6 @@ var hxsl_Shader = function() {
 	this.priority = 0;
 	this.initialize();
 };
-$hxClasses["hxsl.Shader"] = hxsl_Shader;
 hxsl_Shader.__name__ = "hxsl.Shader";
 hxsl_Shader.prototype = {
 	initialize: function() {
@@ -17722,7 +17313,6 @@ var h3d_shader_ScreenShader = function() {
 	this.flipY__ = 0;
 	hxsl_Shader.call(this);
 };
-$hxClasses["h3d.shader.ScreenShader"] = h3d_shader_ScreenShader;
 h3d_shader_ScreenShader.__name__ = "h3d.shader.ScreenShader";
 h3d_shader_ScreenShader.__super__ = hxsl_Shader;
 h3d_shader_ScreenShader.prototype = $extend(hxsl_Shader.prototype,{
@@ -17748,7 +17338,6 @@ var h3d_pass__$Border_BorderShader = function() {
 	this.color__ = new h3d_Vector();
 	h3d_shader_ScreenShader.call(this);
 };
-$hxClasses["h3d.pass._Border.BorderShader"] = h3d_pass__$Border_BorderShader;
 h3d_pass__$Border_BorderShader.__name__ = "h3d.pass._Border.BorderShader";
 h3d_pass__$Border_BorderShader.__super__ = h3d_shader_ScreenShader;
 h3d_pass__$Border_BorderShader.prototype = $extend(h3d_shader_ScreenShader.prototype,{
@@ -18107,7 +17696,6 @@ var h3d_pass_Border = function(width,height,size) {
 	_this.z = 1;
 	_this.w = 1;
 };
-$hxClasses["h3d.pass.Border"] = h3d_pass_Border;
 h3d_pass_Border.__name__ = "h3d.pass.Border";
 h3d_pass_Border.__super__ = h3d_pass_ScreenFx;
 h3d_pass_Border.prototype = $extend(h3d_pass_ScreenFx.prototype,{
@@ -18121,7 +17709,6 @@ var h3d_pass__$Copy_ArrayCopyShader = function() {
 	this.layer__ = 0;
 	h3d_shader_ScreenShader.call(this);
 };
-$hxClasses["h3d.pass._Copy.ArrayCopyShader"] = h3d_pass__$Copy_ArrayCopyShader;
 h3d_pass__$Copy_ArrayCopyShader.__name__ = "h3d.pass._Copy.ArrayCopyShader";
 h3d_pass__$Copy_ArrayCopyShader.__super__ = h3d_shader_ScreenShader;
 h3d_pass__$Copy_ArrayCopyShader.prototype = $extend(h3d_shader_ScreenShader.prototype,{
@@ -18152,7 +17739,6 @@ h3d_pass__$Copy_ArrayCopyShader.prototype = $extend(h3d_shader_ScreenShader.prot
 var h3d_pass__$Copy_CopyShader = function() {
 	h3d_shader_ScreenShader.call(this);
 };
-$hxClasses["h3d.pass._Copy.CopyShader"] = h3d_pass__$Copy_CopyShader;
 h3d_pass__$Copy_CopyShader.__name__ = "h3d.pass._Copy.CopyShader";
 h3d_pass__$Copy_CopyShader.__super__ = h3d_shader_ScreenShader;
 h3d_pass__$Copy_CopyShader.prototype = $extend(h3d_shader_ScreenShader.prototype,{
@@ -18181,7 +17767,6 @@ h3d_pass__$Copy_CopyShader.prototype = $extend(h3d_shader_ScreenShader.prototype
 var h3d_pass_Copy = function() {
 	h3d_pass_ScreenFx.call(this,new h3d_pass__$Copy_CopyShader());
 };
-$hxClasses["h3d.pass.Copy"] = h3d_pass_Copy;
 h3d_pass_Copy.__name__ = "h3d.pass.Copy";
 h3d_pass_Copy.run = function(from,to,blend,pass,layer) {
 	var engine = h3d_Engine.CURRENT;
@@ -18229,7 +17814,6 @@ var h3d_pass__$CubeCopy_CubeCopyShader = function() {
 	this.mat__ = new h3d_Matrix();
 	h3d_shader_ScreenShader.call(this);
 };
-$hxClasses["h3d.pass._CubeCopy.CubeCopyShader"] = h3d_pass__$CubeCopy_CubeCopyShader;
 h3d_pass__$CubeCopy_CubeCopyShader.__name__ = "h3d.pass._CubeCopy.CubeCopyShader";
 h3d_pass__$CubeCopy_CubeCopyShader.__super__ = h3d_shader_ScreenShader;
 h3d_pass__$CubeCopy_CubeCopyShader.prototype = $extend(h3d_shader_ScreenShader.prototype,{
@@ -18263,7 +17847,6 @@ var h3d_pass_Default = function(name) {
 	this.manager = new h3d_pass_ShaderManager(this.getOutputs());
 	this.initGlobals();
 };
-$hxClasses["h3d.pass.Default"] = h3d_pass_Default;
 h3d_pass_Default.__name__ = "h3d.pass.Default";
 h3d_pass_Default.__super__ = h3d_pass_Base;
 h3d_pass_Default.prototype = $extend(h3d_pass_Base.prototype,{
@@ -18437,7 +18020,6 @@ var h3d_pass_Shadows = function(light) {
 	_this.constModified = true;
 	_this.isDepth__ = this.format == h3d_mat_Texture.nativeFormat;
 };
-$hxClasses["h3d.pass.Shadows"] = h3d_pass_Shadows;
 h3d_pass_Shadows.__name__ = "h3d.pass.Shadows";
 h3d_pass_Shadows.__super__ = h3d_pass_Default;
 h3d_pass_Shadows.prototype = $extend(h3d_pass_Default.prototype,{
@@ -18604,7 +18186,6 @@ var h3d_pass_DirShadowMap = function(light) {
 		this.depth = h3d_mat_DepthBuffer.getDefault();
 	}
 };
-$hxClasses["h3d.pass.DirShadowMap"] = h3d_pass_DirShadowMap;
 h3d_pass_DirShadowMap.__name__ = "h3d.pass.DirShadowMap";
 h3d_pass_DirShadowMap.__super__ = h3d_pass_Shadows;
 h3d_pass_DirShadowMap.prototype = $extend(h3d_pass_Shadows.prototype,{
@@ -19232,7 +18813,6 @@ var h3d_pass_DefaultShadowMap = function(size,format) {
 	this.shadowPowerId = hxsl_Globals.allocID("shadow.power");
 	this.shadowBiasId = hxsl_Globals.allocID("shadow.bias");
 };
-$hxClasses["h3d.pass.DefaultShadowMap"] = h3d_pass_DefaultShadowMap;
 h3d_pass_DefaultShadowMap.__name__ = "h3d.pass.DefaultShadowMap";
 h3d_pass_DefaultShadowMap.__super__ = h3d_pass_DirShadowMap;
 h3d_pass_DefaultShadowMap.prototype = $extend(h3d_pass_DirShadowMap.prototype,{
@@ -19251,7 +18831,6 @@ var h3d_pass__$HardwarePick_FixedColor = function() {
 	this.colorID__ = new h3d_Vector();
 	hxsl_Shader.call(this);
 };
-$hxClasses["h3d.pass._HardwarePick.FixedColor"] = h3d_pass__$HardwarePick_FixedColor;
 h3d_pass__$HardwarePick_FixedColor.__name__ = "h3d.pass._HardwarePick.FixedColor";
 h3d_pass__$HardwarePick_FixedColor.__super__ = hxsl_Shader;
 h3d_pass__$HardwarePick_FixedColor.prototype = $extend(hxsl_Shader.prototype,{
@@ -19289,7 +18868,6 @@ var h3d_pass_HardwarePick = function() {
 	this.texOut = new h3d_mat_Texture(3,3,[h3d_mat_TextureFlags.Target]);
 	this.texOut.depthBuffer = new h3d_mat_DepthBuffer(3,3);
 };
-$hxClasses["h3d.pass.HardwarePick"] = h3d_pass_HardwarePick;
 h3d_pass_HardwarePick.__name__ = "h3d.pass.HardwarePick";
 h3d_pass_HardwarePick.__super__ = h3d_pass_Default;
 h3d_pass_HardwarePick.prototype = $extend(h3d_pass_Default.prototype,{
@@ -19374,7 +18952,6 @@ var h3d_pass_PassList = function(current) {
 	this.current = current;
 	this.discarded = this.lastDisc = null;
 };
-$hxClasses["h3d.pass.PassList"] = h3d_pass_PassList;
 h3d_pass_PassList.__name__ = "h3d.pass.PassList";
 h3d_pass_PassList.prototype = {
 	__class__: h3d_pass_PassList
@@ -19382,7 +18959,6 @@ h3d_pass_PassList.prototype = {
 var h3d_pass_PassObject = function() {
 	this.texture = 0;
 };
-$hxClasses["h3d.pass.PassObject"] = h3d_pass_PassObject;
 h3d_pass_PassObject.__name__ = "h3d.pass.PassObject";
 h3d_pass_PassObject.prototype = {
 	__class__: h3d_pass_PassObject
@@ -19393,7 +18969,6 @@ var h3d_pass_ShaderManager = function(output) {
 	this.currentOutput = new hxsl_ShaderList(null);
 	this.setOutput(output);
 };
-$hxClasses["h3d.pass.ShaderManager"] = h3d_pass_ShaderManager;
 h3d_pass_ShaderManager.__name__ = "h3d.pass.ShaderManager";
 h3d_pass_ShaderManager.prototype = {
 	setOutput: function(output) {
@@ -19913,7 +19488,7 @@ h3d_pass_ShaderManager.prototype = {
 	}
 	,__class__: h3d_pass_ShaderManager
 };
-var h3d_pass_RenderMode = $hxEnums["h3d.pass.RenderMode"] = { __ename__:"h3d.pass.RenderMode",__constructs__:null
+var h3d_pass_RenderMode = $hxEnums["h3d.pass.RenderMode"] = { __ename__:true,__constructs__:null
 	,None: {_hx_name:"None",_hx_index:0,__enum__:"h3d.pass.RenderMode",toString:$estr}
 	,Static: {_hx_name:"Static",_hx_index:1,__enum__:"h3d.pass.RenderMode",toString:$estr}
 	,Dynamic: {_hx_name:"Dynamic",_hx_index:2,__enum__:"h3d.pass.RenderMode",toString:$estr}
@@ -19921,7 +19496,7 @@ var h3d_pass_RenderMode = $hxEnums["h3d.pass.RenderMode"] = { __ename__:"h3d.pas
 };
 h3d_pass_RenderMode.__constructs__ = [h3d_pass_RenderMode.None,h3d_pass_RenderMode.Static,h3d_pass_RenderMode.Dynamic,h3d_pass_RenderMode.Mixed];
 h3d_pass_RenderMode.__empty_constructs__ = [h3d_pass_RenderMode.None,h3d_pass_RenderMode.Static,h3d_pass_RenderMode.Dynamic,h3d_pass_RenderMode.Mixed];
-var h3d_pass_ShadowSamplingKind = $hxEnums["h3d.pass.ShadowSamplingKind"] = { __ename__:"h3d.pass.ShadowSamplingKind",__constructs__:null
+var h3d_pass_ShadowSamplingKind = $hxEnums["h3d.pass.ShadowSamplingKind"] = { __ename__:true,__constructs__:null
 	,None: {_hx_name:"None",_hx_index:0,__enum__:"h3d.pass.ShadowSamplingKind",toString:$estr}
 	,PCF: {_hx_name:"PCF",_hx_index:1,__enum__:"h3d.pass.ShadowSamplingKind",toString:$estr}
 	,ESM: {_hx_name:"ESM",_hx_index:2,__enum__:"h3d.pass.ShadowSamplingKind",toString:$estr}
@@ -19934,7 +19509,6 @@ var h3d_pass_SortByMaterial = function() {
 	this.shaderIdMap = [];
 	this.textureIdMap = [];
 };
-$hxClasses["h3d.pass.SortByMaterial"] = h3d_pass_SortByMaterial;
 h3d_pass_SortByMaterial.__name__ = "h3d.pass.SortByMaterial";
 h3d_pass_SortByMaterial.prototype = {
 	sort: function(passes) {
@@ -20031,7 +19605,6 @@ h3d_pass_SortByMaterial.prototype = {
 var h3d_prim_Plane2D = function() {
 	h3d_prim_Primitive.call(this);
 };
-$hxClasses["h3d.prim.Plane2D"] = h3d_prim_Plane2D;
 h3d_prim_Plane2D.__name__ = "h3d.prim.Plane2D";
 h3d_prim_Plane2D.get = function() {
 	var engine = h3d_Engine.CURRENT;
@@ -20237,7 +19810,6 @@ var h3d_prim_RawPrimitive = function(inf,persist) {
 		this.onContextLost = null;
 	}
 };
-$hxClasses["h3d.prim.RawPrimitive"] = h3d_prim_RawPrimitive;
 h3d_prim_RawPrimitive.__name__ = "h3d.prim.RawPrimitive";
 h3d_prim_RawPrimitive.__super__ = h3d_prim_Primitive;
 h3d_prim_RawPrimitive.prototype = $extend(h3d_prim_Primitive.prototype,{
@@ -20299,7 +19871,6 @@ var h3d_scene_Object = function(parent) {
 		parent.addChild(this);
 	}
 };
-$hxClasses["h3d.scene.Object"] = h3d_scene_Object;
 h3d_scene_Object.__name__ = "h3d.scene.Object";
 h3d_scene_Object.__interfaces__ = [hxd_impl__$Serializable_NoSerializeSupport];
 h3d_scene_Object.prototype = {
@@ -20695,7 +20266,6 @@ var h3d_scene_Mesh = function(primitive,material,parent) {
 	}
 	this.material = material;
 };
-$hxClasses["h3d.scene.Mesh"] = h3d_scene_Mesh;
 h3d_scene_Mesh.__name__ = "h3d.scene.Mesh";
 h3d_scene_Mesh.__super__ = h3d_scene_Object;
 h3d_scene_Mesh.prototype = $extend(h3d_scene_Object.prototype,{
@@ -20743,7 +20313,6 @@ var h3d_scene_Interactive = function(shape,parent) {
 	this.shape = shape;
 	this.set_cursor(hxd_Cursor.Button);
 };
-$hxClasses["h3d.scene.Interactive"] = h3d_scene_Interactive;
 h3d_scene_Interactive.__name__ = "h3d.scene.Interactive";
 h3d_scene_Interactive.__interfaces__ = [hxd_Interactive];
 h3d_scene_Interactive.__super__ = h3d_scene_Object;
@@ -20875,7 +20444,6 @@ var h3d_scene_Light = function(shader,parent) {
 	h3d_scene_Object.call(this,parent);
 	this.shader = shader;
 };
-$hxClasses["h3d.scene.Light"] = h3d_scene_Light;
 h3d_scene_Light.__name__ = "h3d.scene.Light";
 h3d_scene_Light.__super__ = h3d_scene_Object;
 h3d_scene_Light.prototype = $extend(h3d_scene_Object.prototype,{
@@ -20890,7 +20458,6 @@ h3d_scene_Light.prototype = $extend(h3d_scene_Object.prototype,{
 var h3d_scene_LightSystem = function() {
 	this.ambientLight = new h3d_Vector(1,1,1);
 };
-$hxClasses["h3d.scene.LightSystem"] = h3d_scene_LightSystem;
 h3d_scene_LightSystem.__name__ = "h3d.scene.LightSystem";
 h3d_scene_LightSystem.prototype = {
 	initGlobals: function(globals) {
@@ -20943,7 +20510,6 @@ var h3d_scene__$RenderContext_SharedGlobal = function(gid,value) {
 	this.gid = gid;
 	this.value = value;
 };
-$hxClasses["h3d.scene._RenderContext.SharedGlobal"] = h3d_scene__$RenderContext_SharedGlobal;
 h3d_scene__$RenderContext_SharedGlobal.__name__ = "h3d.scene._RenderContext.SharedGlobal";
 h3d_scene__$RenderContext_SharedGlobal.prototype = {
 	__class__: h3d_scene__$RenderContext_SharedGlobal
@@ -20953,7 +20519,6 @@ var h3d_scene_RenderContext = function() {
 	this.cachedShaderList = [];
 	this.cachedPassObjects = [];
 };
-$hxClasses["h3d.scene.RenderContext"] = h3d_scene_RenderContext;
 h3d_scene_RenderContext.__name__ = "h3d.scene.RenderContext";
 h3d_scene_RenderContext.__super__ = h3d_impl_RenderContext;
 h3d_scene_RenderContext.prototype = $extend(h3d_impl_RenderContext.prototype,{
@@ -21043,7 +20608,6 @@ h3d_scene_RenderContext.prototype = $extend(h3d_impl_RenderContext.prototype,{
 var h3d_scene_PassObjects = function() {
 	this.passes = new h3d_pass_PassList();
 };
-$hxClasses["h3d.scene.PassObjects"] = h3d_scene_PassObjects;
 h3d_scene_PassObjects.__name__ = "h3d.scene.PassObjects";
 h3d_scene_PassObjects.prototype = {
 	__class__: h3d_scene_PassObjects
@@ -21066,7 +20630,6 @@ var h3d_scene_Renderer = function() {
 		_g1(frontToBack1,passes);
 	};
 };
-$hxClasses["h3d.scene.Renderer"] = h3d_scene_Renderer;
 h3d_scene_Renderer.__name__ = "h3d.scene.Renderer";
 h3d_scene_Renderer.__super__ = hxd_impl_AnyProps;
 h3d_scene_Renderer.prototype = $extend(hxd_impl_AnyProps.prototype,{
@@ -21294,7 +20857,6 @@ var h3d_scene_Scene = function(createRenderer,createLightSystem) {
 		this.lightSystem = h3d_mat_MaterialSetup.current.createLightSystem();
 	}
 };
-$hxClasses["h3d.scene.Scene"] = h3d_scene_Scene;
 h3d_scene_Scene.__name__ = "h3d.scene.Scene";
 h3d_scene_Scene.__interfaces__ = [hxd_InteractiveScene,h3d_IDrawable];
 h3d_scene_Scene.__super__ = h3d_scene_Object;
@@ -21822,7 +21384,6 @@ var h3d_scene_fwd_LightSystem = function() {
 	this.ambientShader = new h3d_shader_AmbientLight();
 	this.set_additiveLighting(true);
 };
-$hxClasses["h3d.scene.fwd.LightSystem"] = h3d_scene_fwd_LightSystem;
 h3d_scene_fwd_LightSystem.__name__ = "h3d.scene.fwd.LightSystem";
 h3d_scene_fwd_LightSystem.__super__ = h3d_scene_LightSystem;
 h3d_scene_fwd_LightSystem.prototype = $extend(h3d_scene_LightSystem.prototype,{
@@ -22027,7 +21588,6 @@ var h3d_scene_fwd_DepthPass = function() {
 	h3d_pass_Default.call(this,"depth");
 	this.depthMapId = hxsl_Globals.allocID("depthMap");
 };
-$hxClasses["h3d.scene.fwd.DepthPass"] = h3d_scene_fwd_DepthPass;
 h3d_scene_fwd_DepthPass.__name__ = "h3d.scene.fwd.DepthPass";
 h3d_scene_fwd_DepthPass.__super__ = h3d_pass_Default;
 h3d_scene_fwd_DepthPass.prototype = $extend(h3d_pass_Default.prototype,{
@@ -22048,7 +21608,6 @@ var h3d_scene_fwd_NormalPass = function() {
 	h3d_pass_Default.call(this,"normal");
 	this.normalMapId = hxsl_Globals.allocID("normalMap");
 };
-$hxClasses["h3d.scene.fwd.NormalPass"] = h3d_scene_fwd_NormalPass;
 h3d_scene_fwd_NormalPass.__name__ = "h3d.scene.fwd.NormalPass";
 h3d_scene_fwd_NormalPass.__super__ = h3d_pass_Default;
 h3d_scene_fwd_NormalPass.prototype = $extend(h3d_pass_Default.prototype,{
@@ -22073,7 +21632,6 @@ var h3d_scene_fwd_Renderer = function() {
 	this.defaultPass = new h3d_pass_Default("default");
 	this.allPasses = [this.defaultPass,this.depth,this.normal,this.shadow];
 };
-$hxClasses["h3d.scene.fwd.Renderer"] = h3d_scene_fwd_Renderer;
 h3d_scene_fwd_Renderer.__name__ = "h3d.scene.fwd.Renderer";
 h3d_scene_fwd_Renderer.__super__ = h3d_scene_Renderer;
 h3d_scene_fwd_Renderer.prototype = $extend(h3d_scene_Renderer.prototype,{
@@ -22099,7 +21657,6 @@ h3d_scene_fwd_Renderer.prototype = $extend(h3d_scene_Renderer.prototype,{
 var h3d_shader_AmbientLight = function() {
 	hxsl_Shader.call(this);
 };
-$hxClasses["h3d.shader.AmbientLight"] = h3d_shader_AmbientLight;
 h3d_shader_AmbientLight.__name__ = "h3d.shader.AmbientLight";
 h3d_shader_AmbientLight.__super__ = hxsl_Shader;
 h3d_shader_AmbientLight.prototype = $extend(hxsl_Shader.prototype,{
@@ -22134,7 +21691,6 @@ var h3d_shader_Base2d = function() {
 	this.zValue__ = 0;
 	hxsl_Shader.call(this);
 };
-$hxClasses["h3d.shader.Base2d"] = h3d_shader_Base2d;
 h3d_shader_Base2d.__name__ = "h3d.shader.Base2d";
 h3d_shader_Base2d.__super__ = hxsl_Shader;
 h3d_shader_Base2d.prototype = $extend(hxsl_Shader.prototype,{
@@ -22217,7 +21773,6 @@ var h3d_shader_BaseMesh = function() {
 	this.specularPower__ = 50;
 	this.specularAmount__ = 1;
 };
-$hxClasses["h3d.shader.BaseMesh"] = h3d_shader_BaseMesh;
 h3d_shader_BaseMesh.__name__ = "h3d.shader.BaseMesh";
 h3d_shader_BaseMesh.__super__ = hxsl_Shader;
 h3d_shader_BaseMesh.prototype = $extend(hxsl_Shader.prototype,{
@@ -22261,7 +21816,6 @@ var h3d_shader_Blur = function() {
 	this.cameraInverseViewProj__ = new h3d_Matrix();
 	h3d_shader_ScreenShader.call(this);
 };
-$hxClasses["h3d.shader.Blur"] = h3d_shader_Blur;
 h3d_shader_Blur.__name__ = "h3d.shader.Blur";
 h3d_shader_Blur.__super__ = h3d_shader_ScreenShader;
 h3d_shader_Blur.prototype = $extend(h3d_shader_ScreenShader.prototype,{
@@ -22348,7 +21902,6 @@ var h3d_shader_ShaderBuffers = function(s) {
 	this.tex = new Array(s.texturesCount);
 	this.buffers = s.bufferCount > 0 ? new Array(s.bufferCount) : null;
 };
-$hxClasses["h3d.shader.ShaderBuffers"] = h3d_shader_ShaderBuffers;
 h3d_shader_ShaderBuffers.__name__ = "h3d.shader.ShaderBuffers";
 h3d_shader_ShaderBuffers.prototype = {
 	grow: function(s) {
@@ -22375,7 +21928,6 @@ var h3d_shader_Buffers = function(s) {
 	this.vertex = new h3d_shader_ShaderBuffers(s.vertex);
 	this.fragment = new h3d_shader_ShaderBuffers(s.fragment);
 };
-$hxClasses["h3d.shader.Buffers"] = h3d_shader_Buffers;
 h3d_shader_Buffers.__name__ = "h3d.shader.Buffers";
 h3d_shader_Buffers.prototype = {
 	__class__: h3d_shader_Buffers
@@ -22392,7 +21944,6 @@ var h3d_shader_ColorAdd = function(color) {
 	_this.z = (color & 255) / 255;
 	_this.w = (color >>> 24) / 255;
 };
-$hxClasses["h3d.shader.ColorAdd"] = h3d_shader_ColorAdd;
 h3d_shader_ColorAdd.__name__ = "h3d.shader.ColorAdd";
 h3d_shader_ColorAdd.__super__ = hxsl_Shader;
 h3d_shader_ColorAdd.prototype = $extend(hxsl_Shader.prototype,{
@@ -22423,7 +21974,6 @@ var h3d_shader_ColorKey = function(v) {
 	_this.z = (v & 255) / 255;
 	_this.w = (v >>> 24) / 255;
 };
-$hxClasses["h3d.shader.ColorKey"] = h3d_shader_ColorKey;
 h3d_shader_ColorKey.__name__ = "h3d.shader.ColorKey";
 h3d_shader_ColorKey.__super__ = hxsl_Shader;
 h3d_shader_ColorKey.prototype = $extend(hxsl_Shader.prototype,{
@@ -22451,7 +22001,6 @@ var h3d_shader_ColorMatrix = function(m) {
 		this.matrix__.identity();
 	}
 };
-$hxClasses["h3d.shader.ColorMatrix"] = h3d_shader_ColorMatrix;
 h3d_shader_ColorMatrix.__name__ = "h3d.shader.ColorMatrix";
 h3d_shader_ColorMatrix.__super__ = hxsl_Shader;
 h3d_shader_ColorMatrix.prototype = $extend(hxsl_Shader.prototype,{
@@ -22486,7 +22035,6 @@ var h3d_shader_DirShadow = function() {
 	this.poissonDiskHigh__ = [new h3d_Vector(-0.326,-0.406),new h3d_Vector(-0.840,-0.074),new h3d_Vector(-0.696,0.457),new h3d_Vector(-0.203,0.621),new h3d_Vector(0.962,-0.195),new h3d_Vector(0.473,-0.480),new h3d_Vector(0.519,0.767),new h3d_Vector(0.185,-0.893),new h3d_Vector(0.507,0.064),new h3d_Vector(0.896,0.412),new h3d_Vector(-0.322,-0.933),new h3d_Vector(-0.792,-0.598)];
 	this.poissonDiskVeryHigh__ = [new h3d_Vector(-0.613392,0.617481),new h3d_Vector(0.170019,-0.040254),new h3d_Vector(-0.299417,0.791925),new h3d_Vector(0.645680,0.493210),new h3d_Vector(-0.651784,0.717887),new h3d_Vector(0.421003,0.027070),new h3d_Vector(-0.817194,-0.271096),new h3d_Vector(-0.705374,-0.668203),new h3d_Vector(0.977050,-0.108615),new h3d_Vector(0.063326,0.142369),new h3d_Vector(0.203528,0.214331),new h3d_Vector(-0.667531,0.326090),new h3d_Vector(-0.098422,-0.295755),new h3d_Vector(-0.885922,0.215369),new h3d_Vector(0.566637,0.605213),new h3d_Vector(0.039766,-0.396100),new h3d_Vector(0.751946,0.453352),new h3d_Vector(0.078707,-0.715323),new h3d_Vector(-0.075838,-0.529344),new h3d_Vector(0.724479,-0.580798),new h3d_Vector(0.222999,-0.215125),new h3d_Vector(-0.467574,-0.405438),new h3d_Vector(-0.248268,-0.814753),new h3d_Vector(0.354411,-0.887570),new h3d_Vector(0.175817,0.382366),new h3d_Vector(0.487472,-0.063082),new h3d_Vector(-0.084078,0.898312),new h3d_Vector(0.488876,-0.783441),new h3d_Vector(0.470016,0.217933),new h3d_Vector(-0.696890,-0.549791),new h3d_Vector(-0.149693,0.605762),new h3d_Vector(0.034211,0.979980),new h3d_Vector(0.503098,-0.308878),new h3d_Vector(-0.016205,-0.872921),new h3d_Vector(0.385784,-0.393902),new h3d_Vector(-0.146886,-0.859249),new h3d_Vector(0.643361,0.164098),new h3d_Vector(0.634388,-0.049471),new h3d_Vector(-0.688894,0.007843),new h3d_Vector(0.464034,-0.188818),new h3d_Vector(-0.440840,0.137486),new h3d_Vector(0.364483,0.511704),new h3d_Vector(0.034028,0.325968),new h3d_Vector(0.099094,-0.308023),new h3d_Vector(0.693960,-0.366253),new h3d_Vector(0.678884,-0.204688),new h3d_Vector(0.001801,0.780328),new h3d_Vector(0.145177,-0.898984),new h3d_Vector(0.062655,-0.611866),new h3d_Vector(0.315226,-0.604297),new h3d_Vector(-0.780145,0.486251),new h3d_Vector(-0.371868,0.882138),new h3d_Vector(0.200476,0.494430),new h3d_Vector(-0.494552,-0.711051),new h3d_Vector(0.612476,0.705252),new h3d_Vector(-0.578845,-0.768792),new h3d_Vector(-0.772454,-0.090976),new h3d_Vector(0.504440,0.372295),new h3d_Vector(0.155736,0.065157),new h3d_Vector(0.391522,0.849605),new h3d_Vector(-0.620106,-0.328104),new h3d_Vector(0.789239,-0.419965),new h3d_Vector(-0.545396,0.538133),new h3d_Vector(-0.178564,-0.596057)];
 };
-$hxClasses["h3d.shader.DirShadow"] = h3d_shader_DirShadow;
 h3d_shader_DirShadow.__name__ = "h3d.shader.DirShadow";
 h3d_shader_DirShadow.__super__ = hxsl_Shader;
 h3d_shader_DirShadow.prototype = $extend(hxsl_Shader.prototype,{
@@ -22569,7 +22117,6 @@ var h3d_shader_GenTexture = function() {
 	this.mode__ = 0;
 	h3d_shader_ScreenShader.call(this);
 };
-$hxClasses["h3d.shader.GenTexture"] = h3d_shader_GenTexture;
 h3d_shader_GenTexture.__name__ = "h3d.shader.GenTexture";
 h3d_shader_GenTexture.__super__ = h3d_shader_ScreenShader;
 h3d_shader_GenTexture.prototype = $extend(h3d_shader_ScreenShader.prototype,{
@@ -22615,7 +22162,6 @@ var h3d_shader_LineShader = function(width,lengthScale) {
 	this.width__ = width;
 	this.lengthScale__ = lengthScale;
 };
-$hxClasses["h3d.shader.LineShader"] = h3d_shader_LineShader;
 h3d_shader_LineShader.__name__ = "h3d.shader.LineShader";
 h3d_shader_LineShader.__super__ = hxsl_Shader;
 h3d_shader_LineShader.prototype = $extend(hxsl_Shader.prototype,{
@@ -22648,7 +22194,6 @@ h3d_shader_LineShader.prototype = $extend(hxsl_Shader.prototype,{
 var h3d_shader_MinMaxShader = function() {
 	h3d_shader_ScreenShader.call(this);
 };
-$hxClasses["h3d.shader.MinMaxShader"] = h3d_shader_MinMaxShader;
 h3d_shader_MinMaxShader.__name__ = "h3d.shader.MinMaxShader";
 h3d_shader_MinMaxShader.__super__ = h3d_shader_ScreenShader;
 h3d_shader_MinMaxShader.prototype = $extend(h3d_shader_ScreenShader.prototype,{
@@ -22685,7 +22230,6 @@ var h3d_shader_CubeMinMaxShader = function() {
 	this.mat__ = new h3d_Matrix();
 	h3d_shader_ScreenShader.call(this);
 };
-$hxClasses["h3d.shader.CubeMinMaxShader"] = h3d_shader_CubeMinMaxShader;
 h3d_shader_CubeMinMaxShader.__name__ = "h3d.shader.CubeMinMaxShader";
 h3d_shader_CubeMinMaxShader.__super__ = h3d_shader_ScreenShader;
 h3d_shader_CubeMinMaxShader.prototype = $extend(h3d_shader_ScreenShader.prototype,{
@@ -22724,7 +22268,6 @@ var h3d_shader_NormalMap = function(texture) {
 	hxsl_Shader.call(this);
 	this.texture__ = texture;
 };
-$hxClasses["h3d.shader.NormalMap"] = h3d_shader_NormalMap;
 h3d_shader_NormalMap.__name__ = "h3d.shader.NormalMap";
 h3d_shader_NormalMap.__super__ = hxsl_Shader;
 h3d_shader_NormalMap.prototype = $extend(hxsl_Shader.prototype,{
@@ -22746,7 +22289,6 @@ h3d_shader_NormalMap.prototype = $extend(hxsl_Shader.prototype,{
 var h3d_shader_Shadow = function() {
 	hxsl_Shader.call(this);
 };
-$hxClasses["h3d.shader.Shadow"] = h3d_shader_Shadow;
 h3d_shader_Shadow.__name__ = "h3d.shader.Shadow";
 h3d_shader_Shadow.__super__ = hxsl_Shader;
 h3d_shader_Shadow.prototype = $extend(hxsl_Shader.prototype,{
@@ -22768,7 +22310,6 @@ var h3d_shader_SignedDistanceField = function() {
 	this.channel__ = 0;
 	hxsl_Shader.call(this);
 };
-$hxClasses["h3d.shader.SignedDistanceField"] = h3d_shader_SignedDistanceField;
 h3d_shader_SignedDistanceField.__name__ = "h3d.shader.SignedDistanceField";
 h3d_shader_SignedDistanceField.__super__ = hxsl_Shader;
 h3d_shader_SignedDistanceField.prototype = $extend(hxsl_Shader.prototype,{
@@ -22812,7 +22353,6 @@ var h3d_shader_SkinBase = function() {
 	this.constModified = true;
 	this.MaxBones__ = 34;
 };
-$hxClasses["h3d.shader.SkinBase"] = h3d_shader_SkinBase;
 h3d_shader_SkinBase.__name__ = "h3d.shader.SkinBase";
 h3d_shader_SkinBase.__super__ = hxsl_Shader;
 h3d_shader_SkinBase.prototype = $extend(hxsl_Shader.prototype,{
@@ -22843,7 +22383,6 @@ h3d_shader_SkinBase.prototype = $extend(hxsl_Shader.prototype,{
 var h3d_shader_Skin = function() {
 	h3d_shader_SkinBase.call(this);
 };
-$hxClasses["h3d.shader.Skin"] = h3d_shader_Skin;
 h3d_shader_Skin.__name__ = "h3d.shader.Skin";
 h3d_shader_Skin.__super__ = h3d_shader_SkinBase;
 h3d_shader_Skin.prototype = $extend(h3d_shader_SkinBase.prototype,{
@@ -22874,7 +22413,6 @@ h3d_shader_Skin.prototype = $extend(h3d_shader_SkinBase.prototype,{
 var h3d_shader_SkinTangent = function() {
 	h3d_shader_SkinBase.call(this);
 };
-$hxClasses["h3d.shader.SkinTangent"] = h3d_shader_SkinTangent;
 h3d_shader_SkinTangent.__name__ = "h3d.shader.SkinTangent";
 h3d_shader_SkinTangent.__super__ = h3d_shader_SkinBase;
 h3d_shader_SkinTangent.prototype = $extend(h3d_shader_SkinBase.prototype,{
@@ -22906,7 +22444,6 @@ var h3d_shader_SpecularTexture = function(tex) {
 	hxsl_Shader.call(this);
 	this.texture__ = tex;
 };
-$hxClasses["h3d.shader.SpecularTexture"] = h3d_shader_SpecularTexture;
 h3d_shader_SpecularTexture.__name__ = "h3d.shader.SpecularTexture";
 h3d_shader_SpecularTexture.__super__ = hxsl_Shader;
 h3d_shader_SpecularTexture.prototype = $extend(hxsl_Shader.prototype,{
@@ -22931,7 +22468,6 @@ var h3d_shader_Texture = function(tex) {
 	this.texture__ = tex;
 	this.killAlphaThreshold__ = h3d_mat_Defaults.defaultKillAlphaThreshold;
 };
-$hxClasses["h3d.shader.Texture"] = h3d_shader_Texture;
 h3d_shader_Texture.__name__ = "h3d.shader.Texture";
 h3d_shader_Texture.__super__ = hxsl_Shader;
 h3d_shader_Texture.prototype = $extend(hxsl_Shader.prototype,{
@@ -23015,7 +22551,6 @@ var h3d_shader_UVDelta = function(dx,dy,sx,sy) {
 	_this.z = 0.;
 	_this.w = 1.;
 };
-$hxClasses["h3d.shader.UVDelta"] = h3d_shader_UVDelta;
 h3d_shader_UVDelta.__name__ = "h3d.shader.UVDelta";
 h3d_shader_UVDelta.__super__ = hxsl_Shader;
 h3d_shader_UVDelta.prototype = $extend(hxsl_Shader.prototype,{
@@ -23041,7 +22576,6 @@ h3d_shader_UVDelta.prototype = $extend(hxsl_Shader.prototype,{
 var h3d_shader_VertexColorAlpha = function() {
 	hxsl_Shader.call(this);
 };
-$hxClasses["h3d.shader.VertexColorAlpha"] = h3d_shader_VertexColorAlpha;
 h3d_shader_VertexColorAlpha.__name__ = "h3d.shader.VertexColorAlpha";
 h3d_shader_VertexColorAlpha.__super__ = hxsl_Shader;
 h3d_shader_VertexColorAlpha.prototype = $extend(hxsl_Shader.prototype,{
@@ -23093,7 +22627,6 @@ var h3d_shader_VolumeDecal = function(objectWidth,objectHeight) {
 	_this.z = 0.;
 	_this.w = 1.;
 };
-$hxClasses["h3d.shader.VolumeDecal"] = h3d_shader_VolumeDecal;
 h3d_shader_VolumeDecal.__name__ = "h3d.shader.VolumeDecal";
 h3d_shader_VolumeDecal.__super__ = hxsl_Shader;
 h3d_shader_VolumeDecal.prototype = $extend(hxsl_Shader.prototype,{
@@ -23124,11 +22657,9 @@ h3d_shader_VolumeDecal.prototype = $extend(hxsl_Shader.prototype,{
 	,__class__: h3d_shader_VolumeDecal
 });
 var haxe_IMap = function() { };
-$hxClasses["haxe.IMap"] = haxe_IMap;
 haxe_IMap.__name__ = "haxe.IMap";
 haxe_IMap.__isInterface__ = true;
 var haxe_EntryPoint = function() { };
-$hxClasses["haxe.EntryPoint"] = haxe_EntryPoint;
 haxe_EntryPoint.__name__ = "haxe.EntryPoint";
 haxe_EntryPoint.processEvents = function() {
 	while(true) {
@@ -23164,7 +22695,6 @@ var haxe_Exception = function(message,previous,native) {
 	this.__previousException = previous;
 	this.__nativeException = native != null ? native : this;
 };
-$hxClasses["haxe.Exception"] = haxe_Exception;
 haxe_Exception.__name__ = "haxe.Exception";
 haxe_Exception.caught = function(value) {
 	if(((value) instanceof haxe_Exception)) {
@@ -23202,7 +22732,6 @@ haxe_Exception.prototype = $extend(Error.prototype,{
 	,__class__: haxe_Exception
 });
 var haxe_Log = function() { };
-$hxClasses["haxe.Log"] = haxe_Log;
 haxe_Log.__name__ = "haxe.Log";
 haxe_Log.formatOutput = function(v,infos) {
 	var str = Std.string(v);
@@ -23229,13 +22758,11 @@ var haxe_MainEvent = function(f,p) {
 	this.priority = p;
 	this.nextRun = -Infinity;
 };
-$hxClasses["haxe.MainEvent"] = haxe_MainEvent;
 haxe_MainEvent.__name__ = "haxe.MainEvent";
 haxe_MainEvent.prototype = {
 	__class__: haxe_MainEvent
 };
 var haxe_MainLoop = function() { };
-$hxClasses["haxe.MainLoop"] = haxe_MainLoop;
 haxe_MainLoop.__name__ = "haxe.MainLoop";
 haxe_MainLoop.hasEvents = function() {
 	var p = haxe_MainLoop.pending;
@@ -23349,308 +22876,12 @@ haxe_MainLoop.tick = function() {
 	}
 	return wait;
 };
-var haxe_Serializer = function() {
-	this.buf = new StringBuf();
-	this.cache = [];
-	this.useCache = haxe_Serializer.USE_CACHE;
-	this.useEnumIndex = haxe_Serializer.USE_ENUM_INDEX;
-	this.shash = new haxe_ds_StringMap();
-	this.scount = 0;
-};
-$hxClasses["haxe.Serializer"] = haxe_Serializer;
-haxe_Serializer.__name__ = "haxe.Serializer";
-haxe_Serializer.run = function(v) {
-	var s = new haxe_Serializer();
-	s.serialize(v);
-	return s.toString();
-};
-haxe_Serializer.prototype = {
-	toString: function() {
-		return this.buf.b;
-	}
-	,serializeString: function(s) {
-		var x = this.shash.h[s];
-		if(x != null) {
-			this.buf.b += "R";
-			this.buf.b += x == null ? "null" : "" + x;
-			return;
-		}
-		this.shash.h[s] = this.scount++;
-		this.buf.b += "y";
-		s = encodeURIComponent(s);
-		this.buf.b += Std.string(s.length);
-		this.buf.b += ":";
-		this.buf.b += s == null ? "null" : "" + s;
-	}
-	,serializeRef: function(v) {
-		var vt = typeof(v);
-		var _g = 0;
-		var _g1 = this.cache.length;
-		while(_g < _g1) {
-			var i = _g++;
-			var ci = this.cache[i];
-			if(typeof(ci) == vt && ci == v) {
-				this.buf.b += "r";
-				this.buf.b += i == null ? "null" : "" + i;
-				return true;
-			}
-		}
-		this.cache.push(v);
-		return false;
-	}
-	,serializeFields: function(v) {
-		var _g = 0;
-		var _g1 = Reflect.fields(v);
-		while(_g < _g1.length) {
-			var f = _g1[_g];
-			++_g;
-			this.serializeString(f);
-			this.serialize(Reflect.field(v,f));
-		}
-		this.buf.b += "g";
-	}
-	,serialize: function(v) {
-		var _g = Type.typeof(v);
-		switch(_g._hx_index) {
-		case 0:
-			this.buf.b += "n";
-			break;
-		case 1:
-			var v1 = v;
-			if(v1 == 0) {
-				this.buf.b += "z";
-				return;
-			}
-			this.buf.b += "i";
-			this.buf.b += v1 == null ? "null" : "" + v1;
-			break;
-		case 2:
-			var v1 = v;
-			if(isNaN(v1)) {
-				this.buf.b += "k";
-			} else if(!isFinite(v1)) {
-				this.buf.b += v1 < 0 ? "m" : "p";
-			} else {
-				this.buf.b += "d";
-				this.buf.b += v1 == null ? "null" : "" + v1;
-			}
-			break;
-		case 3:
-			this.buf.b += v ? "t" : "f";
-			break;
-		case 4:
-			if(js_Boot.__instanceof(v,Class)) {
-				var className = v.__name__;
-				this.buf.b += "A";
-				this.serializeString(className);
-			} else if(js_Boot.__instanceof(v,Enum)) {
-				this.buf.b += "B";
-				this.serializeString(v.__ename__);
-			} else {
-				if(this.useCache && this.serializeRef(v)) {
-					return;
-				}
-				this.buf.b += "o";
-				this.serializeFields(v);
-			}
-			break;
-		case 5:
-			throw haxe_Exception.thrown("Cannot serialize function");
-		case 6:
-			var c = _g.c;
-			if(c == String) {
-				this.serializeString(v);
-				return;
-			}
-			if(this.useCache && this.serializeRef(v)) {
-				return;
-			}
-			switch(c) {
-			case Array:
-				var ucount = 0;
-				this.buf.b += "a";
-				var _g1 = 0;
-				var _g2 = v["length"];
-				while(_g1 < _g2) {
-					var i = _g1++;
-					if(v[i] == null) {
-						++ucount;
-					} else {
-						if(ucount > 0) {
-							if(ucount == 1) {
-								this.buf.b += "n";
-							} else {
-								this.buf.b += "u";
-								this.buf.b += ucount == null ? "null" : "" + ucount;
-							}
-							ucount = 0;
-						}
-						this.serialize(v[i]);
-					}
-				}
-				if(ucount > 0) {
-					if(ucount == 1) {
-						this.buf.b += "n";
-					} else {
-						this.buf.b += "u";
-						this.buf.b += ucount == null ? "null" : "" + ucount;
-					}
-				}
-				this.buf.b += "h";
-				break;
-			case Date:
-				this.buf.b += "v";
-				this.buf.b += Std.string(v.getTime());
-				break;
-			case haxe_ds_IntMap:
-				this.buf.b += "q";
-				var v1 = v;
-				var k = v1.keys();
-				while(k.hasNext()) {
-					var k1 = k.next();
-					this.buf.b += ":";
-					this.buf.b += k1 == null ? "null" : "" + k1;
-					this.serialize(v1.h[k1]);
-				}
-				this.buf.b += "h";
-				break;
-			case haxe_ds_List:
-				this.buf.b += "l";
-				var _g_head = v.h;
-				while(_g_head != null) {
-					var val = _g_head.item;
-					_g_head = _g_head.next;
-					this.serialize(val);
-				}
-				this.buf.b += "h";
-				break;
-			case haxe_ds_ObjectMap:
-				this.buf.b += "M";
-				var v1 = v;
-				var k = v1.keys();
-				while(k.hasNext()) {
-					var k1 = k.next();
-					var id = Reflect.field(k1,"__id__");
-					Reflect.deleteField(k1,"__id__");
-					this.serialize(k1);
-					k1["__id__"] = id;
-					this.serialize(v1.h[k1.__id__]);
-				}
-				this.buf.b += "h";
-				break;
-			case haxe_ds_StringMap:
-				this.buf.b += "b";
-				var v1 = v;
-				var _g_keys = Object.keys(v1.h);
-				var _g_length = _g_keys.length;
-				var _g_current = 0;
-				while(_g_current < _g_length) {
-					var k = _g_keys[_g_current++];
-					this.serializeString(k);
-					this.serialize(v1.h[k]);
-				}
-				this.buf.b += "h";
-				break;
-			case haxe_io_Bytes:
-				var v1 = v;
-				this.buf.b += "s";
-				this.buf.b += Std.string(Math.ceil(v1.length * 8 / 6));
-				this.buf.b += ":";
-				var i = 0;
-				var max = v1.length - 2;
-				var b64 = haxe_Serializer.BASE64_CODES;
-				if(b64 == null) {
-					b64 = new Array(haxe_Serializer.BASE64.length);
-					var _g1 = 0;
-					var _g2 = haxe_Serializer.BASE64.length;
-					while(_g1 < _g2) {
-						var i1 = _g1++;
-						b64[i1] = HxOverrides.cca(haxe_Serializer.BASE64,i1);
-					}
-					haxe_Serializer.BASE64_CODES = b64;
-				}
-				while(i < max) {
-					var b1 = v1.b[i++];
-					var b2 = v1.b[i++];
-					var b3 = v1.b[i++];
-					this.buf.b += String.fromCodePoint(b64[b1 >> 2]);
-					this.buf.b += String.fromCodePoint(b64[(b1 << 4 | b2 >> 4) & 63]);
-					this.buf.b += String.fromCodePoint(b64[(b2 << 2 | b3 >> 6) & 63]);
-					this.buf.b += String.fromCodePoint(b64[b3 & 63]);
-				}
-				if(i == max) {
-					var b1 = v1.b[i++];
-					var b2 = v1.b[i++];
-					this.buf.b += String.fromCodePoint(b64[b1 >> 2]);
-					this.buf.b += String.fromCodePoint(b64[(b1 << 4 | b2 >> 4) & 63]);
-					this.buf.b += String.fromCodePoint(b64[b2 << 2 & 63]);
-				} else if(i == max + 1) {
-					var b1 = v1.b[i++];
-					this.buf.b += String.fromCodePoint(b64[b1 >> 2]);
-					this.buf.b += String.fromCodePoint(b64[b1 << 4 & 63]);
-				}
-				break;
-			default:
-				if(this.useCache) {
-					this.cache.pop();
-				}
-				if(v.hxSerialize != null) {
-					this.buf.b += "C";
-					this.serializeString(c.__name__);
-					if(this.useCache) {
-						this.cache.push(v);
-					}
-					v.hxSerialize(this);
-					this.buf.b += "g";
-				} else {
-					this.buf.b += "c";
-					this.serializeString(c.__name__);
-					if(this.useCache) {
-						this.cache.push(v);
-					}
-					this.serializeFields(v);
-				}
-			}
-			break;
-		case 7:
-			var e = _g.e;
-			if(this.useCache) {
-				if(this.serializeRef(v)) {
-					return;
-				}
-				this.cache.pop();
-			}
-			this.buf.b += Std.string(this.useEnumIndex ? "j" : "w");
-			this.serializeString(e.__ename__);
-			if(this.useEnumIndex) {
-				this.buf.b += ":";
-				this.buf.b += Std.string(v._hx_index);
-			} else {
-				var e = v;
-				this.serializeString($hxEnums[e.__enum__].__constructs__[e._hx_index]._hx_name);
-			}
-			this.buf.b += ":";
-			var params = Type.enumParameters(v);
-			this.buf.b += Std.string(params.length);
-			var _g = 0;
-			while(_g < params.length) this.serialize(params[_g++]);
-			if(this.useCache) {
-				this.cache.push(v);
-			}
-			break;
-		default:
-			throw haxe_Exception.thrown("Cannot serialize " + Std.string(v));
-		}
-	}
-	,__class__: haxe_Serializer
-};
 var haxe_Timer = function(time_ms) {
 	var me = this;
 	this.id = setInterval(function() {
 		me.run();
 	},time_ms);
 };
-$hxClasses["haxe.Timer"] = haxe_Timer;
 haxe_Timer.__name__ = "haxe.Timer";
 haxe_Timer.delay = function(f,time_ms) {
 	var t = new haxe_Timer(time_ms);
@@ -23672,350 +22903,10 @@ haxe_Timer.prototype = {
 	}
 	,__class__: haxe_Timer
 };
-var haxe__$Unserializer_DefaultResolver = function() {
-};
-$hxClasses["haxe._Unserializer.DefaultResolver"] = haxe__$Unserializer_DefaultResolver;
-haxe__$Unserializer_DefaultResolver.__name__ = "haxe._Unserializer.DefaultResolver";
-haxe__$Unserializer_DefaultResolver.prototype = {
-	resolveClass: function(name) {
-		return $hxClasses[name];
-	}
-	,resolveEnum: function(name) {
-		return $hxEnums[name];
-	}
-	,__class__: haxe__$Unserializer_DefaultResolver
-};
-var haxe_Unserializer = function(buf) {
-	this.buf = buf;
-	this.length = this.buf.length;
-	this.pos = 0;
-	this.scache = [];
-	this.cache = [];
-	var r = haxe_Unserializer.DEFAULT_RESOLVER;
-	if(r == null) {
-		r = new haxe__$Unserializer_DefaultResolver();
-		haxe_Unserializer.DEFAULT_RESOLVER = r;
-	}
-	this.resolver = r;
-};
-$hxClasses["haxe.Unserializer"] = haxe_Unserializer;
-haxe_Unserializer.__name__ = "haxe.Unserializer";
-haxe_Unserializer.initCodes = function() {
-	var codes = [];
-	var _g = 0;
-	var _g1 = haxe_Unserializer.BASE64.length;
-	while(_g < _g1) {
-		var i = _g++;
-		codes[haxe_Unserializer.BASE64.charCodeAt(i)] = i;
-	}
-	return codes;
-};
-haxe_Unserializer.run = function(v) {
-	return new haxe_Unserializer(v).unserialize();
-};
-haxe_Unserializer.prototype = {
-	readDigits: function() {
-		var k = 0;
-		var s = false;
-		var fpos = this.pos;
-		while(true) {
-			var c = this.buf.charCodeAt(this.pos);
-			if(c != c) {
-				break;
-			}
-			if(c == 45) {
-				if(this.pos != fpos) {
-					break;
-				}
-				s = true;
-				this.pos++;
-				continue;
-			}
-			if(c < 48 || c > 57) {
-				break;
-			}
-			k = k * 10 + (c - 48);
-			this.pos++;
-		}
-		if(s) {
-			k *= -1;
-		}
-		return k;
-	}
-	,readFloat: function() {
-		var p1 = this.pos;
-		while(true) {
-			var c = this.buf.charCodeAt(this.pos);
-			if(c != c) {
-				break;
-			}
-			if(c >= 43 && c < 58 || c == 101 || c == 69) {
-				this.pos++;
-			} else {
-				break;
-			}
-		}
-		return parseFloat(HxOverrides.substr(this.buf,p1,this.pos - p1));
-	}
-	,unserializeObject: function(o) {
-		while(true) {
-			if(this.pos >= this.length) {
-				throw haxe_Exception.thrown("Invalid object");
-			}
-			if(this.buf.charCodeAt(this.pos) == 103) {
-				break;
-			}
-			var k = this.unserialize();
-			if(typeof(k) != "string") {
-				throw haxe_Exception.thrown("Invalid object key");
-			}
-			o[k] = this.unserialize();
-		}
-		this.pos++;
-	}
-	,unserializeEnum: function(edecl,tag) {
-		if(this.buf.charCodeAt(this.pos++) != 58) {
-			throw haxe_Exception.thrown("Invalid enum format");
-		}
-		var nargs = this.readDigits();
-		if(nargs == 0) {
-			return Type.createEnum(edecl,tag);
-		}
-		var args = [];
-		while(nargs-- > 0) args.push(this.unserialize());
-		return Type.createEnum(edecl,tag,args);
-	}
-	,unserialize: function() {
-		switch(this.buf.charCodeAt(this.pos++)) {
-		case 65:
-			var name = this.unserialize();
-			var cl = this.resolver.resolveClass(name);
-			if(cl == null) {
-				throw haxe_Exception.thrown("Class not found " + name);
-			}
-			return cl;
-		case 66:
-			var name = this.unserialize();
-			var e = this.resolver.resolveEnum(name);
-			if(e == null) {
-				throw haxe_Exception.thrown("Enum not found " + name);
-			}
-			return e;
-		case 67:
-			var name = this.unserialize();
-			var cl = this.resolver.resolveClass(name);
-			if(cl == null) {
-				throw haxe_Exception.thrown("Class not found " + name);
-			}
-			var o = Object.create(cl.prototype);
-			this.cache.push(o);
-			o.hxUnserialize(this);
-			if(this.buf.charCodeAt(this.pos++) != 103) {
-				throw haxe_Exception.thrown("Invalid custom data");
-			}
-			return o;
-		case 77:
-			var h = new haxe_ds_ObjectMap();
-			this.cache.push(h);
-			while(this.buf.charCodeAt(this.pos) != 104) h.set(this.unserialize(),this.unserialize());
-			this.pos++;
-			return h;
-		case 82:
-			var n = this.readDigits();
-			if(n < 0 || n >= this.scache.length) {
-				throw haxe_Exception.thrown("Invalid string reference");
-			}
-			return this.scache[n];
-		case 97:
-			var a = [];
-			this.cache.push(a);
-			while(true) {
-				var c = this.buf.charCodeAt(this.pos);
-				if(c == 104) {
-					this.pos++;
-					break;
-				}
-				if(c == 117) {
-					this.pos++;
-					var n = this.readDigits();
-					a[a.length + n - 1] = null;
-				} else {
-					a.push(this.unserialize());
-				}
-			}
-			return a;
-		case 98:
-			var h = new haxe_ds_StringMap();
-			this.cache.push(h);
-			while(this.buf.charCodeAt(this.pos) != 104) {
-				var s = this.unserialize();
-				var value = this.unserialize();
-				h.h[s] = value;
-			}
-			this.pos++;
-			return h;
-		case 99:
-			var name = this.unserialize();
-			var cl = this.resolver.resolveClass(name);
-			if(cl == null) {
-				throw haxe_Exception.thrown("Class not found " + name);
-			}
-			var o = Object.create(cl.prototype);
-			this.cache.push(o);
-			this.unserializeObject(o);
-			return o;
-		case 100:
-			return this.readFloat();
-		case 102:
-			return false;
-		case 105:
-			return this.readDigits();
-		case 106:
-			var name = this.unserialize();
-			var edecl = this.resolver.resolveEnum(name);
-			if(edecl == null) {
-				throw haxe_Exception.thrown("Enum not found " + name);
-			}
-			this.pos++;
-			var index = this.readDigits();
-			var _this = edecl.__constructs__;
-			var result = new Array(_this.length);
-			var _g = 0;
-			var _g1 = _this.length;
-			while(_g < _g1) {
-				var i = _g++;
-				result[i] = _this[i]._hx_name;
-			}
-			var tag = result[index];
-			if(tag == null) {
-				throw haxe_Exception.thrown("Unknown enum index " + name + "@" + index);
-			}
-			var e = this.unserializeEnum(edecl,tag);
-			this.cache.push(e);
-			return e;
-		case 107:
-			return NaN;
-		case 108:
-			var l = new haxe_ds_List();
-			this.cache.push(l);
-			while(this.buf.charCodeAt(this.pos) != 104) l.add(this.unserialize());
-			this.pos++;
-			return l;
-		case 109:
-			return -Infinity;
-		case 110:
-			return null;
-		case 111:
-			var o = { };
-			this.cache.push(o);
-			this.unserializeObject(o);
-			return o;
-		case 112:
-			return Infinity;
-		case 113:
-			var h = new haxe_ds_IntMap();
-			this.cache.push(h);
-			var c = this.buf.charCodeAt(this.pos++);
-			while(c == 58) {
-				var i = this.readDigits();
-				var value = this.unserialize();
-				h.h[i] = value;
-				c = this.buf.charCodeAt(this.pos++);
-			}
-			if(c != 104) {
-				throw haxe_Exception.thrown("Invalid IntMap format");
-			}
-			return h;
-		case 114:
-			var n = this.readDigits();
-			if(n < 0 || n >= this.cache.length) {
-				throw haxe_Exception.thrown("Invalid reference");
-			}
-			return this.cache[n];
-		case 115:
-			var len = this.readDigits();
-			var buf = this.buf;
-			if(this.buf.charCodeAt(this.pos++) != 58 || this.length - this.pos < len) {
-				throw haxe_Exception.thrown("Invalid bytes length");
-			}
-			var codes = haxe_Unserializer.CODES;
-			if(codes == null) {
-				codes = haxe_Unserializer.initCodes();
-				haxe_Unserializer.CODES = codes;
-			}
-			var i = this.pos;
-			var rest = len & 3;
-			var max = i + (len - rest);
-			var bytes = new haxe_io_Bytes(new ArrayBuffer((len >> 2) * 3 + (rest >= 2 ? rest - 1 : 0)));
-			var bpos = 0;
-			while(i < max) {
-				var c1 = codes[buf.charCodeAt(i++)];
-				var c2 = codes[buf.charCodeAt(i++)];
-				bytes.b[bpos++] = c1 << 2 | c2 >> 4;
-				var c3 = codes[buf.charCodeAt(i++)];
-				bytes.b[bpos++] = c2 << 4 | c3 >> 2;
-				var c4 = codes[buf.charCodeAt(i++)];
-				bytes.b[bpos++] = c3 << 6 | c4;
-			}
-			if(rest >= 2) {
-				var c1 = codes[buf.charCodeAt(i++)];
-				var c2 = codes[buf.charCodeAt(i++)];
-				bytes.b[bpos++] = c1 << 2 | c2 >> 4;
-				if(rest == 3) {
-					var c3 = codes[buf.charCodeAt(i++)];
-					bytes.b[bpos++] = c2 << 4 | c3 >> 2;
-				}
-			}
-			this.pos += len;
-			this.cache.push(bytes);
-			return bytes;
-		case 116:
-			return true;
-		case 118:
-			var d;
-			if(this.buf.charCodeAt(this.pos) >= 48 && this.buf.charCodeAt(this.pos) <= 57 && this.buf.charCodeAt(this.pos + 1) >= 48 && this.buf.charCodeAt(this.pos + 1) <= 57 && this.buf.charCodeAt(this.pos + 2) >= 48 && this.buf.charCodeAt(this.pos + 2) <= 57 && this.buf.charCodeAt(this.pos + 3) >= 48 && this.buf.charCodeAt(this.pos + 3) <= 57 && this.buf.charCodeAt(this.pos + 4) == 45) {
-				d = HxOverrides.strDate(HxOverrides.substr(this.buf,this.pos,19));
-				this.pos += 19;
-			} else {
-				d = new Date(this.readFloat());
-			}
-			this.cache.push(d);
-			return d;
-		case 119:
-			var name = this.unserialize();
-			var edecl = this.resolver.resolveEnum(name);
-			if(edecl == null) {
-				throw haxe_Exception.thrown("Enum not found " + name);
-			}
-			var e = this.unserializeEnum(edecl,this.unserialize());
-			this.cache.push(e);
-			return e;
-		case 120:
-			throw haxe_Exception.thrown(this.unserialize());
-		case 121:
-			var len = this.readDigits();
-			if(this.buf.charCodeAt(this.pos++) != 58 || this.length - this.pos < len) {
-				throw haxe_Exception.thrown("Invalid string length");
-			}
-			var s = HxOverrides.substr(this.buf,this.pos,len);
-			this.pos += len;
-			s = decodeURIComponent(s.split("+").join(" "));
-			this.scache.push(s);
-			return s;
-		case 122:
-			return 0;
-		default:
-		}
-		this.pos--;
-		throw haxe_Exception.thrown("Invalid char " + this.buf.charAt(this.pos) + " at position " + this.pos);
-	}
-	,__class__: haxe_Unserializer
-};
 var haxe_ValueException = function(value,previous,native) {
 	haxe_Exception.call(this,String(value),previous,native);
 	this.value = value;
 };
-$hxClasses["haxe.ValueException"] = haxe_ValueException;
 haxe_ValueException.__name__ = "haxe.ValueException";
 haxe_ValueException.__super__ = haxe_Exception;
 haxe_ValueException.prototype = $extend(haxe_Exception.prototype,{
@@ -24028,7 +22919,6 @@ var haxe_crypto_Adler32 = function() {
 	this.a1 = 1;
 	this.a2 = 0;
 };
-$hxClasses["haxe.crypto.Adler32"] = haxe_crypto_Adler32;
 haxe_crypto_Adler32.__name__ = "haxe.crypto.Adler32";
 haxe_crypto_Adler32.read = function(i) {
 	var a = new haxe_crypto_Adler32();
@@ -24067,7 +22957,6 @@ var haxe_io_Bytes = function(data) {
 	data.hxBytes = this;
 	data.bytes = this.b;
 };
-$hxClasses["haxe.io.Bytes"] = haxe_io_Bytes;
 haxe_io_Bytes.__name__ = "haxe.io.Bytes";
 haxe_io_Bytes.ofString = function(s,encoding) {
 	if(encoding == haxe_io_Encoding.RawNative) {
@@ -24214,14 +23103,13 @@ haxe_io_Bytes.prototype = {
 	}
 	,__class__: haxe_io_Bytes
 };
-var haxe_io_Encoding = $hxEnums["haxe.io.Encoding"] = { __ename__:"haxe.io.Encoding",__constructs__:null
+var haxe_io_Encoding = $hxEnums["haxe.io.Encoding"] = { __ename__:true,__constructs__:null
 	,UTF8: {_hx_name:"UTF8",_hx_index:0,__enum__:"haxe.io.Encoding",toString:$estr}
 	,RawNative: {_hx_name:"RawNative",_hx_index:1,__enum__:"haxe.io.Encoding",toString:$estr}
 };
 haxe_io_Encoding.__constructs__ = [haxe_io_Encoding.UTF8,haxe_io_Encoding.RawNative];
 haxe_io_Encoding.__empty_constructs__ = [haxe_io_Encoding.UTF8,haxe_io_Encoding.RawNative];
 var haxe_crypto_Base64 = function() { };
-$hxClasses["haxe.crypto.Base64"] = haxe_crypto_Base64;
 haxe_crypto_Base64.__name__ = "haxe.crypto.Base64";
 haxe_crypto_Base64.decode = function(str,complement) {
 	if(complement == null) {
@@ -24242,7 +23130,6 @@ var haxe_crypto_BaseCode = function(base) {
 	this.base = base;
 	this.nbits = nbits;
 };
-$hxClasses["haxe.crypto.BaseCode"] = haxe_crypto_BaseCode;
 haxe_crypto_BaseCode.__name__ = "haxe.crypto.BaseCode";
 haxe_crypto_BaseCode.prototype = {
 	initTable: function() {
@@ -24288,7 +23175,6 @@ haxe_crypto_BaseCode.prototype = {
 };
 var haxe_crypto_Md5 = function() {
 };
-$hxClasses["haxe.crypto.Md5"] = haxe_crypto_Md5;
 haxe_crypto_Md5.__name__ = "haxe.crypto.Md5";
 haxe_crypto_Md5.encode = function(s) {
 	var m = new haxe_crypto_Md5();
@@ -24445,106 +23331,7 @@ haxe_crypto_Md5.prototype = {
 	}
 	,__class__: haxe_crypto_Md5
 };
-var haxe_crypto_Sha1 = function() {
-};
-$hxClasses["haxe.crypto.Sha1"] = haxe_crypto_Sha1;
-haxe_crypto_Sha1.__name__ = "haxe.crypto.Sha1";
-haxe_crypto_Sha1.encode = function(s) {
-	var sh = new haxe_crypto_Sha1();
-	return sh.hex(sh.doEncode(haxe_crypto_Sha1.str2blks(s)));
-};
-haxe_crypto_Sha1.str2blks = function(s) {
-	var s1 = haxe_io_Bytes.ofString(s);
-	var nblk = (s1.length + 8 >> 6) + 1;
-	var blks = [];
-	var _g = 0;
-	var _g1 = nblk * 16;
-	while(_g < _g1) blks[_g++] = 0;
-	var _g = 0;
-	var _g1 = s1.length;
-	while(_g < _g1) {
-		var i = _g++;
-		blks[i >> 2] |= s1.b[i] << 24 - ((i & 3) << 3);
-	}
-	var i = s1.length;
-	blks[i >> 2] |= 128 << 24 - ((i & 3) << 3);
-	blks[nblk * 16 - 1] = s1.length * 8;
-	return blks;
-};
-haxe_crypto_Sha1.prototype = {
-	doEncode: function(x) {
-		var w = [];
-		var a = 1732584193;
-		var b = -271733879;
-		var c = -1732584194;
-		var d = 271733878;
-		var e = -1009589776;
-		var i = 0;
-		while(i < x.length) {
-			var olda = a;
-			var oldb = b;
-			var oldc = c;
-			var oldd = d;
-			var olde = e;
-			var j = 0;
-			while(j < 80) {
-				if(j < 16) {
-					w[j] = x[i + j];
-				} else {
-					var num = w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16];
-					w[j] = num << 1 | num >>> 31;
-				}
-				var t = (a << 5 | a >>> 27) + this.ft(j,b,c,d) + e + w[j];
-				e = d;
-				d = c;
-				c = b << 30 | b >>> 2;
-				b = a;
-				a = t + this.kt(j);
-				++j;
-			}
-			a += olda;
-			b += oldb;
-			c += oldc;
-			d += oldd;
-			e += olde;
-			i += 16;
-		}
-		return [a,b,c,d,e];
-	}
-	,ft: function(t,b,c,d) {
-		if(t < 20) {
-			return b & c | ~b & d;
-		}
-		if(t < 40) {
-			return b ^ c ^ d;
-		}
-		if(t < 60) {
-			return b & c | b & d | c & d;
-		}
-		return b ^ c ^ d;
-	}
-	,kt: function(t) {
-		if(t < 20) {
-			return 1518500249;
-		}
-		if(t < 40) {
-			return 1859775393;
-		}
-		if(t < 60) {
-			return -1894007588;
-		}
-		return -899497514;
-	}
-	,hex: function(a) {
-		var str = "";
-		var _g = 0;
-		while(_g < a.length) str += StringTools.hex(a[_g++],8);
-		return str.toLowerCase();
-	}
-	,__class__: haxe_crypto_Sha1
-};
 var haxe_ds_ArraySort = function() { };
-$hxClasses["haxe.ds.ArraySort"] = haxe_ds_ArraySort;
 haxe_ds_ArraySort.__name__ = "haxe.ds.ArraySort";
 haxe_ds_ArraySort.sort = function(a,cmp) {
 	haxe_ds_ArraySort.rec(a,cmp,0,a.length);
@@ -24677,7 +23464,6 @@ haxe_ds_ArraySort.swap = function(a,i,j) {
 };
 var haxe_ds_BalancedTree = function() {
 };
-$hxClasses["haxe.ds.BalancedTree"] = haxe_ds_BalancedTree;
 haxe_ds_BalancedTree.__name__ = "haxe.ds.BalancedTree";
 haxe_ds_BalancedTree.__interfaces__ = [haxe_IMap];
 haxe_ds_BalancedTree.iteratorLoop = function(node,acc) {
@@ -24781,7 +23567,6 @@ var haxe_ds_TreeNode = function(l,k,v,r,h) {
 		this._height = h;
 	}
 };
-$hxClasses["haxe.ds.TreeNode"] = haxe_ds_TreeNode;
 haxe_ds_TreeNode.__name__ = "haxe.ds.TreeNode";
 haxe_ds_TreeNode.prototype = {
 	__class__: haxe_ds_TreeNode
@@ -24789,7 +23574,6 @@ haxe_ds_TreeNode.prototype = {
 var haxe_ds_EnumValueMap = function() {
 	haxe_ds_BalancedTree.call(this);
 };
-$hxClasses["haxe.ds.EnumValueMap"] = haxe_ds_EnumValueMap;
 haxe_ds_EnumValueMap.__name__ = "haxe.ds.EnumValueMap";
 haxe_ds_EnumValueMap.__interfaces__ = [haxe_IMap];
 haxe_ds_EnumValueMap.__super__ = haxe_ds_BalancedTree;
@@ -24836,7 +23620,6 @@ haxe_ds_EnumValueMap.prototype = $extend(haxe_ds_BalancedTree.prototype,{
 var haxe_ds_IntMap = function() {
 	this.h = { };
 };
-$hxClasses["haxe.ds.IntMap"] = haxe_ds_IntMap;
 haxe_ds_IntMap.__name__ = "haxe.ds.IntMap";
 haxe_ds_IntMap.__interfaces__ = [haxe_IMap];
 haxe_ds_IntMap.prototype = {
@@ -24865,7 +23648,6 @@ haxe_ds_IntMap.prototype = {
 var haxe_ds_List = function() {
 	this.length = 0;
 };
-$hxClasses["haxe.ds.List"] = haxe_ds_List;
 haxe_ds_List.__name__ = "haxe.ds.List";
 haxe_ds_List.prototype = {
 	add: function(item) {
@@ -24913,7 +23695,6 @@ var haxe_ds__$List_ListNode = function(item,next) {
 	this.item = item;
 	this.next = next;
 };
-$hxClasses["haxe.ds._List.ListNode"] = haxe_ds__$List_ListNode;
 haxe_ds__$List_ListNode.__name__ = "haxe.ds._List.ListNode";
 haxe_ds__$List_ListNode.prototype = {
 	__class__: haxe_ds__$List_ListNode
@@ -24921,7 +23702,6 @@ haxe_ds__$List_ListNode.prototype = {
 var haxe_ds_ObjectMap = function() {
 	this.h = { __keys__ : { }};
 };
-$hxClasses["haxe.ds.ObjectMap"] = haxe_ds_ObjectMap;
 haxe_ds_ObjectMap.__name__ = "haxe.ds.ObjectMap";
 haxe_ds_ObjectMap.__interfaces__ = [haxe_IMap];
 haxe_ds_ObjectMap.prototype = {
@@ -24953,7 +23733,7 @@ haxe_ds_ObjectMap.prototype = {
 	}
 	,__class__: haxe_ds_ObjectMap
 };
-var haxe_ds_Option = $hxEnums["haxe.ds.Option"] = { __ename__:"haxe.ds.Option",__constructs__:null
+var haxe_ds_Option = $hxEnums["haxe.ds.Option"] = { __ename__:true,__constructs__:null
 	,Some: ($_=function(v) { return {_hx_index:0,v:v,__enum__:"haxe.ds.Option",toString:$estr}; },$_._hx_name="Some",$_.__params__ = ["v"],$_)
 	,None: {_hx_name:"None",_hx_index:1,__enum__:"haxe.ds.Option",toString:$estr}
 };
@@ -24962,7 +23742,6 @@ haxe_ds_Option.__empty_constructs__ = [haxe_ds_Option.None];
 var haxe_ds_StringMap = function() {
 	this.h = Object.create(null);
 };
-$hxClasses["haxe.ds.StringMap"] = haxe_ds_StringMap;
 haxe_ds_StringMap.__name__ = "haxe.ds.StringMap";
 haxe_ds_StringMap.__interfaces__ = [haxe_IMap];
 haxe_ds_StringMap.prototype = {
@@ -24974,7 +23753,6 @@ var haxe_ds__$StringMap_StringMapKeyIterator = function(h) {
 	this.length = this.keys.length;
 	this.current = 0;
 };
-$hxClasses["haxe.ds._StringMap.StringMapKeyIterator"] = haxe_ds__$StringMap_StringMapKeyIterator;
 haxe_ds__$StringMap_StringMapKeyIterator.__name__ = "haxe.ds._StringMap.StringMapKeyIterator";
 haxe_ds__$StringMap_StringMapKeyIterator.prototype = {
 	hasNext: function() {
@@ -24993,7 +23771,6 @@ var haxe_exceptions_PosException = function(message,previous,pos) {
 		this.posInfos = pos;
 	}
 };
-$hxClasses["haxe.exceptions.PosException"] = haxe_exceptions_PosException;
 haxe_exceptions_PosException.__name__ = "haxe.exceptions.PosException";
 haxe_exceptions_PosException.__super__ = haxe_Exception;
 haxe_exceptions_PosException.prototype = $extend(haxe_Exception.prototype,{
@@ -25008,7 +23785,6 @@ var haxe_exceptions_NotImplementedException = function(message,previous,pos) {
 	}
 	haxe_exceptions_PosException.call(this,message,previous,pos);
 };
-$hxClasses["haxe.exceptions.NotImplementedException"] = haxe_exceptions_NotImplementedException;
 haxe_exceptions_NotImplementedException.__name__ = "haxe.exceptions.NotImplementedException";
 haxe_exceptions_NotImplementedException.__super__ = haxe_exceptions_PosException;
 haxe_exceptions_NotImplementedException.prototype = $extend(haxe_exceptions_PosException.prototype,{
@@ -25018,7 +23794,6 @@ var haxe_io_BytesBuffer = function() {
 	this.pos = 0;
 	this.size = 0;
 };
-$hxClasses["haxe.io.BytesBuffer"] = haxe_io_BytesBuffer;
 haxe_io_BytesBuffer.__name__ = "haxe.io.BytesBuffer";
 haxe_io_BytesBuffer.prototype = {
 	addByte: function(byte) {
@@ -25075,7 +23850,6 @@ haxe_io_BytesBuffer.prototype = {
 	,__class__: haxe_io_BytesBuffer
 };
 var haxe_io_Input = function() { };
-$hxClasses["haxe.io.Input"] = haxe_io_Input;
 haxe_io_Input.__name__ = "haxe.io.Input";
 haxe_io_Input.prototype = {
 	readByte: function() {
@@ -25238,7 +24012,6 @@ var haxe_io_BytesInput = function(b,pos,len) {
 	this.len = len;
 	this.totlen = len;
 };
-$hxClasses["haxe.io.BytesInput"] = haxe_io_BytesInput;
 haxe_io_BytesInput.__name__ = "haxe.io.BytesInput";
 haxe_io_BytesInput.__super__ = haxe_io_Input;
 haxe_io_BytesInput.prototype = $extend(haxe_io_Input.prototype,{
@@ -25283,7 +24056,6 @@ haxe_io_BytesInput.prototype = $extend(haxe_io_Input.prototype,{
 	,__class__: haxe_io_BytesInput
 });
 var haxe_io_Output = function() { };
-$hxClasses["haxe.io.Output"] = haxe_io_Output;
 haxe_io_Output.__name__ = "haxe.io.Output";
 haxe_io_Output.prototype = {
 	flush: function() {
@@ -25295,7 +24067,6 @@ haxe_io_Output.prototype = {
 var haxe_io_BytesOutput = function() {
 	this.b = new haxe_io_BytesBuffer();
 };
-$hxClasses["haxe.io.BytesOutput"] = haxe_io_BytesOutput;
 haxe_io_BytesOutput.__name__ = "haxe.io.BytesOutput";
 haxe_io_BytesOutput.__super__ = haxe_io_Output;
 haxe_io_BytesOutput.prototype = $extend(haxe_io_Output.prototype,{
@@ -25310,7 +24081,6 @@ haxe_io_BytesOutput.prototype = $extend(haxe_io_Output.prototype,{
 });
 var haxe_io_Eof = function() {
 };
-$hxClasses["haxe.io.Eof"] = haxe_io_Eof;
 haxe_io_Eof.__name__ = "haxe.io.Eof";
 haxe_io_Eof.prototype = {
 	toString: function() {
@@ -25318,7 +24088,7 @@ haxe_io_Eof.prototype = {
 	}
 	,__class__: haxe_io_Eof
 };
-var haxe_io_Error = $hxEnums["haxe.io.Error"] = { __ename__:"haxe.io.Error",__constructs__:null
+var haxe_io_Error = $hxEnums["haxe.io.Error"] = { __ename__:true,__constructs__:null
 	,Blocked: {_hx_name:"Blocked",_hx_index:0,__enum__:"haxe.io.Error",toString:$estr}
 	,Overflow: {_hx_name:"Overflow",_hx_index:1,__enum__:"haxe.io.Error",toString:$estr}
 	,OutsideBounds: {_hx_name:"OutsideBounds",_hx_index:2,__enum__:"haxe.io.Error",toString:$estr}
@@ -25327,7 +24097,6 @@ var haxe_io_Error = $hxEnums["haxe.io.Error"] = { __ename__:"haxe.io.Error",__co
 haxe_io_Error.__constructs__ = [haxe_io_Error.Blocked,haxe_io_Error.Overflow,haxe_io_Error.OutsideBounds,haxe_io_Error.Custom];
 haxe_io_Error.__empty_constructs__ = [haxe_io_Error.Blocked,haxe_io_Error.Overflow,haxe_io_Error.OutsideBounds];
 var haxe_io_FPHelper = function() { };
-$hxClasses["haxe.io.FPHelper"] = haxe_io_FPHelper;
 haxe_io_FPHelper.__name__ = "haxe.io.FPHelper";
 haxe_io_FPHelper.i64ToDouble = function(low,high) {
 	haxe_io_FPHelper.helper.setInt32(0,low,true);
@@ -25362,7 +24131,6 @@ var haxe_io_Path = function(path) {
 		this.file = path;
 	}
 };
-$hxClasses["haxe.io.Path"] = haxe_io_Path;
 haxe_io_Path.__name__ = "haxe.io.Path";
 haxe_io_Path.directory = function(path) {
 	var s = new haxe_io_Path(path);
@@ -25495,7 +24263,6 @@ var haxe_iterators_ArrayIterator = function(array) {
 	this.current = 0;
 	this.array = array;
 };
-$hxClasses["haxe.iterators.ArrayIterator"] = haxe_iterators_ArrayIterator;
 haxe_iterators_ArrayIterator.__name__ = "haxe.iterators.ArrayIterator";
 haxe_iterators_ArrayIterator.prototype = {
 	hasNext: function() {
@@ -25506,7 +24273,7 @@ haxe_iterators_ArrayIterator.prototype = {
 	}
 	,__class__: haxe_iterators_ArrayIterator
 };
-var haxe_macro_Binop = $hxEnums["haxe.macro.Binop"] = { __ename__:"haxe.macro.Binop",__constructs__:null
+var haxe_macro_Binop = $hxEnums["haxe.macro.Binop"] = { __ename__:true,__constructs__:null
 	,OpAdd: {_hx_name:"OpAdd",_hx_index:0,__enum__:"haxe.macro.Binop",toString:$estr}
 	,OpMult: {_hx_name:"OpMult",_hx_index:1,__enum__:"haxe.macro.Binop",toString:$estr}
 	,OpDiv: {_hx_name:"OpDiv",_hx_index:2,__enum__:"haxe.macro.Binop",toString:$estr}
@@ -25534,7 +24301,7 @@ var haxe_macro_Binop = $hxEnums["haxe.macro.Binop"] = { __ename__:"haxe.macro.Bi
 };
 haxe_macro_Binop.__constructs__ = [haxe_macro_Binop.OpAdd,haxe_macro_Binop.OpMult,haxe_macro_Binop.OpDiv,haxe_macro_Binop.OpSub,haxe_macro_Binop.OpAssign,haxe_macro_Binop.OpEq,haxe_macro_Binop.OpNotEq,haxe_macro_Binop.OpGt,haxe_macro_Binop.OpGte,haxe_macro_Binop.OpLt,haxe_macro_Binop.OpLte,haxe_macro_Binop.OpAnd,haxe_macro_Binop.OpOr,haxe_macro_Binop.OpXor,haxe_macro_Binop.OpBoolAnd,haxe_macro_Binop.OpBoolOr,haxe_macro_Binop.OpShl,haxe_macro_Binop.OpShr,haxe_macro_Binop.OpUShr,haxe_macro_Binop.OpMod,haxe_macro_Binop.OpAssignOp,haxe_macro_Binop.OpInterval,haxe_macro_Binop.OpArrow,haxe_macro_Binop.OpIn];
 haxe_macro_Binop.__empty_constructs__ = [haxe_macro_Binop.OpAdd,haxe_macro_Binop.OpMult,haxe_macro_Binop.OpDiv,haxe_macro_Binop.OpSub,haxe_macro_Binop.OpAssign,haxe_macro_Binop.OpEq,haxe_macro_Binop.OpNotEq,haxe_macro_Binop.OpGt,haxe_macro_Binop.OpGte,haxe_macro_Binop.OpLt,haxe_macro_Binop.OpLte,haxe_macro_Binop.OpAnd,haxe_macro_Binop.OpOr,haxe_macro_Binop.OpXor,haxe_macro_Binop.OpBoolAnd,haxe_macro_Binop.OpBoolOr,haxe_macro_Binop.OpShl,haxe_macro_Binop.OpShr,haxe_macro_Binop.OpUShr,haxe_macro_Binop.OpMod,haxe_macro_Binop.OpInterval,haxe_macro_Binop.OpArrow,haxe_macro_Binop.OpIn];
-var haxe_macro_Unop = $hxEnums["haxe.macro.Unop"] = { __ename__:"haxe.macro.Unop",__constructs__:null
+var haxe_macro_Unop = $hxEnums["haxe.macro.Unop"] = { __ename__:true,__constructs__:null
 	,OpIncrement: {_hx_name:"OpIncrement",_hx_index:0,__enum__:"haxe.macro.Unop",toString:$estr}
 	,OpDecrement: {_hx_name:"OpDecrement",_hx_index:1,__enum__:"haxe.macro.Unop",toString:$estr}
 	,OpNot: {_hx_name:"OpNot",_hx_index:2,__enum__:"haxe.macro.Unop",toString:$estr}
@@ -25599,7 +24366,6 @@ var haxe_xml_XmlParserException = function(message,xml,position) {
 		}
 	}
 };
-$hxClasses["haxe.xml.XmlParserException"] = haxe_xml_XmlParserException;
 haxe_xml_XmlParserException.__name__ = "haxe.xml.XmlParserException";
 haxe_xml_XmlParserException.prototype = {
 	toString: function() {
@@ -25609,7 +24375,6 @@ haxe_xml_XmlParserException.prototype = {
 	,__class__: haxe_xml_XmlParserException
 };
 var haxe_xml_Parser = function() { };
-$hxClasses["haxe.xml.Parser"] = haxe_xml_Parser;
 haxe_xml_Parser.__name__ = "haxe.xml.Parser";
 haxe_xml_Parser.parse = function(str,strict) {
 	if(strict == null) {
@@ -25956,7 +24721,6 @@ var haxe_xml_Printer = function(pretty) {
 	this.output = new StringBuf();
 	this.pretty = pretty;
 };
-$hxClasses["haxe.xml.Printer"] = haxe_xml_Printer;
 haxe_xml_Printer.__name__ = "haxe.xml.Printer";
 haxe_xml_Printer.print = function(xml,pretty) {
 	if(pretty == null) {
@@ -26102,7 +24866,7 @@ haxe_xml_Printer.prototype = {
 	}
 	,__class__: haxe_xml_Printer
 };
-var haxe_zip_Huffman = $hxEnums["haxe.zip.Huffman"] = { __ename__:"haxe.zip.Huffman",__constructs__:null
+var haxe_zip_Huffman = $hxEnums["haxe.zip.Huffman"] = { __ename__:true,__constructs__:null
 	,Found: ($_=function(i) { return {_hx_index:0,i:i,__enum__:"haxe.zip.Huffman",toString:$estr}; },$_._hx_name="Found",$_.__params__ = ["i"],$_)
 	,NeedBit: ($_=function(left,right) { return {_hx_index:1,left:left,right:right,__enum__:"haxe.zip.Huffman",toString:$estr}; },$_._hx_name="NeedBit",$_.__params__ = ["left","right"],$_)
 	,NeedBits: ($_=function(n,table) { return {_hx_index:2,n:n,table:table,__enum__:"haxe.zip.Huffman",toString:$estr}; },$_._hx_name="NeedBits",$_.__params__ = ["n","table"],$_)
@@ -26111,7 +24875,6 @@ haxe_zip_Huffman.__constructs__ = [haxe_zip_Huffman.Found,haxe_zip_Huffman.NeedB
 haxe_zip_Huffman.__empty_constructs__ = [];
 var haxe_zip_HuffTools = function() {
 };
-$hxClasses["haxe.zip.HuffTools"] = haxe_zip_HuffTools;
 haxe_zip_HuffTools.__name__ = "haxe.zip.HuffTools";
 haxe_zip_HuffTools.prototype = {
 	treeDepth: function(t) {
@@ -26225,7 +24988,6 @@ var haxe_zip__$InflateImpl_Window = function(hasCrc) {
 		this.crc = new haxe_crypto_Adler32();
 	}
 };
-$hxClasses["haxe.zip._InflateImpl.Window"] = haxe_zip__$InflateImpl_Window;
 haxe_zip__$InflateImpl_Window.__name__ = "haxe.zip._InflateImpl.Window";
 haxe_zip__$InflateImpl_Window.prototype = {
 	slide: function() {
@@ -26265,7 +25027,7 @@ haxe_zip__$InflateImpl_Window.prototype = {
 	}
 	,__class__: haxe_zip__$InflateImpl_Window
 };
-var haxe_zip__$InflateImpl_State = $hxEnums["haxe.zip._InflateImpl.State"] = { __ename__:"haxe.zip._InflateImpl.State",__constructs__:null
+var haxe_zip__$InflateImpl_State = $hxEnums["haxe.zip._InflateImpl.State"] = { __ename__:true,__constructs__:null
 	,Head: {_hx_name:"Head",_hx_index:0,__enum__:"haxe.zip._InflateImpl.State",toString:$estr}
 	,Block: {_hx_name:"Block",_hx_index:1,__enum__:"haxe.zip._InflateImpl.State",toString:$estr}
 	,CData: {_hx_name:"CData",_hx_index:2,__enum__:"haxe.zip._InflateImpl.State",toString:$estr}
@@ -26319,7 +25081,6 @@ var haxe_zip_InflateImpl = function(i,header,crc) {
 	this.lengths.push(-1);
 	this.window = new haxe_zip__$InflateImpl_Window(crc);
 };
-$hxClasses["haxe.zip.InflateImpl"] = haxe_zip_InflateImpl;
 haxe_zip_InflateImpl.__name__ = "haxe.zip.InflateImpl";
 haxe_zip_InflateImpl.run = function(i,bufsize) {
 	if(bufsize == null) {
@@ -26597,7 +25358,6 @@ haxe_zip_InflateImpl.prototype = {
 	,__class__: haxe_zip_InflateImpl
 };
 var haxe_zip_Uncompress = function() { };
-$hxClasses["haxe.zip.Uncompress"] = haxe_zip_Uncompress;
 haxe_zip_Uncompress.__name__ = "haxe.zip.Uncompress";
 haxe_zip_Uncompress.run = function(src,bufsize) {
 	return haxe_zip_InflateImpl.run(new haxe_io_BytesInput(src),bufsize);
@@ -26610,7 +25370,6 @@ var hxd_BitmapData = function(width,height) {
 		this.ctx = canvas.getContext("2d",null);
 	}
 };
-$hxClasses["hxd.BitmapData"] = hxd_BitmapData;
 hxd_BitmapData.__name__ = "hxd.BitmapData";
 hxd_BitmapData.prototype = {
 	getPixels: function() {
@@ -26671,7 +25430,6 @@ var hxd_Charset = function() {
 	this.map.h[8250] = 62;
 	this.map.h[8211] = 45;
 };
-$hxClasses["hxd.Charset"] = hxd_Charset;
 hxd_Charset.__name__ = "hxd.Charset";
 hxd_Charset.getDefault = function() {
 	if(hxd_Charset.inst == null) {
@@ -26721,7 +25479,7 @@ hxd_Charset.prototype = {
 	}
 	,__class__: hxd_Charset
 };
-var hxd_Cursor = $hxEnums["hxd.Cursor"] = { __ename__:"hxd.Cursor",__constructs__:null
+var hxd_Cursor = $hxEnums["hxd.Cursor"] = { __ename__:true,__constructs__:null
 	,Default: {_hx_name:"Default",_hx_index:0,__enum__:"hxd.Cursor",toString:$estr}
 	,Button: {_hx_name:"Button",_hx_index:1,__enum__:"hxd.Cursor",toString:$estr}
 	,Move: {_hx_name:"Move",_hx_index:2,__enum__:"hxd.Cursor",toString:$estr}
@@ -26741,7 +25499,6 @@ var hxd_CustomCursor = function(frames,speed,offsetX,offsetY) {
 	this.frameTime = 0;
 	this.frameIndex = 0;
 };
-$hxClasses["hxd.CustomCursor"] = hxd_CustomCursor;
 hxd_CustomCursor.__name__ = "hxd.CustomCursor";
 hxd_CustomCursor.prototype = {
 	reset: function() {
@@ -26768,7 +25525,7 @@ hxd_CustomCursor.prototype = {
 	}
 	,__class__: hxd_CustomCursor
 };
-var hxd_EventKind = $hxEnums["hxd.EventKind"] = { __ename__:"hxd.EventKind",__constructs__:null
+var hxd_EventKind = $hxEnums["hxd.EventKind"] = { __ename__:true,__constructs__:null
 	,EPush: {_hx_name:"EPush",_hx_index:0,__enum__:"hxd.EventKind",toString:$estr}
 	,ERelease: {_hx_name:"ERelease",_hx_index:1,__enum__:"hxd.EventKind",toString:$estr}
 	,EMove: {_hx_name:"EMove",_hx_index:2,__enum__:"hxd.EventKind",toString:$estr}
@@ -26797,7 +25554,6 @@ var hxd_Event = function(k,x,y) {
 	this.relX = x;
 	this.relY = y;
 };
-$hxClasses["hxd.Event"] = hxd_Event;
 hxd_Event.__name__ = "hxd.Event";
 hxd_Event.prototype = {
 	__class__: hxd_Event
@@ -26807,7 +25563,6 @@ hxd__$FloatBuffer_Float32Expand._new = function(length) {
 	return { pos : length, array : new Float32Array(new ArrayBuffer(length << 2))};
 };
 var hxd_Key = function() { };
-$hxClasses["hxd.Key"] = hxd_Key;
 hxd_Key.__name__ = "hxd.Key";
 hxd_Key.initialize = function() {
 	if(hxd_Key.initDone) {
@@ -26851,7 +25606,7 @@ hxd_Key.onEvent = function(e) {
 	default:
 	}
 };
-var hxd_Flags = $hxEnums["hxd.Flags"] = { __ename__:"hxd.Flags",__constructs__:null
+var hxd_Flags = $hxEnums["hxd.Flags"] = { __ename__:true,__constructs__:null
 	,ReadOnly: {_hx_name:"ReadOnly",_hx_index:0,__enum__:"hxd.Flags",toString:$estr}
 	,AlphaPremultiplied: {_hx_name:"AlphaPremultiplied",_hx_index:1,__enum__:"hxd.Flags",toString:$estr}
 	,FlipY: {_hx_name:"FlipY",_hx_index:2,__enum__:"hxd.Flags",toString:$estr}
@@ -26875,7 +25630,6 @@ var hxd_Pixels = function(width,height,bytes,format,offset) {
 	this.offset = offset;
 	this.flags = 0;
 };
-$hxClasses["hxd.Pixels"] = hxd_Pixels;
 hxd_Pixels.__name__ = "hxd.Pixels";
 hxd_Pixels.calcDataSize = function(width,height,format) {
 	if(format._hx_index == 21) {
@@ -27203,7 +25957,6 @@ hxd_Pixels.prototype = {
 	,__class__: hxd_Pixels
 };
 var hxd_Res = function() { };
-$hxClasses["hxd.Res"] = hxd_Res;
 hxd_Res.__name__ = "hxd.Res";
 hxd_Res.load = function(name) {
 	return hxd_Res.get_loader().load(name);
@@ -27217,82 +25970,6 @@ hxd_Res.get_loader = function() {
 };
 hxd_Res.set_loader = function(l) {
 	return hxd_res_Loader.currentInstance = l;
-};
-var hxd_Save = function() { };
-$hxClasses["hxd.Save"] = hxd_Save;
-hxd_Save.__name__ = "hxd.Save";
-hxd_Save.makeCRC = function(data) {
-	return HxOverrides.substr(haxe_crypto_Sha1.encode(data + haxe_crypto_Sha1.encode(data + hxd_Save.SALT)),4,32);
-};
-hxd_Save.loadData = function(data,checkSum,defValue) {
-	if(checkSum) {
-		if(HxOverrides.cca(data,data.length - 33) != 35) {
-			throw haxe_Exception.thrown("Missing CRC");
-		}
-		var crc = HxOverrides.substr(data,data.length - 32,null);
-		data = HxOverrides.substr(data,0,-33);
-		if(hxd_Save.makeCRC(data) != crc) {
-			throw haxe_Exception.thrown("Invalid CRC");
-		}
-	}
-	var obj = haxe_Unserializer.run(data);
-	if(defValue != null && Reflect.isObject(obj) && Reflect.isObject(defValue)) {
-		var _g = 0;
-		var _g1 = Reflect.fields(defValue);
-		while(_g < _g1.length) {
-			var f = _g1[_g];
-			++_g;
-			if(Object.prototype.hasOwnProperty.call(obj,f)) {
-				continue;
-			}
-			obj[f] = Reflect.field(defValue,f);
-		}
-	}
-	return obj;
-};
-hxd_Save.saveData = function(value,checkSum) {
-	var data = haxe_Serializer.run(value);
-	if(checkSum) {
-		return data + "#" + hxd_Save.makeCRC(data);
-	} else {
-		return data;
-	}
-};
-hxd_Save.load = function(defValue,name,checkSum) {
-	if(checkSum == null) {
-		checkSum = false;
-	}
-	if(name == null) {
-		name = "save";
-	}
-	try {
-		return hxd_Save.loadData(hxd_Save.readSaveData(name),checkSum,defValue);
-	} catch( _g ) {
-		return defValue;
-	}
-};
-hxd_Save.readSaveData = function(name) {
-	return window.localStorage.getItem(name);
-};
-hxd_Save.writeSaveData = function(name,data) {
-	window.localStorage.setItem(name,data);
-};
-hxd_Save.save = function(val,name,checkSum) {
-	if(checkSum == null) {
-		checkSum = false;
-	}
-	if(name == null) {
-		name = "save";
-	}
-	var data = hxd_Save.saveData(val,checkSum);
-	try {
-		if(hxd_Save.readSaveData(name) == data) {
-			return false;
-		}
-	} catch( _g ) {
-	}
-	hxd_Save.writeSaveData(name,data);
-	return true;
 };
 var hxd_SceneEvents = function($window) {
 	this.defaultCursor = hxd_Cursor.Default;
@@ -27318,7 +25995,6 @@ var hxd_SceneEvents = function($window) {
 	this.window = $window;
 	$window.addEventTarget($bind(this,this.onEvent));
 };
-$hxClasses["hxd.SceneEvents"] = hxd_SceneEvents;
 hxd_SceneEvents.__name__ = "hxd.SceneEvents";
 hxd_SceneEvents.prototype = {
 	onRemove: function(i) {
@@ -27680,7 +26356,7 @@ hxd_SceneEvents.prototype = {
 	}
 	,__class__: hxd_SceneEvents
 };
-var hxd_Platform = $hxEnums["hxd.Platform"] = { __ename__:"hxd.Platform",__constructs__:null
+var hxd_Platform = $hxEnums["hxd.Platform"] = { __ename__:true,__constructs__:null
 	,IOS: {_hx_name:"IOS",_hx_index:0,__enum__:"hxd.Platform",toString:$estr}
 	,Android: {_hx_name:"Android",_hx_index:1,__enum__:"hxd.Platform",toString:$estr}
 	,WebGL: {_hx_name:"WebGL",_hx_index:2,__enum__:"hxd.Platform",toString:$estr}
@@ -27690,7 +26366,7 @@ var hxd_Platform = $hxEnums["hxd.Platform"] = { __ename__:"hxd.Platform",__const
 };
 hxd_Platform.__constructs__ = [hxd_Platform.IOS,hxd_Platform.Android,hxd_Platform.WebGL,hxd_Platform.PC,hxd_Platform.Console,hxd_Platform.FlashPlayer];
 hxd_Platform.__empty_constructs__ = [hxd_Platform.IOS,hxd_Platform.Android,hxd_Platform.WebGL,hxd_Platform.PC,hxd_Platform.Console,hxd_Platform.FlashPlayer];
-var hxd_SystemValue = $hxEnums["hxd.SystemValue"] = { __ename__:"hxd.SystemValue",__constructs__:null
+var hxd_SystemValue = $hxEnums["hxd.SystemValue"] = { __ename__:true,__constructs__:null
 	,IsTouch: {_hx_name:"IsTouch",_hx_index:0,__enum__:"hxd.SystemValue",toString:$estr}
 	,IsWindowed: {_hx_name:"IsWindowed",_hx_index:1,__enum__:"hxd.SystemValue",toString:$estr}
 	,IsMobile: {_hx_name:"IsMobile",_hx_index:2,__enum__:"hxd.SystemValue",toString:$estr}
@@ -27698,7 +26374,6 @@ var hxd_SystemValue = $hxEnums["hxd.SystemValue"] = { __ename__:"hxd.SystemValue
 hxd_SystemValue.__constructs__ = [hxd_SystemValue.IsTouch,hxd_SystemValue.IsWindowed,hxd_SystemValue.IsMobile];
 hxd_SystemValue.__empty_constructs__ = [hxd_SystemValue.IsTouch,hxd_SystemValue.IsWindowed,hxd_SystemValue.IsMobile];
 var hxd_Timer = function() { };
-$hxClasses["hxd.Timer"] = hxd_Timer;
 hxd_Timer.__name__ = "hxd.Timer";
 hxd_Timer.update = function() {
 	hxd_Timer.frameCount++;
@@ -27798,7 +26473,6 @@ var hxd_Window = function(canvas,globalEvents) {
 	this.timer = new haxe_Timer(100);
 	this.timer.run = $bind(this,this.checkResize);
 };
-$hxClasses["hxd.Window"] = hxd_Window;
 hxd_Window.__name__ = "hxd.Window";
 hxd_Window.getInstance = function() {
 	if(hxd_Window.inst == null) {
@@ -28040,7 +26714,6 @@ hxd_Window.prototype = {
 	,__class__: hxd_Window
 };
 var hxd_System = function() { };
-$hxClasses["hxd.System"] = hxd_System;
 hxd_System.__name__ = "hxd.System";
 hxd_System.setLoop = function(f) {
 	if(!hxd_System.loopInit) {
@@ -28148,7 +26821,7 @@ hxd_System.get_platform = function() {
 		return hxd_Platform.PC;
 	}
 };
-var hxd_DisplayMode = $hxEnums["hxd.DisplayMode"] = { __ename__:"hxd.DisplayMode",__constructs__:null
+var hxd_DisplayMode = $hxEnums["hxd.DisplayMode"] = { __ename__:true,__constructs__:null
 	,Windowed: {_hx_name:"Windowed",_hx_index:0,__enum__:"hxd.DisplayMode",toString:$estr}
 	,Borderless: {_hx_name:"Borderless",_hx_index:1,__enum__:"hxd.DisplayMode",toString:$estr}
 	,Fullscreen: {_hx_name:"Fullscreen",_hx_index:2,__enum__:"hxd.DisplayMode",toString:$estr}
@@ -28158,14 +26831,12 @@ hxd_DisplayMode.__constructs__ = [hxd_DisplayMode.Windowed,hxd_DisplayMode.Borde
 hxd_DisplayMode.__empty_constructs__ = [hxd_DisplayMode.Windowed,hxd_DisplayMode.Borderless,hxd_DisplayMode.Fullscreen,hxd_DisplayMode.FullscreenResize];
 var hxd_earcut_EarNode = function() {
 };
-$hxClasses["hxd.earcut.EarNode"] = hxd_earcut_EarNode;
 hxd_earcut_EarNode.__name__ = "hxd.earcut.EarNode";
 hxd_earcut_EarNode.prototype = {
 	__class__: hxd_earcut_EarNode
 };
 var hxd_earcut_Earcut = function() {
 };
-$hxClasses["hxd.earcut.Earcut"] = hxd_earcut_Earcut;
 hxd_earcut_Earcut.__name__ = "hxd.earcut.Earcut";
 hxd_earcut_Earcut.prototype = {
 	triangulate_h2d_GPoint: function(points,holes) {
@@ -29086,7 +27757,6 @@ hxd_earcut_Earcut.prototype = {
 	,__class__: hxd_earcut_Earcut
 };
 var hxd_fmt_bfnt_FontParser = function() { };
-$hxClasses["hxd.fmt.bfnt.FontParser"] = hxd_fmt_bfnt_FontParser;
 hxd_fmt_bfnt_FontParser.__name__ = "hxd.fmt.bfnt.FontParser";
 hxd_fmt_bfnt_FontParser.parse = function(bytes,path,resolveTile) {
 	var tile = null;
@@ -29448,7 +28118,6 @@ hxd_fmt_bfnt_FontParser.parse = function(bytes,path,resolveTile) {
 var hxd_fmt_bfnt_Reader = function(i) {
 	this.i = i;
 };
-$hxClasses["hxd.fmt.bfnt.Reader"] = hxd_fmt_bfnt_Reader;
 hxd_fmt_bfnt_Reader.__name__ = "hxd.fmt.bfnt.Reader";
 hxd_fmt_bfnt_Reader.prototype = {
 	read: function(resolveTile) {
@@ -29492,7 +28161,6 @@ hxd_fmt_bfnt_Reader.prototype = {
 	,__class__: hxd_fmt_bfnt_Reader
 };
 var hxd_fmt_hdr_Reader = function() { };
-$hxClasses["hxd.fmt.hdr.Reader"] = hxd_fmt_hdr_Reader;
 hxd_fmt_hdr_Reader.__name__ = "hxd.fmt.hdr.Reader";
 hxd_fmt_hdr_Reader.decode = function(bytes,sRGB) {
 	var f = new haxe_io_BytesInput(bytes);
@@ -29586,19 +28254,17 @@ hxd_fmt_hdr_Reader.decode = function(bytes,sRGB) {
 };
 var hxd_fmt_pak_File = function() {
 };
-$hxClasses["hxd.fmt.pak.File"] = hxd_fmt_pak_File;
 hxd_fmt_pak_File.__name__ = "hxd.fmt.pak.File";
 hxd_fmt_pak_File.prototype = {
 	__class__: hxd_fmt_pak_File
 };
 var hxd_fmt_pak_Data = function() {
 };
-$hxClasses["hxd.fmt.pak.Data"] = hxd_fmt_pak_Data;
 hxd_fmt_pak_Data.__name__ = "hxd.fmt.pak.Data";
 hxd_fmt_pak_Data.prototype = {
 	__class__: hxd_fmt_pak_Data
 };
-var hxd_fmt_pak_FileSeekMode = $hxEnums["hxd.fmt.pak.FileSeekMode"] = { __ename__:"hxd.fmt.pak.FileSeekMode",__constructs__:null
+var hxd_fmt_pak_FileSeekMode = $hxEnums["hxd.fmt.pak.FileSeekMode"] = { __ename__:true,__constructs__:null
 	,SeekBegin: {_hx_name:"SeekBegin",_hx_index:0,__enum__:"hxd.fmt.pak.FileSeekMode",toString:$estr}
 	,SeekEnd: {_hx_name:"SeekEnd",_hx_index:1,__enum__:"hxd.fmt.pak.FileSeekMode",toString:$estr}
 	,SeedCurrent: {_hx_name:"SeedCurrent",_hx_index:2,__enum__:"hxd.fmt.pak.FileSeekMode",toString:$estr}
@@ -29608,7 +28274,6 @@ hxd_fmt_pak_FileSeekMode.__empty_constructs__ = [hxd_fmt_pak_FileSeekMode.SeekBe
 var hxd_fmt_pak_FileInput = function(b,pos,len) {
 	haxe_io_BytesInput.call(this,b,pos,len);
 };
-$hxClasses["hxd.fmt.pak.FileInput"] = hxd_fmt_pak_FileInput;
 hxd_fmt_pak_FileInput.__name__ = "hxd.fmt.pak.FileInput";
 hxd_fmt_pak_FileInput.__super__ = haxe_io_BytesInput;
 hxd_fmt_pak_FileInput.prototype = $extend(haxe_io_BytesInput.prototype,{
@@ -29628,7 +28293,6 @@ hxd_fmt_pak_FileInput.prototype = $extend(haxe_io_BytesInput.prototype,{
 	,__class__: hxd_fmt_pak_FileInput
 });
 var hxd_fmt_pak_FileSeek = function() { };
-$hxClasses["hxd.fmt.pak.FileSeek"] = hxd_fmt_pak_FileSeek;
 hxd_fmt_pak_FileSeek.__name__ = "hxd.fmt.pak.FileSeek";
 hxd_fmt_pak_FileSeek.seek = function(f,pos,mode) {
 	if(pos > 2147483647) {
@@ -29637,7 +28301,6 @@ hxd_fmt_pak_FileSeek.seek = function(f,pos,mode) {
 	f.seek(pos | 0,mode);
 };
 var hxd_fs_FileEntry = function() { };
-$hxClasses["hxd.fs.FileEntry"] = hxd_fs_FileEntry;
 hxd_fs_FileEntry.__name__ = "hxd.fs.FileEntry";
 hxd_fs_FileEntry.prototype = {
 	getBytes: function() {
@@ -29703,7 +28366,6 @@ var hxd_fmt_pak__$FileSystem_PakEntry = function(fs,parent,f,p) {
 		this.subs = [];
 	}
 };
-$hxClasses["hxd.fmt.pak._FileSystem.PakEntry"] = hxd_fmt_pak__$FileSystem_PakEntry;
 hxd_fmt_pak__$FileSystem_PakEntry.__name__ = "hxd.fmt.pak._FileSystem.PakEntry";
 hxd_fmt_pak__$FileSystem_PakEntry.__super__ = hxd_fs_FileEntry;
 hxd_fmt_pak__$FileSystem_PakEntry.prototype = $extend(hxd_fs_FileEntry.prototype,{
@@ -29775,7 +28437,6 @@ hxd_fmt_pak__$FileSystem_PakEntry.prototype = $extend(hxd_fs_FileEntry.prototype
 	,__class__: hxd_fmt_pak__$FileSystem_PakEntry
 });
 var hxd_fs_FileSystem = function() { };
-$hxClasses["hxd.fs.FileSystem"] = hxd_fs_FileSystem;
 hxd_fs_FileSystem.__name__ = "hxd.fs.FileSystem";
 hxd_fs_FileSystem.__isInterface__ = true;
 hxd_fs_FileSystem.prototype = {
@@ -29795,7 +28456,6 @@ var hxd_fmt_pak_FileSystem = function() {
 	this.files = [];
 	this.root = new hxd_fmt_pak__$FileSystem_PakEntry(this,null,f,null);
 };
-$hxClasses["hxd.fmt.pak.FileSystem"] = hxd_fmt_pak_FileSystem;
 hxd_fmt_pak_FileSystem.__name__ = "hxd.fmt.pak.FileSystem";
 hxd_fmt_pak_FileSystem.__interfaces__ = [hxd_fs_FileSystem];
 hxd_fmt_pak_FileSystem.prototype = {
@@ -29883,7 +28543,6 @@ hxd_fmt_pak_FileSystem.prototype = {
 var hxd_fmt_pak_Reader = function(i) {
 	this.i = i;
 };
-$hxClasses["hxd.fmt.pak.Reader"] = hxd_fmt_pak_Reader;
 hxd_fmt_pak_Reader.__name__ = "hxd.fmt.pak.Reader";
 hxd_fmt_pak_Reader.prototype = {
 	readHeader: function() {
@@ -29929,7 +28588,6 @@ var hxd_fs_FileInput = function(f) {
 	this.f = f;
 	f.open();
 };
-$hxClasses["hxd.fs.FileInput"] = hxd_fs_FileInput;
 hxd_fs_FileInput.__name__ = "hxd.fs.FileInput";
 hxd_fs_FileInput.__super__ = haxe_io_Input;
 hxd_fs_FileInput.prototype = $extend(haxe_io_Input.prototype,{
@@ -29957,7 +28615,6 @@ hxd_fs_LoadedBitmap.toBitmap = function(this1) {
 var hxd_fs_NotFound = function(path) {
 	this.path = path;
 };
-$hxClasses["hxd.fs.NotFound"] = hxd_fs_NotFound;
 hxd_fs_NotFound.__name__ = "hxd.fs.NotFound";
 hxd_fs_NotFound.prototype = {
 	toString: function() {
@@ -29967,7 +28624,6 @@ hxd_fs_NotFound.prototype = {
 };
 var hxd_impl_Allocator = function() {
 };
-$hxClasses["hxd.impl.Allocator"] = hxd_impl_Allocator;
 hxd_impl_Allocator.__name__ = "hxd.impl.Allocator";
 hxd_impl_Allocator.get = function() {
 	if(hxd_impl_Allocator.inst == null) {
@@ -30029,7 +28685,6 @@ var hxd_impl_ArrayIterator_$hxd_$fs_$FileEntry = function(a) {
 	this.a = a;
 	this.l = this.a.length;
 };
-$hxClasses["hxd.impl.ArrayIterator_hxd_fs_FileEntry"] = hxd_impl_ArrayIterator_$hxd_$fs_$FileEntry;
 hxd_impl_ArrayIterator_$hxd_$fs_$FileEntry.__name__ = "hxd.impl.ArrayIterator_hxd_fs_FileEntry";
 hxd_impl_ArrayIterator_$hxd_$fs_$FileEntry.prototype = {
 	hasNext: function() {
@@ -30045,7 +28700,6 @@ var hxd_impl_ArrayIterator_$hxd_$snd_$Channel = function(a) {
 	this.a = a;
 	this.l = this.a.length;
 };
-$hxClasses["hxd.impl.ArrayIterator_hxd_snd_Channel"] = hxd_impl_ArrayIterator_$hxd_$snd_$Channel;
 hxd_impl_ArrayIterator_$hxd_$snd_$Channel.__name__ = "hxd.impl.ArrayIterator_hxd_snd_Channel";
 hxd_impl_ArrayIterator_$hxd_$snd_$Channel.prototype = {
 	hasNext: function() {
@@ -30059,7 +28713,6 @@ hxd_impl_ArrayIterator_$hxd_$snd_$Channel.prototype = {
 var hxd_net_BinaryLoader = function(url) {
 	this.url = url;
 };
-$hxClasses["hxd.net.BinaryLoader"] = hxd_net_BinaryLoader;
 hxd_net_BinaryLoader.__name__ = "hxd.net.BinaryLoader";
 hxd_net_BinaryLoader.prototype = {
 	onLoaded: function(bytes) {
@@ -30094,7 +28747,6 @@ hxd_net_BinaryLoader.prototype = {
 var hxd_res_Resource = function(entry) {
 	this.entry = entry;
 };
-$hxClasses["hxd.res.Resource"] = hxd_res_Resource;
 hxd_res_Resource.__name__ = "hxd.res.Resource";
 hxd_res_Resource.prototype = {
 	toString: function() {
@@ -30111,7 +28763,6 @@ var hxd_res_Any = function(loader,entry) {
 	hxd_res_Resource.call(this,entry);
 	this.loader = loader;
 };
-$hxClasses["hxd.res.Any"] = hxd_res_Any;
 hxd_res_Any.__name__ = "hxd.res.Any";
 hxd_res_Any.__super__ = hxd_res_Resource;
 hxd_res_Any.prototype = $extend(hxd_res_Resource.prototype,{
@@ -30133,7 +28784,6 @@ var hxd_res_BitmapFont = function(entry) {
 	hxd_res_Resource.call(this,entry);
 	this.loader = hxd_res_Loader.currentInstance;
 };
-$hxClasses["hxd.res.BitmapFont"] = hxd_res_BitmapFont;
 hxd_res_BitmapFont.__name__ = "hxd.res.BitmapFont";
 hxd_res_BitmapFont.__super__ = hxd_res_Resource;
 hxd_res_BitmapFont.prototype = $extend(hxd_res_Resource.prototype,{
@@ -30187,7 +28837,7 @@ hxd_res_BitmapFont.prototype = $extend(hxd_res_Resource.prototype,{
 	}
 	,__class__: hxd_res_BitmapFont
 });
-var hxd_res_ImageInfoFlag = $hxEnums["hxd.res.ImageInfoFlag"] = { __ename__:"hxd.res.ImageInfoFlag",__constructs__:null
+var hxd_res_ImageInfoFlag = $hxEnums["hxd.res.ImageInfoFlag"] = { __ename__:true,__constructs__:null
 	,IsCube: {_hx_name:"IsCube",_hx_index:0,__enum__:"hxd.res.ImageInfoFlag",toString:$estr}
 	,Dxt10Header: {_hx_name:"Dxt10Header",_hx_index:1,__enum__:"hxd.res.ImageInfoFlag",toString:$estr}
 };
@@ -30199,7 +28849,6 @@ var hxd_res_ImageInfo = function() {
 	this.width = 0;
 	this.flags = 0;
 };
-$hxClasses["hxd.res.ImageInfo"] = hxd_res_ImageInfo;
 hxd_res_ImageInfo.__name__ = "hxd.res.ImageInfo";
 hxd_res_ImageInfo.prototype = {
 	__class__: hxd_res_ImageInfo
@@ -30207,7 +28856,6 @@ hxd_res_ImageInfo.prototype = {
 var hxd_res_Image = function(entry) {
 	hxd_res_Resource.call(this,entry);
 };
-$hxClasses["hxd.res.Image"] = hxd_res_Image;
 hxd_res_Image.__name__ = "hxd.res.Image";
 hxd_res_Image.setupTextureFlags = function(tex) {
 };
@@ -30828,7 +29476,6 @@ var hxd_res_Loader = function(fs) {
 	this.fs = fs;
 	this.cache = new haxe_ds_StringMap();
 };
-$hxClasses["hxd.res.Loader"] = hxd_res_Loader;
 hxd_res_Loader.__name__ = "hxd.res.Loader";
 hxd_res_Loader.prototype = {
 	load: function(path) {
@@ -30850,7 +29497,7 @@ hxd_res_Loader.prototype = {
 	}
 	,__class__: hxd_res_Loader
 };
-var hxd_res_Filter = $hxEnums["hxd.res.Filter"] = { __ename__:"hxd.res.Filter",__constructs__:null
+var hxd_res_Filter = $hxEnums["hxd.res.Filter"] = { __ename__:true,__constructs__:null
 	,Fast: {_hx_name:"Fast",_hx_index:0,__enum__:"hxd.res.Filter",toString:$estr}
 	,Chromatic: {_hx_name:"Chromatic",_hx_index:1,__enum__:"hxd.res.Filter",toString:$estr}
 };
@@ -30858,7 +29505,6 @@ hxd_res_Filter.__constructs__ = [hxd_res_Filter.Fast,hxd_res_Filter.Chromatic];
 hxd_res_Filter.__empty_constructs__ = [hxd_res_Filter.Fast,hxd_res_Filter.Chromatic];
 var hxd_res__$NanoJpeg_Component = function() {
 };
-$hxClasses["hxd.res._NanoJpeg.Component"] = hxd_res__$NanoJpeg_Component;
 hxd_res__$NanoJpeg_Component.__name__ = "hxd.res._NanoJpeg.Component";
 hxd_res__$NanoJpeg_Component.prototype = {
 	__class__: hxd_res__$NanoJpeg_Component
@@ -30871,7 +29517,6 @@ var hxd_res_NanoJpeg = function() {
 	this.njZZ = [0,1,8,16,9,2,3,10,17,24,32,25,18,11,4,5,12,19,26,33,40,48,41,34,27,20,13,6,7,14,21,28,35,42,49,56,57,50,43,36,29,22,15,23,30,37,44,51,58,59,52,45,38,31,39,46,53,60,61,54,47,55,62,63].slice(0);
 	this.vlctab = [null,null,null,null,null,null,null,null].slice(0);
 };
-$hxClasses["hxd.res.NanoJpeg"] = hxd_res_NanoJpeg;
 hxd_res_NanoJpeg.__name__ = "hxd.res.NanoJpeg";
 hxd_res_NanoJpeg.decode = function(bytes,filter,position,size) {
 	if(size == null) {
@@ -32561,10 +31206,8 @@ hxd_res_NanoJpeg.prototype = {
 	,__class__: hxd_res_NanoJpeg
 };
 var hxd_res_Sound = function(entry) {
-	this.lastPlay = 0.;
 	hxd_res_Resource.call(this,entry);
 };
-$hxClasses["hxd.res.Sound"] = hxd_res_Sound;
 hxd_res_Sound.__name__ = "hxd.res.Sound";
 hxd_res_Sound.__super__ = hxd_res_Resource;
 hxd_res_Sound.prototype = $extend(hxd_res_Resource.prototype,{
@@ -32592,19 +31235,6 @@ hxd_res_Sound.prototype = $extend(hxd_res_Resource.prototype,{
 		}
 		return this.data;
 	}
-	,play: function(loop,volume,channelGroup,soundGroup) {
-		if(volume == null) {
-			volume = 1.;
-		}
-		if(loop == null) {
-			loop = false;
-		}
-		this.lastPlay = HxOverrides.now() / 1000;
-		this.channel = hxd_snd_Manager.get().play(this,channelGroup,soundGroup);
-		this.channel.loop = loop;
-		this.channel.set_volume(volume);
-		return this.channel;
-	}
 	,watchCallb: function() {
 		var old = this.data;
 		this.data = null;
@@ -32629,7 +31259,6 @@ var hxd_snd_ChannelBase = function() {
 	this.mute = false;
 	this.priority = 0.;
 };
-$hxClasses["hxd.snd.ChannelBase"] = hxd_snd_ChannelBase;
 hxd_snd_ChannelBase.__name__ = "hxd.snd.ChannelBase";
 hxd_snd_ChannelBase.prototype = {
 	set_volume: function(v) {
@@ -32652,16 +31281,6 @@ hxd_snd_ChannelBase.prototype = {
 		}
 		this.currentVolume = this.volume;
 	}
-	,addEffect: function(e) {
-		if(e == null) {
-			throw haxe_Exception.thrown("Can't add null effect");
-		}
-		if(this.effects.indexOf(e) >= 0) {
-			throw haxe_Exception.thrown("effect already added on this channel");
-		}
-		this.effects.push(e);
-		return e;
-	}
 	,removeEffect: function(e) {
 		HxOverrides.remove(this.effects,e);
 	}
@@ -32681,7 +31300,6 @@ var hxd_snd_Channel = function() {
 	hxd_snd_ChannelBase.call(this);
 	this.id = hxd_snd_Channel.ID++;
 };
-$hxClasses["hxd.snd.Channel"] = hxd_snd_Channel;
 hxd_snd_Channel.__name__ = "hxd.snd.Channel";
 hxd_snd_Channel.__super__ = hxd_snd_ChannelBase;
 hxd_snd_Channel.prototype = $extend(hxd_snd_ChannelBase.prototype,{
@@ -32734,13 +31352,12 @@ var hxd_snd_ChannelGroup = function(name) {
 	hxd_snd_ChannelBase.call(this);
 	this.name = name;
 };
-$hxClasses["hxd.snd.ChannelGroup"] = hxd_snd_ChannelGroup;
 hxd_snd_ChannelGroup.__name__ = "hxd.snd.ChannelGroup";
 hxd_snd_ChannelGroup.__super__ = hxd_snd_ChannelBase;
 hxd_snd_ChannelGroup.prototype = $extend(hxd_snd_ChannelBase.prototype,{
 	__class__: hxd_snd_ChannelGroup
 });
-var hxd_snd_SampleFormat = $hxEnums["hxd.snd.SampleFormat"] = { __ename__:"hxd.snd.SampleFormat",__constructs__:null
+var hxd_snd_SampleFormat = $hxEnums["hxd.snd.SampleFormat"] = { __ename__:true,__constructs__:null
 	,UI8: {_hx_name:"UI8",_hx_index:0,__enum__:"hxd.snd.SampleFormat",toString:$estr}
 	,I16: {_hx_name:"I16",_hx_index:1,__enum__:"hxd.snd.SampleFormat",toString:$estr}
 	,F32: {_hx_name:"F32",_hx_index:2,__enum__:"hxd.snd.SampleFormat",toString:$estr}
@@ -32748,7 +31365,6 @@ var hxd_snd_SampleFormat = $hxEnums["hxd.snd.SampleFormat"] = { __ename__:"hxd.s
 hxd_snd_SampleFormat.__constructs__ = [hxd_snd_SampleFormat.UI8,hxd_snd_SampleFormat.I16,hxd_snd_SampleFormat.F32];
 hxd_snd_SampleFormat.__empty_constructs__ = [hxd_snd_SampleFormat.UI8,hxd_snd_SampleFormat.I16,hxd_snd_SampleFormat.F32];
 var hxd_snd_Data = function() { };
-$hxClasses["hxd.snd.Data"] = hxd_snd_Data;
 hxd_snd_Data.__name__ = "hxd.snd.Data";
 hxd_snd_Data.prototype = {
 	isLoading: function() {
@@ -32952,7 +31568,6 @@ hxd_snd_Data.prototype = {
 };
 var hxd_snd_EffectDriver = function() {
 };
-$hxClasses["hxd.snd.EffectDriver"] = hxd_snd_EffectDriver;
 hxd_snd_EffectDriver.__name__ = "hxd.snd.EffectDriver";
 hxd_snd_EffectDriver.prototype = {
 	acquire: function() {
@@ -32969,13 +31584,12 @@ hxd_snd_EffectDriver.prototype = {
 	}
 	,__class__: hxd_snd_EffectDriver
 };
-var hxd_snd_DriverFeature = $hxEnums["hxd.snd.DriverFeature"] = { __ename__:"hxd.snd.DriverFeature",__constructs__:null
+var hxd_snd_DriverFeature = $hxEnums["hxd.snd.DriverFeature"] = { __ename__:true,__constructs__:null
 	,MasterVolume: {_hx_name:"MasterVolume",_hx_index:0,__enum__:"hxd.snd.DriverFeature",toString:$estr}
 };
 hxd_snd_DriverFeature.__constructs__ = [hxd_snd_DriverFeature.MasterVolume];
 hxd_snd_DriverFeature.__empty_constructs__ = [hxd_snd_DriverFeature.MasterVolume];
 var hxd_snd_Driver = function() { };
-$hxClasses["hxd.snd.Driver"] = hxd_snd_Driver;
 hxd_snd_Driver.__name__ = "hxd.snd.Driver";
 hxd_snd_Driver.__isInterface__ = true;
 hxd_snd_Driver.prototype = {
@@ -32991,7 +31605,6 @@ var hxd_snd_Effect = function(type) {
 		this.driver = managerDriver.getEffectDriver(type);
 	}
 };
-$hxClasses["hxd.snd.Effect"] = hxd_snd_Effect;
 hxd_snd_Effect.__name__ = "hxd.snd.Effect";
 hxd_snd_Effect.prototype = {
 	applyAudibleVolumeModifier: function(v) {
@@ -33008,7 +31621,6 @@ var hxd_snd_Listener = function() {
 	this.direction = new h3d_Vector(1,0,0);
 	this.up = new h3d_Vector(0,0,1);
 };
-$hxClasses["hxd.snd.Listener"] = hxd_snd_Listener;
 hxd_snd_Listener.__name__ = "hxd.snd.Listener";
 hxd_snd_Listener.prototype = {
 	__class__: hxd_snd_Listener
@@ -33021,7 +31633,6 @@ var hxd_snd_Source = function(driver) {
 	this.handle = driver.createSource();
 	this.buffers = [];
 };
-$hxClasses["hxd.snd.Source"] = hxd_snd_Source;
 hxd_snd_Source.__name__ = "hxd.snd.Source";
 hxd_snd_Source.prototype = {
 	__class__: hxd_snd_Source
@@ -33031,7 +31642,6 @@ var hxd_snd_Buffer = function(driver) {
 	this.refs = 0;
 	this.lastStop = HxOverrides.now() / 1000;
 };
-$hxClasses["hxd.snd.Buffer"] = hxd_snd_Buffer;
 hxd_snd_Buffer.__name__ = "hxd.snd.Buffer";
 hxd_snd_Buffer.prototype = {
 	dispose: function() {
@@ -33073,7 +31683,6 @@ var hxd_snd_Manager = function() {
 	this.cachedBytes = new haxe_io_Bytes(new ArrayBuffer(24));
 	this.resampleBytes = new haxe_io_Bytes(new ArrayBuffer(hxd_snd_Manager.STREAM_BUFFER_SAMPLE_COUNT * 2));
 };
-$hxClasses["hxd.snd.Manager"] = hxd_snd_Manager;
 hxd_snd_Manager.__name__ = "hxd.snd.Manager";
 hxd_snd_Manager.get = function() {
 	if(hxd_snd_Manager.instance == null) {
@@ -33117,29 +31726,6 @@ hxd_snd_Manager.prototype = {
 			ch = ch.next;
 		}
 		return new hxd_impl_ArrayIterator_$hxd_$snd_$Channel(result);
-	}
-	,play: function(sound,channelGroup,soundGroup) {
-		if(soundGroup == null) {
-			soundGroup = this.masterSoundGroup;
-		}
-		if(channelGroup == null) {
-			channelGroup = this.masterChannelGroup;
-		}
-		var sdat = sound.getData();
-		if(sdat.samples == 0) {
-			throw haxe_Exception.thrown(Std.string(sound) + " has no samples");
-		}
-		var c = new hxd_snd_Channel();
-		c.sound = sound;
-		c.duration = sdat.get_duration();
-		c.manager = this;
-		c.soundGroup = soundGroup;
-		c.channelGroup = channelGroup;
-		c.next = this.channels;
-		c.isLoading = sdat.isLoading();
-		c.isVirtual = this.driver == null;
-		this.channels = c;
-		return c;
 	}
 	,updateVirtualChannels: function(now) {
 		var c = this.channels;
@@ -33891,7 +32477,6 @@ var hxd_snd_Mp3Data = function(bytes) {
 	this.samples = Math.ceil(this.samples * decodedRate / this.samplingRate);
 	this.samplingRate = decodedRate;
 };
-$hxClasses["hxd.snd.Mp3Data"] = hxd_snd_Mp3Data;
 hxd_snd_Mp3Data.__name__ = "hxd.snd.Mp3Data";
 hxd_snd_Mp3Data.__super__ = hxd_snd_Data;
 hxd_snd_Mp3Data.prototype = $extend(hxd_snd_Data.prototype,{
@@ -33943,7 +32528,6 @@ var hxd_snd_SoundGroup = function(name) {
 	this.volume = 1;
 	this.mono = false;
 };
-$hxClasses["hxd.snd.SoundGroup"] = hxd_snd_SoundGroup;
 hxd_snd_SoundGroup.__name__ = "hxd.snd.SoundGroup";
 hxd_snd_SoundGroup.prototype = {
 	__class__: hxd_snd_SoundGroup
@@ -33953,7 +32537,6 @@ var hxd_snd_WavData = function(bytes) {
 		this.init(new format_wav_Reader(new haxe_io_BytesInput(bytes)).read());
 	}
 };
-$hxClasses["hxd.snd.WavData"] = hxd_snd_WavData;
 hxd_snd_WavData.__name__ = "hxd.snd.WavData";
 hxd_snd_WavData.__super__ = hxd_snd_Data;
 hxd_snd_WavData.prototype = $extend(hxd_snd_Data.prototype,{
@@ -33987,7 +32570,6 @@ var hxd_snd_effect_LowPass = function() {
 	this.priority = 100;
 	this.gainHF = 1.0;
 };
-$hxClasses["hxd.snd.effect.LowPass"] = hxd_snd_effect_LowPass;
 hxd_snd_effect_LowPass.__name__ = "hxd.snd.effect.LowPass";
 hxd_snd_effect_LowPass.__super__ = hxd_snd_Effect;
 hxd_snd_effect_LowPass.prototype = $extend(hxd_snd_Effect.prototype,{
@@ -34000,56 +32582,11 @@ var hxd_snd_effect_Pitch = function(value) {
 	hxd_snd_Effect.call(this,"pitch");
 	this.value = value;
 };
-$hxClasses["hxd.snd.effect.Pitch"] = hxd_snd_effect_Pitch;
 hxd_snd_effect_Pitch.__name__ = "hxd.snd.effect.Pitch";
 hxd_snd_effect_Pitch.__super__ = hxd_snd_Effect;
 hxd_snd_effect_Pitch.prototype = $extend(hxd_snd_Effect.prototype,{
 	__class__: hxd_snd_effect_Pitch
 });
-var hxd_snd_effect_Reverb = function(preset) {
-	hxd_snd_Effect.call(this,"reverb");
-	this.wetDryMix = 100.0;
-	this.loadPreset(preset != null ? preset : hxd_snd_effect_ReverbPreset.DEFAULT);
-};
-$hxClasses["hxd.snd.effect.Reverb"] = hxd_snd_effect_Reverb;
-hxd_snd_effect_Reverb.__name__ = "hxd.snd.effect.Reverb";
-hxd_snd_effect_Reverb.__super__ = hxd_snd_Effect;
-hxd_snd_effect_Reverb.prototype = $extend(hxd_snd_Effect.prototype,{
-	loadPreset: function(preset) {
-		this.room = preset.room;
-		this.roomHF = preset.roomHF;
-		this.roomRolloffFactor = preset.roomRolloffFactor;
-		this.decayTime = preset.decayTime;
-		this.decayHFRatio = preset.decayHFRatio;
-		this.reflections = preset.reflections;
-		this.reflectionsDelay = preset.reflectionsDelay;
-		this.reverb = preset.reverb;
-		this.reverbDelay = preset.reverbDelay;
-		this.diffusion = preset.diffusion;
-		this.density = preset.density;
-		this.hfReference = preset.hfReference;
-	}
-	,__class__: hxd_snd_effect_Reverb
-});
-var hxd_snd_effect_ReverbPreset = function(room,roomHF,roomRolloffFactor,decayTime,decayHFRatio,reflections,reflectionsDelay,reverb,reverbDelay,diffusion,density,hfReference) {
-	this.room = room;
-	this.roomHF = roomHF;
-	this.roomRolloffFactor = roomRolloffFactor;
-	this.decayTime = decayTime;
-	this.decayHFRatio = decayHFRatio;
-	this.reflections = reflections;
-	this.reflectionsDelay = reflectionsDelay;
-	this.reverb = reverb;
-	this.reverbDelay = reverbDelay;
-	this.diffusion = diffusion;
-	this.density = density;
-	this.hfReference = hfReference;
-};
-$hxClasses["hxd.snd.effect.ReverbPreset"] = hxd_snd_effect_ReverbPreset;
-hxd_snd_effect_ReverbPreset.__name__ = "hxd.snd.effect.ReverbPreset";
-hxd_snd_effect_ReverbPreset.prototype = {
-	__class__: hxd_snd_effect_ReverbPreset
-};
 var hxd_snd_effect_Spatialization = function() {
 	hxd_snd_Effect.call(this,"spatialization");
 	this.position = new h3d_Vector();
@@ -34058,7 +32595,6 @@ var hxd_snd_effect_Spatialization = function() {
 	this.referenceDistance = 1.0;
 	this.rollOffFactor = 1.0;
 };
-$hxClasses["hxd.snd.effect.Spatialization"] = hxd_snd_effect_Spatialization;
 hxd_snd_effect_Spatialization.__name__ = "hxd.snd.effect.Spatialization";
 hxd_snd_effect_Spatialization.__super__ = hxd_snd_Effect;
 hxd_snd_effect_Spatialization.prototype = $extend(hxd_snd_Effect.prototype,{
@@ -34109,7 +32645,6 @@ hxd_snd_effect_Spatialization.prototype = $extend(hxd_snd_Effect.prototype,{
 });
 var hxd_snd_webaudio_BufferHandle = function() {
 };
-$hxClasses["hxd.snd.webaudio.BufferHandle"] = hxd_snd_webaudio_BufferHandle;
 hxd_snd_webaudio_BufferHandle.__name__ = "hxd.snd.webaudio.BufferHandle";
 hxd_snd_webaudio_BufferHandle.prototype = {
 	__class__: hxd_snd_webaudio_BufferHandle
@@ -34120,7 +32655,6 @@ var hxd_snd_webaudio_SourceHandle = function() {
 	this.pitch = 1;
 	this.firstPlay = true;
 };
-$hxClasses["hxd.snd.webaudio.SourceHandle"] = hxd_snd_webaudio_SourceHandle;
 hxd_snd_webaudio_SourceHandle.__name__ = "hxd.snd.webaudio.SourceHandle";
 hxd_snd_webaudio_SourceHandle.prototype = {
 	updateDestination: function() {
@@ -34154,7 +32688,6 @@ hxd_snd_webaudio_SourceHandle.prototype = {
 };
 var hxd_snd_webaudio_BufferPlayback = function() {
 };
-$hxClasses["hxd.snd.webaudio.BufferPlayback"] = hxd_snd_webaudio_BufferPlayback;
 hxd_snd_webaudio_BufferPlayback.__name__ = "hxd.snd.webaudio.BufferPlayback";
 hxd_snd_webaudio_BufferPlayback.prototype = {
 	get_currentSample: function() {
@@ -34267,7 +32800,6 @@ hxd_snd_webaudio_BufferPlayback.prototype = {
 	,__class__: hxd_snd_webaudio_BufferPlayback
 };
 var hxd_snd_webaudio_Context = function() { };
-$hxClasses["hxd.snd.webaudio.Context"] = hxd_snd_webaudio_Context;
 hxd_snd_webaudio_Context.__name__ = "hxd.snd.webaudio.Context";
 hxd_snd_webaudio_Context.get = function() {
 	if(hxd_snd_webaudio_Context.ctx == null) {
@@ -34356,7 +32888,6 @@ var hxd_snd_webaudio__$Context_BufferPool = function(channels,samples,rate) {
 	this.samples = samples;
 	this.rate = rate;
 };
-$hxClasses["hxd.snd.webaudio._Context.BufferPool"] = hxd_snd_webaudio__$Context_BufferPool;
 hxd_snd_webaudio__$Context_BufferPool.__name__ = "hxd.snd.webaudio._Context.BufferPool";
 hxd_snd_webaudio__$Context_BufferPool.prototype = {
 	__class__: hxd_snd_webaudio__$Context_BufferPool
@@ -34365,7 +32896,6 @@ var hxd_snd_webaudio_Driver = function() {
 	this.playbackPool = [];
 	this.ctx = hxd_snd_webaudio_Context.get();
 };
-$hxClasses["hxd.snd.webaudio.Driver"] = hxd_snd_webaudio_Driver;
 hxd_snd_webaudio_Driver.__name__ = "hxd.snd.webaudio.Driver";
 hxd_snd_webaudio_Driver.__interfaces__ = [hxd_snd_Driver];
 hxd_snd_webaudio_Driver.prototype = {
@@ -34606,7 +33136,6 @@ var hxd_snd_webaudio_LowPassDriver = function() {
 	this.pool = [];
 	hxd_snd_EffectDriver.call(this);
 };
-$hxClasses["hxd.snd.webaudio.LowPassDriver"] = hxd_snd_webaudio_LowPassDriver;
 hxd_snd_webaudio_LowPassDriver.__name__ = "hxd.snd.webaudio.LowPassDriver";
 hxd_snd_webaudio_LowPassDriver.__super__ = hxd_snd_EffectDriver;
 hxd_snd_webaudio_LowPassDriver.prototype = $extend(hxd_snd_EffectDriver.prototype,{
@@ -34640,7 +33169,6 @@ hxd_snd_webaudio_LowPassDriver.prototype = $extend(hxd_snd_EffectDriver.prototyp
 var hxd_snd_webaudio_PitchDriver = function() {
 	hxd_snd_EffectDriver.call(this);
 };
-$hxClasses["hxd.snd.webaudio.PitchDriver"] = hxd_snd_webaudio_PitchDriver;
 hxd_snd_webaudio_PitchDriver.__name__ = "hxd.snd.webaudio.PitchDriver";
 hxd_snd_webaudio_PitchDriver.__super__ = hxd_snd_EffectDriver;
 hxd_snd_webaudio_PitchDriver.prototype = $extend(hxd_snd_EffectDriver.prototype,{
@@ -34660,7 +33188,6 @@ var hxd_snd_webaudio_SpatializationDriver = function() {
 	this.pool = [];
 	hxd_snd_EffectDriver.call(this);
 };
-$hxClasses["hxd.snd.webaudio.SpatializationDriver"] = hxd_snd_webaudio_SpatializationDriver;
 hxd_snd_webaudio_SpatializationDriver.__name__ = "hxd.snd.webaudio.SpatializationDriver";
 hxd_snd_webaudio_SpatializationDriver.__super__ = hxd_snd_EffectDriver;
 hxd_snd_webaudio_SpatializationDriver.prototype = $extend(hxd_snd_EffectDriver.prototype,{
@@ -34692,7 +33219,7 @@ hxd_snd_webaudio_SpatializationDriver.prototype = $extend(hxd_snd_EffectDriver.p
 	}
 	,__class__: hxd_snd_webaudio_SpatializationDriver
 });
-var hxsl_Type = $hxEnums["hxsl.Type"] = { __ename__:"hxsl.Type",__constructs__:null
+var hxsl_Type = $hxEnums["hxsl.Type"] = { __ename__:true,__constructs__:null
 	,TVoid: {_hx_name:"TVoid",_hx_index:0,__enum__:"hxsl.Type",toString:$estr}
 	,TInt: {_hx_name:"TInt",_hx_index:1,__enum__:"hxsl.Type",toString:$estr}
 	,TBool: {_hx_name:"TBool",_hx_index:2,__enum__:"hxsl.Type",toString:$estr}
@@ -34715,14 +33242,14 @@ var hxsl_Type = $hxEnums["hxsl.Type"] = { __ename__:"hxsl.Type",__constructs__:n
 };
 hxsl_Type.__constructs__ = [hxsl_Type.TVoid,hxsl_Type.TInt,hxsl_Type.TBool,hxsl_Type.TFloat,hxsl_Type.TString,hxsl_Type.TVec,hxsl_Type.TMat3,hxsl_Type.TMat4,hxsl_Type.TMat3x4,hxsl_Type.TBytes,hxsl_Type.TSampler2D,hxsl_Type.TSampler2DArray,hxsl_Type.TSamplerCube,hxsl_Type.TStruct,hxsl_Type.TFun,hxsl_Type.TArray,hxsl_Type.TBuffer,hxsl_Type.TChannel,hxsl_Type.TMat2];
 hxsl_Type.__empty_constructs__ = [hxsl_Type.TVoid,hxsl_Type.TInt,hxsl_Type.TBool,hxsl_Type.TFloat,hxsl_Type.TString,hxsl_Type.TMat3,hxsl_Type.TMat4,hxsl_Type.TMat3x4,hxsl_Type.TSampler2D,hxsl_Type.TSampler2DArray,hxsl_Type.TSamplerCube,hxsl_Type.TMat2];
-var hxsl_VecType = $hxEnums["hxsl.VecType"] = { __ename__:"hxsl.VecType",__constructs__:null
+var hxsl_VecType = $hxEnums["hxsl.VecType"] = { __ename__:true,__constructs__:null
 	,VInt: {_hx_name:"VInt",_hx_index:0,__enum__:"hxsl.VecType",toString:$estr}
 	,VFloat: {_hx_name:"VFloat",_hx_index:1,__enum__:"hxsl.VecType",toString:$estr}
 	,VBool: {_hx_name:"VBool",_hx_index:2,__enum__:"hxsl.VecType",toString:$estr}
 };
 hxsl_VecType.__constructs__ = [hxsl_VecType.VInt,hxsl_VecType.VFloat,hxsl_VecType.VBool];
 hxsl_VecType.__empty_constructs__ = [hxsl_VecType.VInt,hxsl_VecType.VFloat,hxsl_VecType.VBool];
-var hxsl_SizeDecl = $hxEnums["hxsl.SizeDecl"] = { __ename__:"hxsl.SizeDecl",__constructs__:null
+var hxsl_SizeDecl = $hxEnums["hxsl.SizeDecl"] = { __ename__:true,__constructs__:null
 	,SConst: ($_=function(v) { return {_hx_index:0,v:v,__enum__:"hxsl.SizeDecl",toString:$estr}; },$_._hx_name="SConst",$_.__params__ = ["v"],$_)
 	,SVar: ($_=function(v) { return {_hx_index:1,v:v,__enum__:"hxsl.SizeDecl",toString:$estr}; },$_._hx_name="SVar",$_.__params__ = ["v"],$_)
 };
@@ -34732,7 +33259,6 @@ var hxsl_Error = function(msg,pos) {
 	this.msg = msg;
 	this.pos = pos;
 };
-$hxClasses["hxsl.Error"] = hxsl_Error;
 hxsl_Error.__name__ = "hxsl.Error";
 hxsl_Error.t = function(msg,pos) {
 	throw haxe_Exception.thrown(new hxsl_Error(msg,pos));
@@ -34743,7 +33269,7 @@ hxsl_Error.prototype = {
 	}
 	,__class__: hxsl_Error
 };
-var hxsl_VarKind = $hxEnums["hxsl.VarKind"] = { __ename__:"hxsl.VarKind",__constructs__:null
+var hxsl_VarKind = $hxEnums["hxsl.VarKind"] = { __ename__:true,__constructs__:null
 	,Global: {_hx_name:"Global",_hx_index:0,__enum__:"hxsl.VarKind",toString:$estr}
 	,Input: {_hx_name:"Input",_hx_index:1,__enum__:"hxsl.VarKind",toString:$estr}
 	,Param: {_hx_name:"Param",_hx_index:2,__enum__:"hxsl.VarKind",toString:$estr}
@@ -34754,7 +33280,7 @@ var hxsl_VarKind = $hxEnums["hxsl.VarKind"] = { __ename__:"hxsl.VarKind",__const
 };
 hxsl_VarKind.__constructs__ = [hxsl_VarKind.Global,hxsl_VarKind.Input,hxsl_VarKind.Param,hxsl_VarKind.Var,hxsl_VarKind.Local,hxsl_VarKind.Output,hxsl_VarKind.Function];
 hxsl_VarKind.__empty_constructs__ = [hxsl_VarKind.Global,hxsl_VarKind.Input,hxsl_VarKind.Param,hxsl_VarKind.Var,hxsl_VarKind.Local,hxsl_VarKind.Output,hxsl_VarKind.Function];
-var hxsl_VarQualifier = $hxEnums["hxsl.VarQualifier"] = { __ename__:"hxsl.VarQualifier",__constructs__:null
+var hxsl_VarQualifier = $hxEnums["hxsl.VarQualifier"] = { __ename__:true,__constructs__:null
 	,Const: ($_=function(max) { return {_hx_index:0,max:max,__enum__:"hxsl.VarQualifier",toString:$estr}; },$_._hx_name="Const",$_.__params__ = ["max"],$_)
 	,Private: {_hx_name:"Private",_hx_index:1,__enum__:"hxsl.VarQualifier",toString:$estr}
 	,Nullable: {_hx_name:"Nullable",_hx_index:2,__enum__:"hxsl.VarQualifier",toString:$estr}
@@ -34771,14 +33297,14 @@ var hxsl_VarQualifier = $hxEnums["hxsl.VarQualifier"] = { __ename__:"hxsl.VarQua
 };
 hxsl_VarQualifier.__constructs__ = [hxsl_VarQualifier.Const,hxsl_VarQualifier.Private,hxsl_VarQualifier.Nullable,hxsl_VarQualifier.PerObject,hxsl_VarQualifier.Name,hxsl_VarQualifier.Shared,hxsl_VarQualifier.Precision,hxsl_VarQualifier.Range,hxsl_VarQualifier.Ignore,hxsl_VarQualifier.PerInstance,hxsl_VarQualifier.Doc,hxsl_VarQualifier.Borrow,hxsl_VarQualifier.Sampler];
 hxsl_VarQualifier.__empty_constructs__ = [hxsl_VarQualifier.Private,hxsl_VarQualifier.Nullable,hxsl_VarQualifier.PerObject,hxsl_VarQualifier.Shared,hxsl_VarQualifier.Ignore];
-var hxsl_Prec = $hxEnums["hxsl.Prec"] = { __ename__:"hxsl.Prec",__constructs__:null
+var hxsl_Prec = $hxEnums["hxsl.Prec"] = { __ename__:true,__constructs__:null
 	,Low: {_hx_name:"Low",_hx_index:0,__enum__:"hxsl.Prec",toString:$estr}
 	,Medium: {_hx_name:"Medium",_hx_index:1,__enum__:"hxsl.Prec",toString:$estr}
 	,High: {_hx_name:"High",_hx_index:2,__enum__:"hxsl.Prec",toString:$estr}
 };
 hxsl_Prec.__constructs__ = [hxsl_Prec.Low,hxsl_Prec.Medium,hxsl_Prec.High];
 hxsl_Prec.__empty_constructs__ = [hxsl_Prec.Low,hxsl_Prec.Medium,hxsl_Prec.High];
-var hxsl_Const = $hxEnums["hxsl.Const"] = { __ename__:"hxsl.Const",__constructs__:null
+var hxsl_Const = $hxEnums["hxsl.Const"] = { __ename__:true,__constructs__:null
 	,CNull: {_hx_name:"CNull",_hx_index:0,__enum__:"hxsl.Const",toString:$estr}
 	,CBool: ($_=function(b) { return {_hx_index:1,b:b,__enum__:"hxsl.Const",toString:$estr}; },$_._hx_name="CBool",$_.__params__ = ["b"],$_)
 	,CInt: ($_=function(v) { return {_hx_index:2,v:v,__enum__:"hxsl.Const",toString:$estr}; },$_._hx_name="CInt",$_.__params__ = ["v"],$_)
@@ -34787,7 +33313,7 @@ var hxsl_Const = $hxEnums["hxsl.Const"] = { __ename__:"hxsl.Const",__constructs_
 };
 hxsl_Const.__constructs__ = [hxsl_Const.CNull,hxsl_Const.CBool,hxsl_Const.CInt,hxsl_Const.CFloat,hxsl_Const.CString];
 hxsl_Const.__empty_constructs__ = [hxsl_Const.CNull];
-var hxsl_FunctionKind = $hxEnums["hxsl.FunctionKind"] = { __ename__:"hxsl.FunctionKind",__constructs__:null
+var hxsl_FunctionKind = $hxEnums["hxsl.FunctionKind"] = { __ename__:true,__constructs__:null
 	,Vertex: {_hx_name:"Vertex",_hx_index:0,__enum__:"hxsl.FunctionKind",toString:$estr}
 	,Fragment: {_hx_name:"Fragment",_hx_index:1,__enum__:"hxsl.FunctionKind",toString:$estr}
 	,Init: {_hx_name:"Init",_hx_index:2,__enum__:"hxsl.FunctionKind",toString:$estr}
@@ -34795,7 +33321,7 @@ var hxsl_FunctionKind = $hxEnums["hxsl.FunctionKind"] = { __ename__:"hxsl.Functi
 };
 hxsl_FunctionKind.__constructs__ = [hxsl_FunctionKind.Vertex,hxsl_FunctionKind.Fragment,hxsl_FunctionKind.Init,hxsl_FunctionKind.Helper];
 hxsl_FunctionKind.__empty_constructs__ = [hxsl_FunctionKind.Vertex,hxsl_FunctionKind.Fragment,hxsl_FunctionKind.Init,hxsl_FunctionKind.Helper];
-var hxsl_TGlobal = $hxEnums["hxsl.TGlobal"] = { __ename__:"hxsl.TGlobal",__constructs__:null
+var hxsl_TGlobal = $hxEnums["hxsl.TGlobal"] = { __ename__:true,__constructs__:null
 	,Radians: {_hx_name:"Radians",_hx_index:0,__enum__:"hxsl.TGlobal",toString:$estr}
 	,Degrees: {_hx_name:"Degrees",_hx_index:1,__enum__:"hxsl.TGlobal",toString:$estr}
 	,Sin: {_hx_name:"Sin",_hx_index:2,__enum__:"hxsl.TGlobal",toString:$estr}
@@ -34871,7 +33397,7 @@ var hxsl_TGlobal = $hxEnums["hxsl.TGlobal"] = { __ename__:"hxsl.TGlobal",__const
 };
 hxsl_TGlobal.__constructs__ = [hxsl_TGlobal.Radians,hxsl_TGlobal.Degrees,hxsl_TGlobal.Sin,hxsl_TGlobal.Cos,hxsl_TGlobal.Tan,hxsl_TGlobal.Asin,hxsl_TGlobal.Acos,hxsl_TGlobal.Atan,hxsl_TGlobal.Pow,hxsl_TGlobal.Exp,hxsl_TGlobal.Log,hxsl_TGlobal.Exp2,hxsl_TGlobal.Log2,hxsl_TGlobal.Sqrt,hxsl_TGlobal.Inversesqrt,hxsl_TGlobal.Abs,hxsl_TGlobal.Sign,hxsl_TGlobal.Floor,hxsl_TGlobal.Ceil,hxsl_TGlobal.Fract,hxsl_TGlobal.Mod,hxsl_TGlobal.Min,hxsl_TGlobal.Max,hxsl_TGlobal.Clamp,hxsl_TGlobal.Mix,hxsl_TGlobal.Step,hxsl_TGlobal.Smoothstep,hxsl_TGlobal.Length,hxsl_TGlobal.Distance,hxsl_TGlobal.Dot,hxsl_TGlobal.Cross,hxsl_TGlobal.Normalize,hxsl_TGlobal.LReflect,hxsl_TGlobal.Texture,hxsl_TGlobal.TextureLod,hxsl_TGlobal.Texel,hxsl_TGlobal.TextureSize,hxsl_TGlobal.ToInt,hxsl_TGlobal.ToFloat,hxsl_TGlobal.ToBool,hxsl_TGlobal.Vec2,hxsl_TGlobal.Vec3,hxsl_TGlobal.Vec4,hxsl_TGlobal.IVec2,hxsl_TGlobal.IVec3,hxsl_TGlobal.IVec4,hxsl_TGlobal.BVec2,hxsl_TGlobal.BVec3,hxsl_TGlobal.BVec4,hxsl_TGlobal.Mat2,hxsl_TGlobal.Mat3,hxsl_TGlobal.Mat4,hxsl_TGlobal.Mat3x4,hxsl_TGlobal.Saturate,hxsl_TGlobal.Pack,hxsl_TGlobal.Unpack,hxsl_TGlobal.PackNormal,hxsl_TGlobal.UnpackNormal,hxsl_TGlobal.ScreenToUv,hxsl_TGlobal.UvToScreen,hxsl_TGlobal.DFdx,hxsl_TGlobal.DFdy,hxsl_TGlobal.Fwidth,hxsl_TGlobal.ChannelRead,hxsl_TGlobal.ChannelReadLod,hxsl_TGlobal.ChannelFetch,hxsl_TGlobal.ChannelTextureSize,hxsl_TGlobal.Trace,hxsl_TGlobal.VertexID,hxsl_TGlobal.InstanceID,hxsl_TGlobal.FragCoord,hxsl_TGlobal.FrontFacing];
 hxsl_TGlobal.__empty_constructs__ = [hxsl_TGlobal.Radians,hxsl_TGlobal.Degrees,hxsl_TGlobal.Sin,hxsl_TGlobal.Cos,hxsl_TGlobal.Tan,hxsl_TGlobal.Asin,hxsl_TGlobal.Acos,hxsl_TGlobal.Atan,hxsl_TGlobal.Pow,hxsl_TGlobal.Exp,hxsl_TGlobal.Log,hxsl_TGlobal.Exp2,hxsl_TGlobal.Log2,hxsl_TGlobal.Sqrt,hxsl_TGlobal.Inversesqrt,hxsl_TGlobal.Abs,hxsl_TGlobal.Sign,hxsl_TGlobal.Floor,hxsl_TGlobal.Ceil,hxsl_TGlobal.Fract,hxsl_TGlobal.Mod,hxsl_TGlobal.Min,hxsl_TGlobal.Max,hxsl_TGlobal.Clamp,hxsl_TGlobal.Mix,hxsl_TGlobal.Step,hxsl_TGlobal.Smoothstep,hxsl_TGlobal.Length,hxsl_TGlobal.Distance,hxsl_TGlobal.Dot,hxsl_TGlobal.Cross,hxsl_TGlobal.Normalize,hxsl_TGlobal.LReflect,hxsl_TGlobal.Texture,hxsl_TGlobal.TextureLod,hxsl_TGlobal.Texel,hxsl_TGlobal.TextureSize,hxsl_TGlobal.ToInt,hxsl_TGlobal.ToFloat,hxsl_TGlobal.ToBool,hxsl_TGlobal.Vec2,hxsl_TGlobal.Vec3,hxsl_TGlobal.Vec4,hxsl_TGlobal.IVec2,hxsl_TGlobal.IVec3,hxsl_TGlobal.IVec4,hxsl_TGlobal.BVec2,hxsl_TGlobal.BVec3,hxsl_TGlobal.BVec4,hxsl_TGlobal.Mat2,hxsl_TGlobal.Mat3,hxsl_TGlobal.Mat4,hxsl_TGlobal.Mat3x4,hxsl_TGlobal.Saturate,hxsl_TGlobal.Pack,hxsl_TGlobal.Unpack,hxsl_TGlobal.PackNormal,hxsl_TGlobal.UnpackNormal,hxsl_TGlobal.ScreenToUv,hxsl_TGlobal.UvToScreen,hxsl_TGlobal.DFdx,hxsl_TGlobal.DFdy,hxsl_TGlobal.Fwidth,hxsl_TGlobal.ChannelRead,hxsl_TGlobal.ChannelReadLod,hxsl_TGlobal.ChannelFetch,hxsl_TGlobal.ChannelTextureSize,hxsl_TGlobal.Trace,hxsl_TGlobal.VertexID,hxsl_TGlobal.InstanceID,hxsl_TGlobal.FragCoord,hxsl_TGlobal.FrontFacing];
-var hxsl_Component = $hxEnums["hxsl.Component"] = { __ename__:"hxsl.Component",__constructs__:null
+var hxsl_Component = $hxEnums["hxsl.Component"] = { __ename__:true,__constructs__:null
 	,X: {_hx_name:"X",_hx_index:0,__enum__:"hxsl.Component",toString:$estr}
 	,Y: {_hx_name:"Y",_hx_index:1,__enum__:"hxsl.Component",toString:$estr}
 	,Z: {_hx_name:"Z",_hx_index:2,__enum__:"hxsl.Component",toString:$estr}
@@ -34879,7 +33405,7 @@ var hxsl_Component = $hxEnums["hxsl.Component"] = { __ename__:"hxsl.Component",_
 };
 hxsl_Component.__constructs__ = [hxsl_Component.X,hxsl_Component.Y,hxsl_Component.Z,hxsl_Component.W];
 hxsl_Component.__empty_constructs__ = [hxsl_Component.X,hxsl_Component.Y,hxsl_Component.Z,hxsl_Component.W];
-var hxsl_TExprDef = $hxEnums["hxsl.TExprDef"] = { __ename__:"hxsl.TExprDef",__constructs__:null
+var hxsl_TExprDef = $hxEnums["hxsl.TExprDef"] = { __ename__:true,__constructs__:null
 	,TConst: ($_=function(c) { return {_hx_index:0,c:c,__enum__:"hxsl.TExprDef",toString:$estr}; },$_._hx_name="TConst",$_.__params__ = ["c"],$_)
 	,TVar: ($_=function(v) { return {_hx_index:1,v:v,__enum__:"hxsl.TExprDef",toString:$estr}; },$_._hx_name="TVar",$_.__params__ = ["v"],$_)
 	,TGlobal: ($_=function(g) { return {_hx_index:2,g:g,__enum__:"hxsl.TExprDef",toString:$estr}; },$_._hx_name="TGlobal",$_.__params__ = ["g"],$_)
@@ -34905,7 +33431,6 @@ var hxsl_TExprDef = $hxEnums["hxsl.TExprDef"] = { __ename__:"hxsl.TExprDef",__co
 hxsl_TExprDef.__constructs__ = [hxsl_TExprDef.TConst,hxsl_TExprDef.TVar,hxsl_TExprDef.TGlobal,hxsl_TExprDef.TParenthesis,hxsl_TExprDef.TBlock,hxsl_TExprDef.TBinop,hxsl_TExprDef.TUnop,hxsl_TExprDef.TVarDecl,hxsl_TExprDef.TCall,hxsl_TExprDef.TSwiz,hxsl_TExprDef.TIf,hxsl_TExprDef.TDiscard,hxsl_TExprDef.TReturn,hxsl_TExprDef.TFor,hxsl_TExprDef.TContinue,hxsl_TExprDef.TBreak,hxsl_TExprDef.TArray,hxsl_TExprDef.TArrayDecl,hxsl_TExprDef.TSwitch,hxsl_TExprDef.TWhile,hxsl_TExprDef.TMeta];
 hxsl_TExprDef.__empty_constructs__ = [hxsl_TExprDef.TDiscard,hxsl_TExprDef.TContinue,hxsl_TExprDef.TBreak];
 var hxsl_Tools = function() { };
-$hxClasses["hxsl.Tools"] = hxsl_Tools;
 hxsl_Tools.__name__ = "hxsl.Tools";
 hxsl_Tools.allocVarId = function() {
 	return ++hxsl_Tools.UID;
@@ -35428,7 +33953,6 @@ hxsl_Tools.size = function(t) {
 	}
 };
 var hxsl_Tools2 = function() { };
-$hxClasses["hxsl.Tools2"] = hxsl_Tools2;
 hxsl_Tools2.__name__ = "hxsl.Tools2";
 hxsl_Tools2.toString = function(g) {
 	var n = $hxEnums[g.__enum__].__constructs__[g._hx_index]._hx_name;
@@ -35438,7 +33962,6 @@ var hxsl_BatchShader = function() {
 	this.Batch_Count__ = 0;
 	hxsl_Shader.call(this);
 };
-$hxClasses["hxsl.BatchShader"] = hxsl_BatchShader;
 hxsl_BatchShader.__name__ = "hxsl.BatchShader";
 hxsl_BatchShader.__super__ = hxsl_Shader;
 hxsl_BatchShader.prototype = $extend(hxsl_Shader.prototype,{
@@ -35468,7 +33991,6 @@ hxsl_BatchShader.prototype = $extend(hxsl_Shader.prototype,{
 });
 var hxsl_SearchMap = function() {
 };
-$hxClasses["hxsl.SearchMap"] = hxsl_SearchMap;
 hxsl_SearchMap.__name__ = "hxsl.SearchMap";
 hxsl_SearchMap.prototype = {
 	__class__: hxsl_SearchMap
@@ -35480,7 +34002,6 @@ var hxsl_Cache = function() {
 	this.batchShaders = new haxe_ds_IntMap();
 	this.byID = new haxe_ds_StringMap();
 };
-$hxClasses["hxsl.Cache"] = hxsl_Cache;
 hxsl_Cache.__name__ = "hxsl.Cache";
 hxsl_Cache.get = function() {
 	var c = hxsl_Cache.INST;
@@ -35932,7 +34453,7 @@ hxsl_Cache.prototype = {
 	}
 	,__class__: hxsl_Cache
 };
-var hxsl_Channel = $hxEnums["hxsl.Channel"] = { __ename__:"hxsl.Channel",__constructs__:null
+var hxsl_Channel = $hxEnums["hxsl.Channel"] = { __ename__:true,__constructs__:null
 	,Unknown: {_hx_name:"Unknown",_hx_index:0,__enum__:"hxsl.Channel",toString:$estr}
 	,R: {_hx_name:"R",_hx_index:1,__enum__:"hxsl.Channel",toString:$estr}
 	,G: {_hx_name:"G",_hx_index:2,__enum__:"hxsl.Channel",toString:$estr}
@@ -35946,7 +34467,6 @@ hxsl_Channel.__empty_constructs__ = [hxsl_Channel.Unknown,hxsl_Channel.R,hxsl_Ch
 var hxsl_Clone = function() {
 	this.varMap = new haxe_ds_IntMap();
 };
-$hxClasses["hxsl.Clone"] = hxsl_Clone;
 hxsl_Clone.__name__ = "hxsl.Clone";
 hxsl_Clone.shaderData = function(s) {
 	return new hxsl_Clone().shader(s);
@@ -36045,14 +34565,12 @@ var hxsl__$Dce_VarDeps = function(v) {
 	this.used = false;
 	this.deps = new haxe_ds_IntMap();
 };
-$hxClasses["hxsl._Dce.VarDeps"] = hxsl__$Dce_VarDeps;
 hxsl__$Dce_VarDeps.__name__ = "hxsl._Dce.VarDeps";
 hxsl__$Dce_VarDeps.prototype = {
 	__class__: hxsl__$Dce_VarDeps
 };
 var hxsl_Dce = function() {
 };
-$hxClasses["hxsl.Dce"] = hxsl_Dce;
 hxsl_Dce.__name__ = "hxsl.Dce";
 hxsl_Dce.prototype = {
 	dce: function(vertex,fragment) {
@@ -36757,7 +35275,6 @@ var hxsl_Eval = function() {
 	this.funMap = new haxe_ds_ObjectMap();
 	this.constants = new haxe_ds_IntMap();
 };
-$hxClasses["hxsl.Eval"] = hxsl_Eval;
 hxsl_Eval.__name__ = "hxsl.Eval";
 hxsl_Eval.prototype = {
 	setConstant: function(v,c) {
@@ -38440,12 +36957,11 @@ var hxsl__$Flatten_Alloc = function(g,t,pos,size) {
 	this.pos = pos;
 	this.size = size;
 };
-$hxClasses["hxsl._Flatten.Alloc"] = hxsl__$Flatten_Alloc;
 hxsl__$Flatten_Alloc.__name__ = "hxsl._Flatten.Alloc";
 hxsl__$Flatten_Alloc.prototype = {
 	__class__: hxsl__$Flatten_Alloc
 };
-var hxsl_ARead = $hxEnums["hxsl.ARead"] = { __ename__:"hxsl.ARead",__constructs__:null
+var hxsl_ARead = $hxEnums["hxsl.ARead"] = { __ename__:true,__constructs__:null
 	,AIndex: ($_=function(a) { return {_hx_index:0,a:a,__enum__:"hxsl.ARead",toString:$estr}; },$_._hx_name="AIndex",$_.__params__ = ["a"],$_)
 	,AOffset: ($_=function(a,stride,delta) { return {_hx_index:1,a:a,stride:stride,delta:delta,__enum__:"hxsl.ARead",toString:$estr}; },$_._hx_name="AOffset",$_.__params__ = ["a","stride","delta"],$_)
 };
@@ -38453,7 +36969,6 @@ hxsl_ARead.__constructs__ = [hxsl_ARead.AIndex,hxsl_ARead.AOffset];
 hxsl_ARead.__empty_constructs__ = [];
 var hxsl_Flatten = function() {
 };
-$hxClasses["hxsl.Flatten"] = hxsl_Flatten;
 hxsl_Flatten.__name__ = "hxsl.Flatten";
 hxsl_Flatten.prototype = {
 	flatten: function(s,kind,constsToGlobal) {
@@ -39326,7 +37841,6 @@ var hxsl_Globals = function() {
 	this.channels = [];
 	this.map = new haxe_ds_IntMap();
 };
-$hxClasses["hxsl.Globals"] = hxsl_Globals;
 hxsl_Globals.__name__ = "hxsl.Globals";
 hxsl_Globals.allocID = function(path) {
 	if(hxsl_Globals.MAP == null) {
@@ -39366,7 +37880,6 @@ hxsl_Globals.prototype = {
 	,__class__: hxsl_Globals
 };
 var js_Boot = function() { };
-$hxClasses["js.Boot"] = js_Boot;
 js_Boot.__name__ = "js.Boot";
 js_Boot.getClass = function(o) {
 	if(o == null) {
@@ -39499,51 +38012,6 @@ js_Boot.__interfLoop = function(cc,cl) {
 		cc = cc.__super__;
 	}
 };
-js_Boot.__instanceof = function(o,cl) {
-	if(cl == null) {
-		return false;
-	}
-	switch(cl) {
-	case Array:
-		return ((o) instanceof Array);
-	case Bool:
-		return typeof(o) == "boolean";
-	case Dynamic:
-		return o != null;
-	case Float:
-		return typeof(o) == "number";
-	case Int:
-		if(typeof(o) == "number") {
-			return ((o | 0) === o);
-		} else {
-			return false;
-		}
-		break;
-	case String:
-		return typeof(o) == "string";
-	default:
-		if(o != null) {
-			if(typeof(cl) == "function") {
-				if(js_Boot.__downcastCheck(o,cl)) {
-					return true;
-				}
-			} else if(typeof(cl) == "object" && js_Boot.__isNativeObj(cl)) {
-				if(((o) instanceof cl)) {
-					return true;
-				}
-			}
-		} else {
-			return false;
-		}
-		if(cl == Class ? o.__name__ != null : false) {
-			return true;
-		}
-		if(cl == Enum ? o.__ename__ != null : false) {
-			return true;
-		}
-		return o.__enum__ != null ? $hxEnums[o.__enum__] == cl : false;
-	}
-};
 js_Boot.__downcastCheck = function(o,cl) {
 	if(!((o) instanceof cl)) {
 		if(cl.__isInterface__) {
@@ -39562,9 +38030,6 @@ js_Boot.__nativeClassName = function(o) {
 	}
 	return name;
 };
-js_Boot.__isNativeObj = function(o) {
-	return js_Boot.__nativeClassName(o) != null;
-};
 js_Boot.__resolveNativeClass = function(name) {
 	return $global[name];
 };
@@ -39575,7 +38040,6 @@ var hxsl_GlslOut = function() {
 	this.varNames = new haxe_ds_IntMap();
 	this.allNames = new haxe_ds_StringMap();
 };
-$hxClasses["hxsl.GlslOut"] = hxsl_GlslOut;
 hxsl_GlslOut.__name__ = "hxsl.GlslOut";
 hxsl_GlslOut.prototype = {
 	decl: function(s) {
@@ -40877,7 +39341,6 @@ hxsl_GlslOut.prototype = {
 };
 var hxsl__$Linker_AllocatedVar = function() {
 };
-$hxClasses["hxsl._Linker.AllocatedVar"] = hxsl__$Linker_AllocatedVar;
 hxsl__$Linker_AllocatedVar.__name__ = "hxsl._Linker.AllocatedVar";
 hxsl__$Linker_AllocatedVar.prototype = {
 	__class__: hxsl__$Linker_AllocatedVar
@@ -40891,7 +39354,6 @@ var hxsl__$Linker_ShaderInfos = function(n,v) {
 	this.read = new haxe_ds_IntMap();
 	this.write = new haxe_ds_IntMap();
 };
-$hxClasses["hxsl._Linker.ShaderInfos"] = hxsl__$Linker_ShaderInfos;
 hxsl__$Linker_ShaderInfos.__name__ = "hxsl._Linker.ShaderInfos";
 hxsl__$Linker_ShaderInfos.prototype = {
 	__class__: hxsl__$Linker_ShaderInfos
@@ -40903,7 +39365,6 @@ var hxsl_Linker = function(batchMode) {
 	this.debugDepth = 0;
 	this.batchMode = batchMode;
 };
-$hxClasses["hxsl.Linker"] = hxsl_Linker;
 hxsl_Linker.__name__ = "hxsl.Linker";
 hxsl_Linker.prototype = {
 	error: function(msg,p) {
@@ -41538,7 +39999,7 @@ hxsl_Linker.prototype = {
 	}
 	,__class__: hxsl_Linker
 };
-var hxsl_Output = $hxEnums["hxsl.Output"] = { __ename__:"hxsl.Output",__constructs__:null
+var hxsl_Output = $hxEnums["hxsl.Output"] = { __ename__:true,__constructs__:null
 	,Const: ($_=function(v) { return {_hx_index:0,v:v,__enum__:"hxsl.Output",toString:$estr}; },$_._hx_name="Const",$_.__params__ = ["v"],$_)
 	,Value: ($_=function(v,size) { return {_hx_index:1,v:v,size:size,__enum__:"hxsl.Output",toString:$estr}; },$_._hx_name="Value",$_.__params__ = ["v","size"],$_)
 	,PackNormal: ($_=function(v) { return {_hx_index:2,v:v,__enum__:"hxsl.Output",toString:$estr}; },$_._hx_name="PackNormal",$_.__params__ = ["v"],$_)
@@ -41556,7 +40017,6 @@ var hxsl_Printer = function(varId) {
 	}
 	this.varId = varId;
 };
-$hxClasses["hxsl.Printer"] = hxsl_Printer;
 hxsl_Printer.__name__ = "hxsl.Printer";
 hxsl_Printer.opStr = function(op) {
 	switch(op._hx_index) {
@@ -42064,7 +40524,6 @@ var hxsl_AllocParam = function(name,pos,instance,index,type) {
 	this.index = index;
 	this.type = type;
 };
-$hxClasses["hxsl.AllocParam"] = hxsl_AllocParam;
 hxsl_AllocParam.__name__ = "hxsl.AllocParam";
 hxsl_AllocParam.prototype = {
 	__class__: hxsl_AllocParam
@@ -42075,14 +40534,12 @@ var hxsl_AllocGlobal = function(pos,path,type) {
 	this.gid = hxsl_Globals.allocID(path);
 	this.type = type;
 };
-$hxClasses["hxsl.AllocGlobal"] = hxsl_AllocGlobal;
 hxsl_AllocGlobal.__name__ = "hxsl.AllocGlobal";
 hxsl_AllocGlobal.prototype = {
 	__class__: hxsl_AllocGlobal
 };
 var hxsl_RuntimeShaderData = function() {
 };
-$hxClasses["hxsl.RuntimeShaderData"] = hxsl_RuntimeShaderData;
 hxsl_RuntimeShaderData.__name__ = "hxsl.RuntimeShaderData";
 hxsl_RuntimeShaderData.prototype = {
 	__class__: hxsl_RuntimeShaderData
@@ -42091,7 +40548,6 @@ var hxsl_ShaderInstanceDesc = function(shader,bits) {
 	this.shader = shader;
 	this.bits = bits;
 };
-$hxClasses["hxsl.ShaderInstanceDesc"] = hxsl_ShaderInstanceDesc;
 hxsl_ShaderInstanceDesc.__name__ = "hxsl.ShaderInstanceDesc";
 hxsl_ShaderInstanceDesc.prototype = {
 	__class__: hxsl_ShaderInstanceDesc
@@ -42099,14 +40555,12 @@ hxsl_ShaderInstanceDesc.prototype = {
 var hxsl_RuntimeShader = function() {
 	this.id = hxsl_RuntimeShader.UID++;
 };
-$hxClasses["hxsl.RuntimeShader"] = hxsl_RuntimeShader;
 hxsl_RuntimeShader.__name__ = "hxsl.RuntimeShader";
 hxsl_RuntimeShader.prototype = {
 	__class__: hxsl_RuntimeShader
 };
 var hxsl_Serializer = function() {
 };
-$hxClasses["hxsl.Serializer"] = hxsl_Serializer;
 hxsl_Serializer.__name__ = "hxsl.Serializer";
 hxsl_Serializer.prototype = {
 	readVarInt: function() {
@@ -42460,7 +40914,6 @@ var hxsl_ShaderList = function(s,n) {
 	this.s = s;
 	this.next = n;
 };
-$hxClasses["hxsl.ShaderList"] = hxsl_ShaderList;
 hxsl_ShaderList.__name__ = "hxsl.ShaderList";
 hxsl_ShaderList.addSort = function(s,shaders) {
 	var prev = null;
@@ -42483,7 +40936,6 @@ var hxsl_ShaderInstance = function(shader) {
 	this.shader = shader;
 	this.params = new haxe_ds_IntMap();
 };
-$hxClasses["hxsl.ShaderInstance"] = hxsl_ShaderInstance;
 hxsl_ShaderInstance.__name__ = "hxsl.ShaderInstance";
 hxsl_ShaderInstance.prototype = {
 	__class__: hxsl_ShaderInstance
@@ -42492,7 +40944,6 @@ var hxsl_ShaderGlobal = function(v,gid) {
 	this.v = v;
 	this.globalId = gid;
 };
-$hxClasses["hxsl.ShaderGlobal"] = hxsl_ShaderGlobal;
 hxsl_ShaderGlobal.__name__ = "hxsl.ShaderGlobal";
 hxsl_ShaderGlobal.prototype = {
 	__class__: hxsl_ShaderGlobal
@@ -42502,7 +40953,6 @@ var hxsl_ShaderConst = function(v,pos,bits) {
 	this.pos = pos;
 	this.bits = bits;
 };
-$hxClasses["hxsl.ShaderConst"] = hxsl_ShaderConst;
 hxsl_ShaderConst.__name__ = "hxsl.ShaderConst";
 hxsl_ShaderConst.prototype = {
 	__class__: hxsl_ShaderConst
@@ -42517,7 +40967,6 @@ var hxsl_SharedShader = function(src) {
 	this.data = new hxsl_Serializer().unserialize(src);
 	this.initialize();
 };
-$hxClasses["hxsl.SharedShader"] = hxsl_SharedShader;
 hxsl_SharedShader.__name__ = "hxsl.SharedShader";
 hxsl_SharedShader.prototype = {
 	initialize: function() {
@@ -42605,14 +41054,12 @@ var hxsl__$Splitter_VarProps = function(v) {
 	this.read = 0;
 	this.write = 0;
 };
-$hxClasses["hxsl._Splitter.VarProps"] = hxsl__$Splitter_VarProps;
 hxsl__$Splitter_VarProps.__name__ = "hxsl._Splitter.VarProps";
 hxsl__$Splitter_VarProps.prototype = {
 	__class__: hxsl__$Splitter_VarProps
 };
 var hxsl_Splitter = function() {
 };
-$hxClasses["hxsl.Splitter"] = hxsl_Splitter;
 hxsl_Splitter.__name__ = "hxsl.Splitter";
 hxsl_Splitter.prototype = {
 	split: function(s) {
@@ -42954,7 +41401,6 @@ hxsl_Splitter.prototype = {
 	,__class__: hxsl_Splitter
 };
 var js_html__$CanvasElement_CanvasUtil = function() { };
-$hxClasses["js.html._CanvasElement.CanvasUtil"] = js_html__$CanvasElement_CanvasUtil;
 js_html__$CanvasElement_CanvasUtil.__name__ = "js.html._CanvasElement.CanvasUtil";
 js_html__$CanvasElement_CanvasUtil.getContextWebGL = function(canvas,attribs) {
 	var ctx = canvas.getContext("webgl",attribs);
@@ -42974,20 +41420,10 @@ $global.$haxeUID |= 0;
 if(typeof(performance) != "undefined" ? typeof(performance.now) == "function" : false) {
 	HxOverrides.now = performance.now.bind(performance);
 }
-$hxClasses["Math"] = Math;
 if( String.fromCodePoint == null ) String.fromCodePoint = function(c) { return c < 0x10000 ? String.fromCharCode(c) : String.fromCharCode((c>>10)+0xD7C0)+String.fromCharCode((c&0x3FF)+0xDC00); }
-String.prototype.__class__ = $hxClasses["String"] = String;
+String.prototype.__class__ = String;
 String.__name__ = "String";
-$hxClasses["Array"] = Array;
 Array.__name__ = "Array";
-Date.prototype.__class__ = $hxClasses["Date"] = Date;
-Date.__name__ = "Date";
-var Int = { };
-var Dynamic = { };
-var Float = Number;
-var Bool = Boolean;
-var Class = { };
-var Enum = { };
 haxe_ds_ObjectMap.count = 0;
 haxe_MainLoop.add(hxd_System.updateCursor,-1);
 js_Boot.__toStr = ({ }).toString;
@@ -43085,11 +41521,6 @@ h3d_shader_VertexColorAlpha.SRC = "HXSLG2gzZC5zaGFkZXIuVmVydGV4Q29sb3JBbHBoYQQBB
 h3d_shader_VolumeDecal.SRC = "HXSLFmgzZC5zaGFkZXIuVm9sdW1lRGVjYWwYAQZjYW1lcmENAQoCBHZpZXcHAAEAAwRwcm9qBwABAAQIcG9zaXRpb24FCwABAAUIcHJvakZsaXADAAEABghwcm9qRGlhZwULAAEABwh2aWV3UHJvagcAAQAID2ludmVyc2VWaWV3UHJvagcAAQAJBXpOZWFyAwABAAoEekZhcgMAAQALA2RpcgULAwEAAAAADAZnbG9iYWwNAgQNBHRpbWUDAAwADglwaXhlbFNpemUFCgAMAA8JbW9kZWxWaWV3BwAMAQMQEG1vZGVsVmlld0ludmVyc2UHAAwBAwAAABEFaW5wdXQNAwISCHBvc2l0aW9uBQsBEQATBm5vcm1hbAULAREAAQAAFAZvdXRwdXQNBAUVCHBvc2l0aW9uBQwEFAAWBWNvbG9yBQwEFAAXBWRlcHRoAwQUABgGbm9ybWFsBQsEFAAZCXdvcmxkRGlzdAMEFAAEAAAaEHJlbGF0aXZlUG9zaXRpb24FCwQAABsTdHJhbnNmb3JtZWRQb3NpdGlvbgULBAAAHBhwaXhlbFRyYW5zZm9ybWVkUG9zaXRpb24FCwQAAB0RdHJhbnNmb3JtZWROb3JtYWwFCwQAAB4RcHJvamVjdGVkUG9zaXRpb24FDAQAAB8KcGl4ZWxDb2xvcgUMBAAAIAVkZXB0aAMEAAAhCHNjcmVlblVWBQoEAAAiCXNwZWNQb3dlcgMEAAAjCXNwZWNDb2xvcgULBAAAJAl3b3JsZERpc3QDBAAAJQhkZXB0aE1hcBEBAAAAJgVzY2FsZQUKAgAAJwZub3JtYWwFCwIAACgHdGFuZ2VudAULAgAAKQppc0NlbnRlcmVkAgIAAQAAAAAAKgxjYWxjdWxhdGVkVVYFCgQAACsSdHJhbnNmb3JtZWRUYW5nZW50BQwEAAAsDl9faW5pdF9fdmVydGV4DgYAAC0IZnJhZ21lbnQOBgAAAgIsAAAFAgYEAh0FCwkDHw4BBAYBAicFCwkDMg4BAg8HBgULBQsFCwULBgQCKwUMCQMqDgIJAx8OAQQGAQIoBQsJAzIOAQIPBwYFCwULBQsBAwAAAAAAAPA/AwUMBQwAAS0AAAUJCC4GbWF0cml4BwQAAAYBAggHAhAHBwAILwlzY3JlZW5Qb3MFCgQAAAYCCgIeBQwRAAUKCgIeBQwMAAMFCgAIMANydXYFDAQAAAkDKg4DAi8FCgkDPw4CAiURAQkDOg4BAi8FCgUKAwEDAAAAAAAA8D8DBQwACDEEd3BvcwUMBAAABgECMAUMAi4HBQwACDIEcHBvcwUMBAAABgECMAUMAggHBQwABgQCHAULBgIKAjIFDJIABQsKAjIFDAwAAwULBQsGBAIqBQoGAQImBQoEBgIKAjEFDBEABQoKAjEFDAwAAwUKBQoFCgUKCwIpAgaAAioFCgEDAAAAAAAA4D8DBQoAAAsGCQkDFQ4CCQMVDgIKAioFCgAAAwoCKgUKBAADAwkDFQ4CBgMBAwAAAAAAAPA/AwoCKgUKAAADAwYDAQMAAAAAAADwPwMKAioFCgQAAwMDAwEDAAAAAAAAAAADAgwAAAAA";
 haxe_EntryPoint.pending = [];
 haxe_EntryPoint.threadCount = 0;
-haxe_Serializer.USE_CACHE = false;
-haxe_Serializer.USE_ENUM_INDEX = false;
-haxe_Serializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
-haxe_Unserializer.DEFAULT_RESOLVER = new haxe__$Unserializer_DefaultResolver();
-haxe_Unserializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
 haxe_crypto_Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 haxe_crypto_Base64.BYTES = haxe_io_Bytes.ofString(haxe_crypto_Base64.CHARS);
 haxe_io_FPHelper.helper = new DataView(new ArrayBuffer(8));
@@ -43123,7 +41554,6 @@ hxd_Charset.complementChars = (function($this) {
 hxd_Key.initDone = false;
 hxd_Key.keyPressed = [];
 hxd_Key.ALLOW_KEY_REPEAT = false;
-hxd_Save.SALT = "s*al!t";
 hxd_Timer.wantedFPS = 60.;
 hxd_Timer.maxDeltaTime = 0.5;
 hxd_Timer.smoothFactor = 0.95;
@@ -43148,8 +41578,6 @@ hxd_snd_Manager.MAX_SOURCES = 16;
 hxd_snd_Manager.SOUND_BUFFER_CACHE_SIZE = 256;
 hxd_snd_Manager.VIRTUAL_VOLUME_THRESHOLD = 1e-5;
 hxd_snd_Manager.BUFFER_STREAM_SPLIT = 16;
-hxd_snd_effect_ReverbPreset.DEFAULT = new hxd_snd_effect_ReverbPreset(-1000,-100,0.0,1.49,0.83,-2602,0.007,200,0.011,100.0,100.0,5000.0);
-hxd_snd_effect_ReverbPreset.DRUGGED = new hxd_snd_effect_ReverbPreset(-1000,0,0.0,8.39,1.39,-115,0.002,985,0.03,50.0,42.87,5000.0);
 hxsl_Tools.UID = 0;
 hxsl_Tools.SWIZ = hxsl_Component.__empty_constructs__.slice();
 hxsl_Tools.MAX_CHANNELS_BITS = 3;
