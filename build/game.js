@@ -1782,6 +1782,16 @@ h2d_Scene.prototype = $extend(h2d_Layers.prototype,{
 	,addEventListener: function(f) {
 		this.eventListeners.push(f);
 	}
+	,startCapture: function(onEvent,onCancel,touchId) {
+		var _gthis = this;
+		this.events.startCapture(function(e) {
+			_gthis.screenToViewport(e);
+			onEvent(e);
+		},onCancel,touchId);
+	}
+	,stopCapture: function() {
+		this.events.stopCapture();
+	}
 	,addEventTarget: function(i) {
 		var i1 = i;
 		var lv = 0;
@@ -3846,17 +3856,365 @@ MenuView.prototype = $extend(GameState.prototype,{
 	,__class__: MenuView
 });
 var PlayView = function() {
+	this.fpsText = new Text("",null,0.5);
+	this.drawGr = new h2d_Graphics();
+	this.houses = [];
+	this.tracks = [];
+	this.points = [];
 	GameState.call(this);
 };
 PlayView.__name__ = "PlayView";
 PlayView.__super__ = GameState;
 PlayView.prototype = $extend(GameState.prototype,{
 	init: function() {
-		this.addEventListener($bind(this,this.onEvent));
+		var uiCamera = new h2d_Camera(this);
+		uiCamera.layerVisible = function(layer) {
+			return layer == PlayView.LAYER_UI;
+		};
+		this.set_interactiveCamera(uiCamera);
+		var _this = this._cameras[0];
+		_this.posChanged = true;
+		_this.anchorX = 0.5;
+		var _this = this._cameras[0];
+		_this.posChanged = true;
+		_this.anchorY = 0.5;
+		this._cameras[0].clipViewport = true;
+		this._cameras[0].layerVisible = function(layer) {
+			return layer == PlayView.LAYER_MAP;
+		};
+		this.addEventListener($bind(this,this.onMapEvent));
+		var rand = new hxd_Rand(10);
+		this.points.push(new h2d_col_Point(-100,-700));
+		this.points.push(new h2d_col_Point(1000,500));
+		this.points.push(new h2d_col_Point(800,2000));
+		var _g = -10;
+		while(_g < 10) {
+			var i = _g++;
+			var _g1 = -10;
+			while(_g1 < 10) {
+				rand.seed = 36969 * (rand.seed & 65535) + (rand.seed >> 16);
+				rand.seed2 = 18000 * (rand.seed2 & 65535) + (rand.seed2 >> 16);
+				var tmp = (i + (((rand.seed << 16) + rand.seed2 | 0) & 1073741823) % 10007 / 10007.0) * 700;
+				rand.seed = 36969 * (rand.seed & 65535) + (rand.seed >> 16);
+				rand.seed2 = 18000 * (rand.seed2 & 65535) + (rand.seed2 >> 16);
+				this.houses.push(new h2d_col_Point(tmp,(_g1++ + (((rand.seed << 16) + rand.seed2 | 0) & 1073741823) % 10007 / 10007.0) * 700));
+			}
+		}
+		this.tracks.push({ start : 0, end : 1});
+		this.tracks.push({ start : 1, end : 2});
+		this.addChild(this.drawGr);
+		this.addChildAt(this.fpsText,PlayView.LAYER_UI);
 	}
-	,onEvent: function(event) {
+	,onMapEvent: function(event) {
+		var _gthis = this;
+		event.propagate = false;
+		if(event.touchId != 0) {
+			return;
+		}
+		if(event.kind == hxd_EventKind.EPush) {
+			var pt = new h2d_col_Point(event.relX,event.relY);
+			this._cameras[0].screenToCamera(pt);
+			var closestPoint = null;
+			var _g = 0;
+			var _g1 = this.tracks;
+			while(_g < _g1.length) {
+				var track = _g1[_g];
+				++_g;
+				var closestPointTrack = Utils.projectToLineSegment(pt,this.points[track.start],this.points[track.end]);
+				var tmp;
+				if(closestPoint != null) {
+					var dx = closestPointTrack.x - pt.x;
+					var dy = closestPointTrack.y - pt.y;
+					tmp = Math.sqrt(dx * dx + dy * dy) < closestPoint.distance(pt);
+				} else {
+					tmp = true;
+				}
+				if(tmp) {
+					closestPoint = closestPointTrack;
+				}
+			}
+			var dx = closestPoint.x - pt.x;
+			var dy = closestPoint.y - pt.y;
+			var addingTrack = Math.sqrt(dx * dx + dy * dy) < 100;
+			if(addingTrack) {
+				this.points.push(closestPoint);
+				this.points.push(pt);
+				this.tracks.push({ start : this.points.length - 2, end : this.points.length - 1});
+			}
+			var x = event.relX;
+			var y = event.relY;
+			if(y == null) {
+				y = 0.;
+			}
+			if(x == null) {
+				x = 0.;
+			}
+			var lastDragPos = new h2d_col_Point(x,y);
+			this.startCapture(function(event) {
+				var pt = new h2d_col_Point(event.relX,event.relY);
+				_gthis._cameras[0].screenToCamera(pt);
+				if(addingTrack) {
+					_gthis.points[_gthis.points.length - 1] = new h2d_col_Point(pt.x,pt.y);
+				} else {
+					var fh = _gthis._cameras[0];
+					var v = fh.x + (lastDragPos.x - event.relX);
+					fh.posChanged = true;
+					fh.x = v;
+					var fh = _gthis._cameras[0];
+					var v = fh.y + (lastDragPos.y - event.relY);
+					fh.posChanged = true;
+					fh.y = v;
+				}
+				lastDragPos = new h2d_col_Point(event.relX,event.relY);
+			});
+		} else if(event.kind == hxd_EventKind.ERelease) {
+			this.stopCapture();
+		}
 	}
 	,update: function(dt) {
+		this.drawMap();
+		this.fpsText.set_text("FPS: " + Math.round(hxd_Timer.fps()));
+	}
+	,drawMap: function() {
+		this.drawGr.clear();
+		this.drawGr.beginFill(5280848);
+		this.drawGr.drawRect(-10000,-10000,20000,20000);
+		this.drawGr.beginFill(3681318);
+		var _g = 0;
+		var _g1 = this.points;
+		while(_g < _g1.length) {
+			var point = _g1[_g];
+			++_g;
+			this.drawGr.drawCircle(point.x,point.y,35);
+		}
+		this.drawGr.endFill();
+		this.drawGr.lineStyle(15,6696206);
+		var _g = 0;
+		var _g1 = this.tracks;
+		while(_g < _g1.length) {
+			var track = _g1[_g];
+			++_g;
+			var start = this.points[track.start];
+			var end = this.points[track.end];
+			var x = end.x - start.x;
+			var y = end.y - start.y;
+			if(y == null) {
+				y = 0.;
+			}
+			if(x == null) {
+				x = 0.;
+			}
+			var _this_x = x;
+			var _this_y = y;
+			var k = _this_x * _this_x + _this_y * _this_y;
+			if(k < 1e-10) {
+				k = 0;
+			} else {
+				k = 1. / Math.sqrt(k);
+			}
+			var x1 = _this_x * k;
+			var y1 = _this_y * k;
+			if(y1 == null) {
+				y1 = 0.;
+			}
+			if(x1 == null) {
+				x1 = 0.;
+			}
+			var dir_x = x1;
+			var dir_y = y1;
+			var x2 = dir_x * 30;
+			var y2 = dir_y * 30;
+			if(y2 == null) {
+				y2 = 0.;
+			}
+			if(x2 == null) {
+				x2 = 0.;
+			}
+			var offset_x = x2;
+			var offset_y = y2;
+			var angle = 0.5 * Math.PI;
+			var c = Math.cos(angle);
+			var s = Math.sin(angle);
+			var y21 = offset_x * s + offset_y * c;
+			offset_x = offset_x * c - offset_y * s;
+			offset_y = y21;
+			var x3 = dir_x * 25;
+			var y3 = dir_y * 25;
+			if(y3 == null) {
+				y3 = 0.;
+			}
+			if(x3 == null) {
+				x3 = 0.;
+			}
+			var pos = new h2d_col_Point(start.x + x3,start.y + y3);
+			while(true) {
+				var dx = pos.x - start.x;
+				var dy = pos.y - start.y;
+				var dx1 = end.x - start.x;
+				var dy1 = end.y - start.y;
+				if(!(Math.sqrt(dx * dx + dy * dy) + 25 < Math.sqrt(dx1 * dx1 + dy1 * dy1))) {
+					break;
+				}
+				var x4 = offset_x * 1.5;
+				var y4 = offset_y * 1.5;
+				if(y4 == null) {
+					y4 = 0.;
+				}
+				if(x4 == null) {
+					x4 = 0.;
+				}
+				var x5 = pos.x + x4;
+				var y5 = pos.y + y4;
+				if(y5 == null) {
+					y5 = 0.;
+				}
+				if(x5 == null) {
+					x5 = 0.;
+				}
+				var plankLeft_x = x5;
+				var plankLeft_y = y5;
+				var x6 = offset_x * 1.5;
+				var y6 = offset_y * 1.5;
+				if(y6 == null) {
+					y6 = 0.;
+				}
+				if(x6 == null) {
+					x6 = 0.;
+				}
+				var x7 = pos.x - x6;
+				var y7 = pos.y - y6;
+				if(y7 == null) {
+					y7 = 0.;
+				}
+				if(x7 == null) {
+					x7 = 0.;
+				}
+				var plankRight_x = x7;
+				var plankRight_y = y7;
+				var _this = this.drawGr;
+				_this.flush();
+				_this.addVertex(plankLeft_x,plankLeft_y,_this.curR,_this.curG,_this.curB,_this.curA,plankLeft_x * _this.ma + plankLeft_y * _this.mc + _this.mx,plankLeft_x * _this.mb + plankLeft_y * _this.md + _this.my);
+				var _this1 = this.drawGr;
+				_this1.addVertex(plankRight_x,plankRight_y,_this1.curR,_this1.curG,_this1.curB,_this1.curA,plankRight_x * _this1.ma + plankRight_y * _this1.mc + _this1.mx,plankRight_x * _this1.mb + plankRight_y * _this1.md + _this1.my);
+				var x8 = dir_x * 25;
+				var y8 = dir_y * 25;
+				if(y8 == null) {
+					y8 = 0.;
+				}
+				if(x8 == null) {
+					x8 = 0.;
+				}
+				pos = new h2d_col_Point(pos.x + x8,pos.y + y8);
+			}
+		}
+		this.drawGr.lineStyle(10,0);
+		var _g = 0;
+		var _g1 = this.tracks;
+		while(_g < _g1.length) {
+			var track = _g1[_g];
+			++_g;
+			var start = this.points[track.start];
+			var end = this.points[track.end];
+			var x = end.x - start.x;
+			var y = end.y - start.y;
+			if(y == null) {
+				y = 0.;
+			}
+			if(x == null) {
+				x = 0.;
+			}
+			var _this_x = x;
+			var _this_y = y;
+			var k = _this_x * _this_x + _this_y * _this_y;
+			if(k < 1e-10) {
+				k = 0;
+			} else {
+				k = 1. / Math.sqrt(k);
+			}
+			var x1 = _this_x * k;
+			var y1 = _this_y * k;
+			if(y1 == null) {
+				y1 = 0.;
+			}
+			if(x1 == null) {
+				x1 = 0.;
+			}
+			var x2 = x1 * 30;
+			var y2 = y1 * 30;
+			if(y2 == null) {
+				y2 = 0.;
+			}
+			if(x2 == null) {
+				x2 = 0.;
+			}
+			var offset_x = x2;
+			var offset_y = y2;
+			var angle = 0.5 * Math.PI;
+			var c = Math.cos(angle);
+			var s = Math.sin(angle);
+			var y21 = offset_x * s + offset_y * c;
+			offset_x = offset_x * c - offset_y * s;
+			offset_y = y21;
+			var x3 = start.x + offset_x;
+			var y3 = start.y + offset_y;
+			if(y3 == null) {
+				y3 = 0.;
+			}
+			if(x3 == null) {
+				x3 = 0.;
+			}
+			var rail1Start_x = x3;
+			var rail1Start_y = y3;
+			var x4 = end.x + offset_x;
+			var y4 = end.y + offset_y;
+			if(y4 == null) {
+				y4 = 0.;
+			}
+			if(x4 == null) {
+				x4 = 0.;
+			}
+			var rail1End_x = x4;
+			var rail1End_y = y4;
+			var _this = this.drawGr;
+			_this.flush();
+			_this.addVertex(rail1Start_x,rail1Start_y,_this.curR,_this.curG,_this.curB,_this.curA,rail1Start_x * _this.ma + rail1Start_y * _this.mc + _this.mx,rail1Start_x * _this.mb + rail1Start_y * _this.md + _this.my);
+			var _this1 = this.drawGr;
+			_this1.addVertex(rail1End_x,rail1End_y,_this1.curR,_this1.curG,_this1.curB,_this1.curA,rail1End_x * _this1.ma + rail1End_y * _this1.mc + _this1.mx,rail1End_x * _this1.mb + rail1End_y * _this1.md + _this1.my);
+			var x5 = start.x - offset_x;
+			var y5 = start.y - offset_y;
+			if(y5 == null) {
+				y5 = 0.;
+			}
+			if(x5 == null) {
+				x5 = 0.;
+			}
+			var rail2Start_x = x5;
+			var rail2Start_y = y5;
+			var x6 = end.x - offset_x;
+			var y6 = end.y - offset_y;
+			if(y6 == null) {
+				y6 = 0.;
+			}
+			if(x6 == null) {
+				x6 = 0.;
+			}
+			var rail2End_x = x6;
+			var rail2End_y = y6;
+			var _this2 = this.drawGr;
+			_this2.flush();
+			_this2.addVertex(rail2Start_x,rail2Start_y,_this2.curR,_this2.curG,_this2.curB,_this2.curA,rail2Start_x * _this2.ma + rail2Start_y * _this2.mc + _this2.mx,rail2Start_x * _this2.mb + rail2Start_y * _this2.md + _this2.my);
+			var _this3 = this.drawGr;
+			_this3.addVertex(rail2End_x,rail2End_y,_this3.curR,_this3.curG,_this3.curB,_this3.curA,rail2End_x * _this3.ma + rail2End_y * _this3.mc + _this3.mx,rail2End_x * _this3.mb + rail2End_y * _this3.md + _this3.my);
+		}
+		this.drawGr.beginFill(13082394);
+		this.drawGr.lineStyle();
+		var _g = 0;
+		var _g1 = this.houses;
+		while(_g < _g1.length) {
+			var house = _g1[_g];
+			++_g;
+			this.drawGr.drawRect(house.x - 70.,house.y - 100.,140,200);
+		}
 	}
 	,__class__: PlayView
 });
@@ -4143,6 +4501,48 @@ Utils.floatToStr = function(n,prec) {
 	} else {
 		return HxOverrides.substr(str,0,str.length - prec) + "." + HxOverrides.substr(str,str.length - prec,null);
 	}
+};
+Utils.projectToLineSegment = function(p,l0,l1) {
+	var dx = l0.x - l1.x;
+	var dy = l0.y - l1.y;
+	var d2 = dx * dx + dy * dy;
+	if(d2 == 0.0) {
+		return l0;
+	}
+	var x = p.x - l0.x;
+	var y = p.y - l0.y;
+	if(y == null) {
+		y = 0.;
+	}
+	if(x == null) {
+		x = 0.;
+	}
+	var x1 = l1.x - l0.x;
+	var y1 = l1.y - l0.y;
+	if(y1 == null) {
+		y1 = 0.;
+	}
+	if(x1 == null) {
+		x1 = 0.;
+	}
+	var t = Math.max(0,Math.min(1,(x * x1 + y * y1) / d2));
+	var x = l1.x - l0.x;
+	var y = l1.y - l0.y;
+	if(y == null) {
+		y = 0.;
+	}
+	if(x == null) {
+		x = 0.;
+	}
+	var x1 = x * t;
+	var y1 = y * t;
+	if(y1 == null) {
+		y1 = 0.;
+	}
+	if(x1 == null) {
+		x1 = 0.;
+	}
+	return new h2d_col_Point(l0.x + x1,l0.y + y1);
 };
 var XmlType = {};
 XmlType.toString = function(this1) {
@@ -6701,6 +7101,15 @@ h2d_Camera.prototype = {
 		e.relX = (x * this.matD - y * this.matC) * this.invDet;
 		e.relY = (-x * this.matB + y * this.matA) * this.invDet;
 	}
+	,screenToCamera: function(pt) {
+		if(this.scene == null) {
+			throw haxe_Exception.thrown("This method requires Camera to be added to the Scene");
+		}
+		var x = (pt.x - this.scene.offsetX) / this.scene.viewportScaleX - this.absX;
+		var y = (pt.y - this.scene.offsetY) / this.scene.viewportScaleY - this.absY;
+		pt.x = (x * this.matD - y * this.matC) * this.invDet;
+		pt.y = (-x * this.matB + y * this.matA) * this.invDet;
+	}
 	,__class__: h2d_Camera
 };
 var h2d_FlowAlign = $hxEnums["h2d.FlowAlign"] = { __ename__:true,__constructs__:null
@@ -9230,6 +9639,10 @@ h2d_Graphics.prototype = $extend(h2d_Drawable.prototype,{
 		this.lineG = (color >> 8 & 255) / 255.;
 		this.lineB = (color & 255) / 255.;
 	}
+	,endFill: function() {
+		this.flush();
+		this.doFill = false;
+	}
 	,drawRect: function(x,y,w,h) {
 		this.flush();
 		this.addVertex(x,y,this.curR,this.curG,this.curB,this.curA,x * this.ma + y * this.mc + this.mx,x * this.mb + y * this.md + this.my);
@@ -9317,6 +9730,29 @@ h2d_Graphics.prototype = $extend(h2d_Drawable.prototype,{
 			var x1 = x + Math.cos(a) * radius;
 			var y1 = y + Math.sin(a) * radius;
 			this.addVertex(x1,y1,this.curR,this.curG,this.curB,this.curA,x1 * this.ma + y1 * this.mc + this.mx,x1 * this.mb + y1 * this.md + this.my);
+		}
+		this.flush();
+	}
+	,drawCircle: function(cx,cy,radius,nsegments) {
+		if(nsegments == null) {
+			nsegments = 0;
+		}
+		this.flush();
+		if(nsegments == 0) {
+			var f = radius * 3.14 * 2 / 4;
+			nsegments = Math.ceil(f < 0 ? -f : f);
+		}
+		if(nsegments < 3) {
+			nsegments = 3;
+		}
+		var angle = 6.28318530717958623 / nsegments;
+		var _g = 0;
+		var _g1 = nsegments + 1;
+		while(_g < _g1) {
+			var a = _g++ * angle;
+			var x = cx + Math.cos(a) * radius;
+			var y = cy + Math.sin(a) * radius;
+			this.addVertex(x,y,this.curR,this.curG,this.curB,this.curA,x * this.ma + y * this.mc + this.mx,x * this.mb + y * this.md + this.my);
 		}
 		this.flush();
 	}
@@ -12038,7 +12474,12 @@ var h2d_col_Point = function(x,y) {
 };
 h2d_col_Point.__name__ = "h2d.col.Point";
 h2d_col_Point.prototype = {
-	__class__: h2d_col_Point
+	distance: function(p) {
+		var dx = this.x - p.x;
+		var dy = this.y - p.y;
+		return Math.sqrt(dx * dx + dy * dy);
+	}
+	,__class__: h2d_col_Point
 };
 var h2d_filter_Filter = function() {
 	this.enable = true;
@@ -22731,6 +23172,7 @@ haxe_Exception.prototype = $extend(Error.prototype,{
 	}
 	,__class__: haxe_Exception
 });
+var haxe_Int32 = {};
 var haxe_Log = function() { };
 haxe_Log.__name__ = "haxe.Log";
 haxe_Log.formatOutput = function(v,infos) {
@@ -25956,6 +26398,41 @@ hxd_Pixels.prototype = {
 	}
 	,__class__: hxd_Pixels
 };
+var hxd_Rand = function(seed) {
+	this.init(seed);
+};
+hxd_Rand.__name__ = "hxd.Rand";
+hxd_Rand.hash = function(n,seed) {
+	if(seed == null) {
+		seed = 5381;
+	}
+	var n1 = n;
+	n1 = haxe_Int32._mul(n1,-862048943);
+	n1 = n1 << 15 | n1 >>> 17;
+	n1 = haxe_Int32._mul(n1,461845907);
+	var h = seed;
+	h ^= n1;
+	h = h << 13 | h >>> 19;
+	h = haxe_Int32._mul(h,5) + (-430675100) | 0;
+	h ^= h >> 16;
+	h = haxe_Int32._mul(h,-2048144789);
+	h ^= h >> 13;
+	h = haxe_Int32._mul(h,-1028477387);
+	return h ^= h >> 16;
+};
+hxd_Rand.prototype = {
+	init: function(seed) {
+		this.seed = seed;
+		this.seed2 = hxd_Rand.hash(seed);
+		if(this.seed == 0) {
+			this.seed = 1;
+		}
+		if(this.seed2 == 0) {
+			this.seed2 = 1;
+		}
+	}
+	,__class__: hxd_Rand
+};
 var hxd_Res = function() { };
 hxd_Res.__name__ = "hxd.Res";
 hxd_Res.load = function(name) {
@@ -26307,6 +26784,18 @@ hxd_SceneEvents.prototype = {
 			this.checkPos.propagate = false;
 			this.emitEvent(this.checkPos);
 		}
+	}
+	,startCapture: function(f,onCancel,touchId) {
+		if(this.currentDrag != null && this.currentDrag.onCancel != null) {
+			this.currentDrag.onCancel();
+		}
+		this.currentDrag = { f : f, ref : touchId, onCancel : onCancel};
+	}
+	,stopCapture: function() {
+		if(this.currentDrag != null && this.currentDrag.onCancel != null) {
+			this.currentDrag.onCancel();
+		}
+		this.currentDrag = null;
 	}
 	,updateCursor: function(i) {
 		if(this.overList.indexOf(i) != -1) {
@@ -41437,6 +41926,8 @@ Colors.BLUE = -13291603;
 Colors.LIGHT_GREY = -10066330;
 TextButton.BUTTON_TEXT_COLOR_ENABLED = -1;
 TextButton.BUTTON_TEXT_COLOR_DISABLED = -5592406;
+PlayView.LAYER_MAP = 0;
+PlayView.LAYER_UI = 1;
 Xml.Element = 0;
 Xml.PCData = 1;
 Xml.CData = 2;
@@ -41521,6 +42012,9 @@ h3d_shader_VertexColorAlpha.SRC = "HXSLG2gzZC5zaGFkZXIuVmVydGV4Q29sb3JBbHBoYQQBB
 h3d_shader_VolumeDecal.SRC = "HXSLFmgzZC5zaGFkZXIuVm9sdW1lRGVjYWwYAQZjYW1lcmENAQoCBHZpZXcHAAEAAwRwcm9qBwABAAQIcG9zaXRpb24FCwABAAUIcHJvakZsaXADAAEABghwcm9qRGlhZwULAAEABwh2aWV3UHJvagcAAQAID2ludmVyc2VWaWV3UHJvagcAAQAJBXpOZWFyAwABAAoEekZhcgMAAQALA2RpcgULAwEAAAAADAZnbG9iYWwNAgQNBHRpbWUDAAwADglwaXhlbFNpemUFCgAMAA8JbW9kZWxWaWV3BwAMAQMQEG1vZGVsVmlld0ludmVyc2UHAAwBAwAAABEFaW5wdXQNAwISCHBvc2l0aW9uBQsBEQATBm5vcm1hbAULAREAAQAAFAZvdXRwdXQNBAUVCHBvc2l0aW9uBQwEFAAWBWNvbG9yBQwEFAAXBWRlcHRoAwQUABgGbm9ybWFsBQsEFAAZCXdvcmxkRGlzdAMEFAAEAAAaEHJlbGF0aXZlUG9zaXRpb24FCwQAABsTdHJhbnNmb3JtZWRQb3NpdGlvbgULBAAAHBhwaXhlbFRyYW5zZm9ybWVkUG9zaXRpb24FCwQAAB0RdHJhbnNmb3JtZWROb3JtYWwFCwQAAB4RcHJvamVjdGVkUG9zaXRpb24FDAQAAB8KcGl4ZWxDb2xvcgUMBAAAIAVkZXB0aAMEAAAhCHNjcmVlblVWBQoEAAAiCXNwZWNQb3dlcgMEAAAjCXNwZWNDb2xvcgULBAAAJAl3b3JsZERpc3QDBAAAJQhkZXB0aE1hcBEBAAAAJgVzY2FsZQUKAgAAJwZub3JtYWwFCwIAACgHdGFuZ2VudAULAgAAKQppc0NlbnRlcmVkAgIAAQAAAAAAKgxjYWxjdWxhdGVkVVYFCgQAACsSdHJhbnNmb3JtZWRUYW5nZW50BQwEAAAsDl9faW5pdF9fdmVydGV4DgYAAC0IZnJhZ21lbnQOBgAAAgIsAAAFAgYEAh0FCwkDHw4BBAYBAicFCwkDMg4BAg8HBgULBQsFCwULBgQCKwUMCQMqDgIJAx8OAQQGAQIoBQsJAzIOAQIPBwYFCwULBQsBAwAAAAAAAPA/AwUMBQwAAS0AAAUJCC4GbWF0cml4BwQAAAYBAggHAhAHBwAILwlzY3JlZW5Qb3MFCgQAAAYCCgIeBQwRAAUKCgIeBQwMAAMFCgAIMANydXYFDAQAAAkDKg4DAi8FCgkDPw4CAiURAQkDOg4BAi8FCgUKAwEDAAAAAAAA8D8DBQwACDEEd3BvcwUMBAAABgECMAUMAi4HBQwACDIEcHBvcwUMBAAABgECMAUMAggHBQwABgQCHAULBgIKAjIFDJIABQsKAjIFDAwAAwULBQsGBAIqBQoGAQImBQoEBgIKAjEFDBEABQoKAjEFDAwAAwUKBQoFCgUKCwIpAgaAAioFCgEDAAAAAAAA4D8DBQoAAAsGCQkDFQ4CCQMVDgIKAioFCgAAAwoCKgUKBAADAwkDFQ4CBgMBAwAAAAAAAPA/AwoCKgUKAAADAwYDAQMAAAAAAADwPwMKAioFCgQAAwMDAwEDAAAAAAAAAAADAgwAAAAA";
 haxe_EntryPoint.pending = [];
 haxe_EntryPoint.threadCount = 0;
+haxe_Int32._mul = Math.imul != null ? Math.imul : function(a,b) {
+	return a * (b & 65535) + (a * (b >>> 16) << 16 | 0) | 0;
+};
 haxe_crypto_Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 haxe_crypto_Base64.BYTES = haxe_io_Bytes.ofString(haxe_crypto_Base64.CHARS);
 haxe_io_FPHelper.helper = new DataView(new ArrayBuffer(8));
