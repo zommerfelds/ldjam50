@@ -413,6 +413,8 @@ var CardType = $hxEnums["CardType"] = { __ename__:true,__constructs__:null
 CardType.__constructs__ = [CardType.Track,CardType.Station,CardType.Money,CardType.Debt,CardType.Backside];
 CardType.__empty_constructs__ = [CardType.Track,CardType.Station,CardType.Money,CardType.Debt,CardType.Backside];
 var Card = function(type,parent,scene,pos) {
+	this.onClickLocked = function(card) {
+	};
 	this.onMove = function(card,pt) {
 	};
 	this.onRelease = function(card,pt) {
@@ -464,6 +466,12 @@ var Card = function(type,parent,scene,pos) {
 				_gthis.onRelease(_gthis,pt);
 			}
 		});
+	};
+	interactive.onClick = function(e) {
+		if(_gthis.canMove) {
+			return;
+		}
+		_gthis.onClickLocked(_gthis);
 	};
 	this.homePos = Utils.toPoint(this.obj);
 	this.homeRotation = this.obj.rotation;
@@ -4124,6 +4132,7 @@ var PlayView = function() {
 	this.payDebtCard = null;
 	this.clickedPt = null;
 	this.constructionCardPlaceholders = [];
+	this.tutorialText = new Text("",null,0.7);
 	this.fpsText = new Text("",null,0.5);
 	this.drawGr = new h2d_Graphics();
 	this.trackUnderConstruction = null;
@@ -4134,7 +4143,7 @@ var PlayView = function() {
 	this.points = [];
 	GameState.call(this);
 	this.rand = new hxd_Rand(this.seed);
-	haxe_Log.trace("Random seed: " + this.seed,{ fileName : "src/PlayView.hx", lineNumber : 64, className : "PlayView", methodName : "new"});
+	haxe_Log.trace("Random seed: " + this.seed,{ fileName : "src/PlayView.hx", lineNumber : 65, className : "PlayView", methodName : "new"});
 };
 $hxClasses["PlayView"] = PlayView;
 PlayView.__name__ = "PlayView";
@@ -4163,6 +4172,15 @@ PlayView.prototype = $extend(GameState.prototype,{
 		this.setUpDeck();
 		this.setUpHand();
 		this.setUpZoomButtons();
+		this.addChildAt(this.tutorialText,PlayView.LAYER_UI);
+		var _this = this.tutorialText;
+		var v = this.height - Gui.scale(300);
+		_this.posChanged = true;
+		_this.y = v;
+		var _this = this.tutorialText;
+		_this.posChanged = true;
+		_this.x = this.width * 0.1;
+		this.tutorialText.set_maxWidth(this.width * 0.9 / this.tutorialText.scaleX);
 		if(new URLSearchParams(window.location.search).get("fps") != null) {
 			this.addChildAt(this.fpsText,PlayView.LAYER_UI);
 		}
@@ -4211,6 +4229,11 @@ PlayView.prototype = $extend(GameState.prototype,{
 		placeholder.alpha = 0.5;
 		placeholder.set_visible(false);
 		this.constructionCardPlaceholders.push(placeholder);
+	}
+	,showMessage: function(text) {
+		this.tutorialText.alpha = 1;
+		this.tutorialText.set_text(text);
+		motion_Actuate.tween(this.tutorialText,1.0,{ alpha : 0.0}).delay(5.0);
 	}
 	,setUpTiles: function() {
 		var _this = this.tileHouse;
@@ -4348,23 +4371,39 @@ PlayView.prototype = $extend(GameState.prototype,{
 		this._cameras[0].screenToCamera(mapPt);
 		switch(card.type._hx_index) {
 		case 0:
-			if(this.payDebtCard == null && this.trackUnderConstruction != null && this.trackUnderConstruction.valid && this.trackUnderConstruction.paid < this.trackUnderConstruction.cost) {
-				var _this = Utils.toPoint(this.constructionCardPlaceholders[this.trackUnderConstruction.paid]);
-				var dx = _this.x - mapPt.x;
-				var dy = _this.y - mapPt.y;
-				if(Math.sqrt(dx * dx + dy * dy) < 450) {
-					this.addCardToConstruction(card);
+			if(this.payDebtCard == null) {
+				if(this.trackUnderConstruction != null && this.trackUnderConstruction.valid && this.trackUnderConstruction.paid < this.trackUnderConstruction.cost) {
+					var _this = Utils.toPoint(this.constructionCardPlaceholders[this.trackUnderConstruction.paid]);
+					var dx = _this.x - mapPt.x;
+					var dy = _this.y - mapPt.y;
+					if(Math.sqrt(dx * dx + dy * dy) < 450) {
+						this.addCardToConstruction(card);
+					} else {
+						this.showMessage("Drag this card on the construction to pay a track.");
+						hxd_Res.get_loader().loadCache("invalid.wav",hxd_res_Sound).play();
+					}
+				} else {
+					this.showMessage("First, start a construction by touching and dragging from a track.");
+					hxd_Res.get_loader().loadCache("invalid.wav",hxd_res_Sound).play();
 				}
 			} else {
+				this.showMessage("You need to pay the debt first.");
 				hxd_Res.get_loader().loadCache("invalid.wav",hxd_res_Sound).play();
 			}
 			this.arrangeHand();
 			break;
 		case 1:
 			var pointOnTrack = this.getClosestPointOnTrack(mapPt);
-			if(this.payDebtCard == null && this.placingStationValid(pt,mapPt,pointOnTrack.closestPoint)) {
-				this.placeStation(card,pointOnTrack.closestPoint,pointOnTrack.rotation);
+			if(this.payDebtCard == null) {
+				if(this.placingStationValid(pt,mapPt,pointOnTrack.closestPoint)) {
+					this.placeStation(card,pointOnTrack.closestPoint,pointOnTrack.rotation);
+				} else {
+					this.showMessage("Place this card on a track to build a station.");
+					hxd_Res.get_loader().loadCache("invalid.wav",hxd_res_Sound).play();
+					this.arrangeHand();
+				}
 			} else {
+				this.showMessage("You need to pay the debt first.");
 				hxd_Res.get_loader().loadCache("invalid.wav",hxd_res_Sound).play();
 				this.arrangeHand();
 			}
@@ -4373,6 +4412,7 @@ PlayView.prototype = $extend(GameState.prototype,{
 			if(this.payDebtCard != null) {
 				this.payMoneyForDebt(card);
 			} else {
+				this.showMessage("You don't need to pay anything right now.");
 				hxd_Res.get_loader().loadCache("invalid.wav",hxd_res_Sound).play();
 			}
 			this.arrangeHand();
@@ -4422,7 +4462,7 @@ PlayView.prototype = $extend(GameState.prototype,{
 		this.trackUnderConstruction.paid++;
 		Utils.tween(card.obj,0.7,{ x : placeholder.x, y : placeholder.y, scaleX : placeholder.scaleX, scaleY : placeholder.scaleY}).ease(motion_easing_Cubic.easeOut).onComplete(function() {
 			if(_gthis.trackUnderConstruction == null) {
-				haxe_Log.trace("ERROR: trackUnderConstruction shouldn't be null!",{ fileName : "src/PlayView.hx", lineNumber : 257, className : "PlayView", methodName : "addCardToConstruction"});
+				haxe_Log.trace("ERROR: trackUnderConstruction shouldn't be null!",{ fileName : "src/PlayView.hx", lineNumber : 283, className : "PlayView", methodName : "addCardToConstruction"});
 				return;
 			}
 			if(_gthis.trackUnderConstruction.paid == _gthis.trackUnderConstruction.cost) {
@@ -4534,6 +4574,9 @@ PlayView.prototype = $extend(GameState.prototype,{
 				return c.type == CardType.Money;
 			})) {
 				Utils.tween(card.obj,1.0,{ scaleX : Gui.scale(Card.FULLSCREEN_CARD_SCALE / 2), scaleY : Gui.scale(Card.FULLSCREEN_CARD_SCALE / 2)});
+				card.onClickLocked = function(card) {
+					_gthis.showMessage("Drag money to pay debt.");
+				};
 			} else {
 				App.instance.musicChannel.fadeTo(0,3.0);
 				Utils.tween(card.obj,3.0,{ scaleX : Gui.scale(Card.FULLSCREEN_CARD_SCALE * 4), scaleY : Gui.scale(Card.FULLSCREEN_CARD_SCALE * 4), rotation : Math.PI * 2}).ease(motion_easing_Cubic.easeIn).delay(0.2).onComplete(function() {
