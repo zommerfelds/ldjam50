@@ -4363,7 +4363,7 @@ PlayView.prototype = $extend(GameState.prototype,{
 		if(x2 == null) {
 			x2 = 0.;
 		}
-		this.placeStation(null,new h2d_col_Point(x + x1,y + y1),Math.atan2(y2,x2));
+		this.placeStation(null,new h2d_col_Point(x + x1,y + y1),Math.atan2(y2,x2),false);
 	}
 	,onReleaseHandCard: function(card,pt) {
 		this.movingHandCard = null;
@@ -4396,7 +4396,7 @@ PlayView.prototype = $extend(GameState.prototype,{
 			var pointOnTrack = this.getClosestPointOnTrack(mapPt);
 			if(this.payDebtCard == null) {
 				if(this.placingStationValid(pt,mapPt,pointOnTrack.closestPoint)) {
-					this.placeStation(card,pointOnTrack.closestPoint,pointOnTrack.rotation);
+					this.placeStation(card,pointOnTrack.closestPoint,pointOnTrack.rotation,true);
 				} else {
 					this.showMessage("Place this card on a track to build a station.");
 					hxd_Res.get_loader().loadCache("invalid.wav",hxd_res_Sound).play();
@@ -4495,7 +4495,7 @@ PlayView.prototype = $extend(GameState.prototype,{
 		});
 		this.makeNextDeckCard();
 	}
-	,placeStation: function(stationCard,pointOnTrack,rotation) {
+	,placeStation: function(stationCard,pointOnTrack,rotation,makeMoney) {
 		var _gthis = this;
 		hxd_Res.get_loader().loadCache("build.wav",hxd_res_Sound).play();
 		this.addStation(pointOnTrack,rotation);
@@ -4512,32 +4512,36 @@ PlayView.prototype = $extend(GameState.prototype,{
 			var dy = pointOnTrack.y - p.y;
 			if(Math.sqrt(dx * dx + dy * dy) <= PlayView.STATION_RADIUS && house.connectedStation == null) {
 				house.connectedStation = this.stations.length - 1;
-				var card = this.newHandCard(CardType.Money);
-				var _this = house.center;
-				var screenPt = new h2d_col_Point(_this.x,_this.y);
-				this._cameras[0].cameraToScreen(screenPt);
-				var _this1 = card.obj;
-				_this1.posChanged = true;
-				_this1.x = screenPt.x;
-				var _this2 = card.obj;
-				_this2.posChanged = true;
-				_this2.y = screenPt.y;
-				var _this3 = card.obj;
-				_this3.posChanged = true;
-				_this3.scaleX *= 0;
-				_this3.posChanged = true;
-				_this3.scaleY *= 0;
-				var _this4 = card.obj;
-				var v = Math.random() * 2 * Math.PI;
-				_this4.posChanged = true;
-				_this4.rotation = v;
-				Utils.tween(card.obj,1.0,{ scaleX : Gui.scale(Card.NORMAL_CARD_SCALE), scaleY : Gui.scale(Card.NORMAL_CARD_SCALE), rotation : 0});
+				if(makeMoney) {
+					var card = this.newHandCard(CardType.Money);
+					var _this = house.center;
+					var screenPt = new h2d_col_Point(_this.x,_this.y);
+					this._cameras[0].cameraToScreen(screenPt);
+					var _this1 = card.obj;
+					_this1.posChanged = true;
+					_this1.x = screenPt.x;
+					var _this2 = card.obj;
+					_this2.posChanged = true;
+					_this2.y = screenPt.y;
+					var _this3 = card.obj;
+					_this3.posChanged = true;
+					_this3.scaleX *= 0;
+					_this3.posChanged = true;
+					_this3.scaleY *= 0;
+					var _this4 = card.obj;
+					var v = Math.random() * 2 * Math.PI;
+					_this4.posChanged = true;
+					_this4.rotation = v;
+					Utils.tween(card.obj,1.0,{ scaleX : Gui.scale(Card.NORMAL_CARD_SCALE), scaleY : Gui.scale(Card.NORMAL_CARD_SCALE), rotation : 0});
+				}
 			}
 		}
-		haxe_Timer.delay(function() {
-			hxd_Res.get_loader().loadCache("good.wav",hxd_res_Sound).play();
-			_gthis.arrangeHand();
-		},800. | 0);
+		if(makeMoney) {
+			haxe_Timer.delay(function() {
+				hxd_Res.get_loader().loadCache("good.wav",hxd_res_Sound).play();
+				_gthis.arrangeHand();
+			},800. | 0);
+		}
 	}
 	,flipDeckCard: function(card,pt) {
 		var _gthis = this;
