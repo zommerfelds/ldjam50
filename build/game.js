@@ -453,7 +453,7 @@ var Card = function(type,parent,scene,pos) {
 	interactive.y = -Card.CARD_HEIGHT / 2;
 	var isDragging = false;
 	interactive.onPush = function(e) {
-		if(!_gthis.canMove) {
+		if(!_gthis.canMove || !Card.gobalCanMove) {
 			return;
 		}
 		isDragging = true;
@@ -468,7 +468,7 @@ var Card = function(type,parent,scene,pos) {
 		});
 	};
 	interactive.onClick = function(e) {
-		if(_gthis.canMove) {
+		if(_gthis.canMove && Card.gobalCanMove) {
 			return;
 		}
 		_gthis.onClickLocked(_gthis);
@@ -4127,6 +4127,7 @@ var PlayView = function() {
 	this.tileHouse = hxd_Res.get_loader().loadCache("house.png",hxd_res_Image).toTile();
 	this.movingHandCard = null;
 	this.seed = Std.random(2147483647);
+	this.nonHandCardsContainer = new h2d_Object();
 	this.handCardsContainer = new h2d_Object();
 	this.handCards = new haxe_ds_ObjectMap();
 	this.payDebtCard = null;
@@ -4143,7 +4144,7 @@ var PlayView = function() {
 	this.points = [];
 	GameState.call(this);
 	this.rand = new hxd_Rand(this.seed);
-	haxe_Log.trace("Random seed: " + this.seed,{ fileName : "src/PlayView.hx", lineNumber : 65, className : "PlayView", methodName : "new"});
+	haxe_Log.trace("Random seed: " + this.seed,{ fileName : "src/PlayView.hx", lineNumber : 66, className : "PlayView", methodName : "new"});
 };
 $hxClasses["PlayView"] = PlayView;
 PlayView.__name__ = "PlayView";
@@ -4172,6 +4173,7 @@ PlayView.prototype = $extend(GameState.prototype,{
 		this.setUpDeck();
 		this.setUpHand();
 		this.setUpZoomButtons();
+		this.addChildAt(this.nonHandCardsContainer,PlayView.LAYER_UI);
 		this.addChildAt(this.tutorialText,PlayView.LAYER_UI);
 		var _this = this.tutorialText;
 		var v = this.height - Gui.scale(300);
@@ -4369,6 +4371,7 @@ PlayView.prototype = $extend(GameState.prototype,{
 		this.movingHandCard = null;
 		var mapPt = new h2d_col_Point(pt.x,pt.y);
 		this._cameras[0].screenToCamera(mapPt);
+		Card.gobalCanMove = false;
 		switch(card.type._hx_index) {
 		case 0:
 			if(this.payDebtCard == null) {
@@ -4462,7 +4465,7 @@ PlayView.prototype = $extend(GameState.prototype,{
 		this.trackUnderConstruction.paid++;
 		Utils.tween(card.obj,0.7,{ x : placeholder.x, y : placeholder.y, scaleX : placeholder.scaleX, scaleY : placeholder.scaleY}).ease(motion_easing_Cubic.easeOut).onComplete(function() {
 			if(_gthis.trackUnderConstruction == null) {
-				haxe_Log.trace("ERROR: trackUnderConstruction shouldn't be null!",{ fileName : "src/PlayView.hx", lineNumber : 283, className : "PlayView", methodName : "addCardToConstruction"});
+				haxe_Log.trace("ERROR: trackUnderConstruction shouldn't be null!",{ fileName : "src/PlayView.hx", lineNumber : 288, className : "PlayView", methodName : "addCardToConstruction"});
 				return;
 			}
 			if(_gthis.trackUnderConstruction.paid == _gthis.trackUnderConstruction.cost) {
@@ -4483,15 +4486,15 @@ PlayView.prototype = $extend(GameState.prototype,{
 		});
 	}
 	,payMoneyForDebt: function(moneyCard) {
-		var _gthis = this;
+		var tmpPayDebtCard = this.payDebtCard;
+		this.payDebtCard = null;
 		hxd_Res.get_loader().loadCache("good.wav",hxd_res_Sound).play();
 		this.removeHandCard(moneyCard);
-		Utils.tween(this.payDebtCard.obj,1.0,{ scaleX : 0, scaleY : 0, alpha : 0}).onComplete(function() {
-			var _this = _gthis.payDebtCard.obj;
+		Utils.tween(tmpPayDebtCard.obj,1.0,{ scaleX : 0, scaleY : 0, alpha : 0}).onComplete(function() {
+			var _this = tmpPayDebtCard.obj;
 			if(_this != null && _this.parent != null) {
 				_this.parent.removeChild(_this);
 			}
-			return _gthis.payDebtCard = null;
 		});
 		this.makeNextDeckCard();
 	}
@@ -4545,6 +4548,7 @@ PlayView.prototype = $extend(GameState.prototype,{
 	}
 	,flipDeckCard: function(card,pt) {
 		var _gthis = this;
+		Card.gobalCanMove = false;
 		hxd_Res.get_loader().loadCache("beep.wav",hxd_res_Sound).play();
 		card.canMove = false;
 		Utils.tween(card.obj,1.0,{ x : this.width / 2, y : this.height / 2, scaleX : Gui.scale(Card.FULLSCREEN_CARD_SCALE), scaleY : Gui.scale(Card.FULLSCREEN_CARD_SCALE)});
@@ -4556,9 +4560,9 @@ PlayView.prototype = $extend(GameState.prototype,{
 				if(_this != null && _this.parent != null) {
 					_this.parent.removeChild(_this);
 				}
-				return Utils.tween(newCard.obj,0.3,{ scaleX : Gui.scale(Card.FULLSCREEN_CARD_SCALE)}).ease(motion_easing_Sine.easeOut).onComplete(function() {
+				return Utils.tween(newCard.obj,0.3,{ scaleX : Gui.scale(Card.FULLSCREEN_CARD_SCALE)},null,function() {
 					_gthis.handleNewCard(newCard);
-				});
+				}).ease(motion_easing_Sine.easeOut);
 			});
 		});
 	}
@@ -4591,6 +4595,7 @@ PlayView.prototype = $extend(GameState.prototype,{
 		case 4:
 			throw new haxe_Exception("Invalid new card: " + Std.string(card.type));
 		}
+		Card.gobalCanMove = true;
 	}
 	,newCardFromDeck: function() {
 		var shares = [{ card : CardType.Track, units : 2.0},{ card : CardType.Station, units : 1.0},{ card : CardType.Money, units : 0.5},{ card : CardType.Debt, units : 1.0 + this.cardsDrawn * 0.02}];
@@ -4634,7 +4639,7 @@ PlayView.prototype = $extend(GameState.prototype,{
 		return card;
 	}
 	,newNonHandCard: function(type) {
-		return new Card(type,this,this,PlayView.LAYER_UI);
+		return new Card(type,this.nonHandCardsContainer,this);
 	}
 	,getPositionForNewHandCard: function(type) {
 		var _g = 0;
@@ -4672,6 +4677,7 @@ PlayView.prototype = $extend(GameState.prototype,{
 			card.returnToHomePos();
 			++i;
 		}
+		Card.gobalCanMove = true;
 	}
 	,getClosestPointOnTrack: function(pt) {
 		var closestPoint = null;
@@ -5732,9 +5738,12 @@ Utils.posUpdated = function(obj) {
 	obj.posChanged = true;
 	obj.x = obj.x;
 };
-Utils.tween = function(obj,time,properties,overwrite) {
+Utils.tween = function(obj,time,properties,overwrite,after) {
 	if(overwrite == null) {
 		overwrite = true;
+	}
+	if(after != null) {
+		motion_Actuate.timer(time).onComplete(after);
 	}
 	return motion_Actuate.tween(obj,time,properties,overwrite).onUpdate(function() {
 		Utils.posUpdated(obj);
@@ -45702,6 +45711,7 @@ Card.CARD_WIDTH = 21;
 Card.CARD_HEIGHT = 31;
 Card.NORMAL_CARD_SCALE = 5;
 Card.FULLSCREEN_CARD_SCALE = 20;
+Card.gobalCanMove = true;
 h2d_HtmlText.REG_SPACES = new EReg("[\r\n\t ]+","g");
 Colors.BLUE = 5537732;
 Colors.LIGHT_GREY = -10066330;
