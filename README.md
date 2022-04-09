@@ -1,5 +1,7 @@
 # My game entry for Ludum Dare 50: Debt Train
 
+👉❄ This version is frozen to the jam version. Click [here](https://github.com/zommerfelds/ldjam50-post-jam) for an improved version.
+
 [Live demo](https://zommerfelds.github.io/ldjam50/)
 
 Based on [this template](https://github.com/zommerfelds/gamejam-template).
