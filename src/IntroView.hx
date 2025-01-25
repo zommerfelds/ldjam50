@@ -18,7 +18,7 @@ class IntroView extends GameState {
 		t.textAlign = MultilineCenter;
 		centeringFlow.addSpacing(Gui.scaleAsInt(50));
 
-		final t = new Gui.Text("Boss, I don't think we cast last much longer.", centeringFlow, 0.8);
+		final t = new Gui.Text("Boss, I don't think we can last much longer.", centeringFlow, 0.8);
 		t.textAlign = MultilineCenter;
 		centeringFlow.addSpacing(Gui.scaleAsInt(50));
 
