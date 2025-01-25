@@ -4054,7 +4054,7 @@ IntroView.prototype = $extend(GameState.prototype,{
 		centeringFlow.set_verticalSpacing(Gui.scaleAsInt(50));
 		new Text("We're running out of money!",centeringFlow).set_textAlign(h2d_Align.MultilineCenter);
 		centeringFlow.addSpacing(Gui.scaleAsInt(50));
-		new Text("Boss, I don't think we cast last much longer.",centeringFlow,0.8).set_textAlign(h2d_Align.MultilineCenter);
+		new Text("Boss, I don't think we can last much longer.",centeringFlow,0.8).set_textAlign(h2d_Align.MultilineCenter);
 		centeringFlow.addSpacing(Gui.scaleAsInt(50));
 		new Text("I already told you we should have sold all the assets many years ago. We're drowning in debt now.",centeringFlow,0.8).set_textAlign(h2d_Align.MultilineCenter);
 		centeringFlow.addSpacing(Gui.scaleAsInt(50));
@@ -7638,7 +7638,8 @@ format_png_Tools.extract32 = function(d,bytes,flipY) {
 						bgra.b[w++] = v2;
 						bgra.b[w++] = v2;
 						bgra.b[w++] = v2;
-						bgra.b[w++] = data.b[r++] + bgra.b[w - stride];
+						var va = data.b[r++] + bgra.b[w - stride];
+						bgra.b[w++] = va;
 					}
 				} else {
 					var _g9 = 0;
@@ -8099,10 +8100,11 @@ format_png_Tools.extract32 = function(d,bytes,flipY) {
 			alpha = alpha2;
 		}
 		var width = h.width;
-		if(data.length < h.height * (Math.ceil(width * h.colbits / 8) + 1)) {
+		var stride = Math.ceil(width * h.colbits / 8) + 1;
+		if(data.length < h.height * stride) {
 			throw haxe_Exception.thrown("Not enough data");
 		}
-		var rline = h.width * h.colbits >> 3;
+		var rline = stride - 1;
 		var _g = 0;
 		var _g1 = h.height;
 		while(_g < _g1) {
@@ -8633,7 +8635,11 @@ format_wav_Reader.prototype = {
 					cuePoints.push({ id : cueId, sampleOffset : this.i.readInt32()});
 				}
 			} else {
-				this.i.read(this.i.readInt32());
+				var n = this.i.readInt32();
+				if(n < 0) {
+					break;
+				}
+				this.i.read(n);
 			}
 		} catch( _g ) {
 			if(!((haxe_Exception.caught(_g).unwrap()) instanceof haxe_io_Eof)) {
